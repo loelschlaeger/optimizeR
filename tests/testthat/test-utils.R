@@ -12,7 +12,7 @@ test_that("try an expression silently works", {
 
 test_that("interruption of long evaluations works", {
   foo <- function(x) {
-    for(i in 1:10) Sys.sleep(x/10)
+    for (i in 1:10) Sys.sleep(x / 10)
     return(x)
   }
   expect_null(timed(foo(1.5), 1))
@@ -20,7 +20,7 @@ test_that("interruption of long evaluations works", {
 
 test_that("interruption of silently tried evaluations works", {
   foo <- function(x, y) {
-    for(i in 1:10) Sys.sleep(x/10)
+    for (i in 1:10) Sys.sleep(x / 10)
     return(x + y)
   }
   expect_equal(try_silent_timed(foo(0.5, 1), 1), 1.5)
