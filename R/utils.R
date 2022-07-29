@@ -76,7 +76,7 @@ try_silent <- function(expr) {
 #' @export
 #'
 #' @examples
-#' foo <- function(x) { Sys.sleep(x); return(x) }
+#' foo <- function(x) { for(i in 1:10) Sys.sleep(x/10); return(x) }
 #' timed(foo(0.5), 1)
 #' timed(foo(1.5), 1)
 #'
