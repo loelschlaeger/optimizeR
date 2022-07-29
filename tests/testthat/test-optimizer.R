@@ -35,7 +35,7 @@ test_that("pre-specified optim optimizer works", {
 })
 
 test_that("optimization works", {
-  out <- optimizeR(set_optimizer_nlm(), f_ackley, c(-2,2))
+  out <- optimizeR(set_optimizer_nlm(), f_ackley, c(-2, 2))
   expect_type(out, "list")
   expect_type(out$v, "double")
   expect_type(out$z, "double")

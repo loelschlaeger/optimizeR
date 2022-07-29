@@ -14,9 +14,7 @@
 #' @keywords
 #' internal
 
-optimizeR_stop <- function(
-    event, debug = character(), call. = FALSE
-) {
+optimizeR_stop <- function(event, debug = character(), call. = FALSE) {
   msg <- paste(event, debug, sep = "\n", collapse = "")
   stop(msg, call. = call.)
 }
@@ -25,9 +23,7 @@ optimizeR_stop <- function(
 #' @keywords
 #' internal
 
-optimizeR_warn <- function(
-    event, debug = character(), call. = FALSE, immediate. = FALSE
-) {
+optimizeR_warn <- function(event, debug = character(), call. = FALSE, immediate. = FALSE) {
   msg <- paste(event, debug, sep = "\n", collapse = "")
   warning(msg, call. = call., immediate. = immediate.)
 }
