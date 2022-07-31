@@ -24,7 +24,7 @@ A list, containing the elements
 \itemize{
 \item \code{v}, the value of the estimated optimum of \code{f},
 \item \code{z}, the parameter vector where the optimum of \code{f} is obtained,
-\item \code{time}, the total optimization time (as an \code{difftime} object),
+\item \code{time}, the total optimization time (as a \code{difftime} object),
 and additional output elements of the optimizer (if not excluded by the
 \code{out_ign} element via \code{\link{set_optimizer}}).
 }

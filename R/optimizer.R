@@ -431,7 +431,7 @@ set_optimizer_optim <- function(..., out_ign = character(), test_par = list()) {
 #' A list, containing the elements
 #' * \code{v}, the value of the estimated optimum of \code{f},
 #' * \code{z}, the parameter vector where the optimum of \code{f} is obtained,
-#' * \code{time}, the total optimization time (as an \code{difftime} object),
+#' * \code{time}, the total optimization time (as a \code{difftime} object),
 #' and additional output elements of the optimizer (if not excluded by the
 #' \code{out_ign} element via \code{\link{set_optimizer}}).
 #'
@@ -443,6 +443,7 @@ set_optimizer_optim <- function(..., out_ign = character(), test_par = list()) {
 optimizeR <- function(
     optimizer = set_optimizer_nlm(), f, p, ...
 ) {
+  start <- Sys.time()
   res <- do.call(
     what = optimizer[["opt"]],
     args = c(
@@ -451,11 +452,13 @@ optimizeR <- function(
       optimizer[["add"]], list(...)
     )
   )
+  end <- Sys.time()
   c(
     structure(
       list(res[[optimizer[["arg_names"]][["v"]]]],
-           res[[optimizer[["arg_names"]][["z"]]]]),
-      names = c("v", "z")
+           res[[optimizer[["arg_names"]][["z"]]]],
+           difftime(end, start)),
+      names = c("v", "z", "time")
     ),
     res[!names(res) %in% optimizer[["out_ign"]]]
   )
