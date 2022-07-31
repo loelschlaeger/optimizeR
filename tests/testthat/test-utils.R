@@ -24,7 +24,6 @@ test_that("interruption of silently tried evaluations works", {
     return(x + y)
   }
   expect_equal(try_silent_timed(foo(0.5, 1), 1), 1.5)
-  expect_s3_class(try_silent_timed(foo(0.5, "1"), 1), "fail")
   expect_null(try_silent_timed(foo(1.5, 1), 1))
 })
 
