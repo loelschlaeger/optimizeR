@@ -82,22 +82,28 @@ outputs are preserved:
 ``` r
 str(res)
 #> List of 3
-#>  $ :List of 5
+#>  $ :List of 6
 #>   ..$ v         : num 1.66e-06
 #>   ..$ z         : num [1:2] -2.91e-07 5.08e-07
+#>   ..$ time      : 'difftime' num 0.000495195388793945
+#>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ gradient  : num [1:2] -0.00824 0.0144
 #>   ..$ code      : int 2
 #>   ..$ iterations: int 33
-#>  $ :List of 5
+#>  $ :List of 6
 #>   ..$ v          : num 3.57
 #>   ..$ z          : num [1:2] -0.969 0.969
+#>   ..$ time       : 'difftime' num 0.000224828720092773
+#>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ counts     : Named int [1:2] 45 NA
 #>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
 #>   ..$ convergence: int 0
 #>   ..$ message    : NULL
-#>  $ :List of 5
+#>  $ :List of 6
 #>   ..$ v          : num 0
 #>   ..$ z          : num [1:2] 0 0
+#>   ..$ time       : 'difftime' num 0.00132107734680176
+#>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ count      : num 111
 #>   ..$ convergence: num 0
 #>   ..$ info       :List of 2
@@ -110,10 +116,14 @@ others? The optimizer got stuck in a local minimum.
 
 ## Installation
 
-The package is not yet on CRAN, but it will be soon.
+You can install the released version of {optimizeR} from
+[CRAN](https://CRAN.R-project.org) with:
 
-You can install the development version from
-[GitHub](https://github.com/) with:
+``` r
+install.packages("optimizeR")
+```
+
+…and the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")

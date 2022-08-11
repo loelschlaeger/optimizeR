@@ -1,6 +1,6 @@
 Package: optimizeR
 Title: Unified Framework for Numerical Optimizer in R
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: c(
     person("Lennart", "Oelschl\u00e4ger", 
            email = "oelschlaeger.lennart@gmail.com", 
@@ -11,7 +11,7 @@ Authors@R: c(
            role = c("ctb"),
            comment = c(ORCID = "0000-0002-9373-0365"))
            )
-Description: Provides a unified framework for numerical optimizers in R, 
+Description: Provides a unified framework for numerical optimizer in R, 
     particularly for inputs and outputs.
 License: GPL (>= 3)
 Encoding: UTF-8
@@ -27,6 +27,5 @@ Suggests:
 Config/testthat/edition: 3
 URL: https://github.com/loelschlaeger/optimizeR
 BugReports: https://github.com/loelschlaeger/optimizeR/issues
-VignetteBuilder: knitr
 Depends:
     R (>= 4.0.0)
