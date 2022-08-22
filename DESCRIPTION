@@ -1,5 +1,5 @@
 Package: optimizeR
-Title: Unified Framework for Numerical Optimizer in R
+Title: Unified Framework for Numerical Optimizer
 Version: 0.1.0
 Authors@R: c(
     person("Lennart", "Oelschl\u00e4ger", 
@@ -11,7 +11,7 @@ Authors@R: c(
            role = c("ctb"),
            comment = c(ORCID = "0000-0002-9373-0365"))
            )
-Description: Provides a unified framework for numerical optimizer in R, 
+Description: Provides a unified framework for numerical optimizer, 
     particularly for inputs and outputs.
 License: GPL (>= 3)
 Encoding: UTF-8

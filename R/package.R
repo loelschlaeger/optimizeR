@@ -1,7 +1,7 @@
-#' optimizeR: Unified Framework for Numerical Optimizer in R
+#' optimizeR: Unified Framework for Numerical Optimizer
 #'
 #' @description
-#' This package provides a unified framework for numerical optimizers in R,
+#' This package provides a unified framework for numerical optimizer,
 #' particularly for inputs and outputs.
 #'
 #' @docType package

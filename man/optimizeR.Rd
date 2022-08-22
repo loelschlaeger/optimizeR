@@ -33,7 +33,7 @@ and additional output elements of the optimizer (if not excluded by the
 This function performs numerical optimization using an \code{optimizer}
 object.
 
-This package provides a unified framework for numerical optimizers in R,
+This package provides a unified framework for numerical optimizer,
 particularly for inputs and outputs.
 }
 \seealso{
