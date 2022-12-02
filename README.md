@@ -8,6 +8,8 @@
 [![CRAN
 status](https://www.r-pkg.org/badges/version/optimizeR)](https://CRAN.R-project.org/package=optimizeR)
 [![R-CMD-check](https://github.com/loelschlaeger/optimizeR/workflows/R-CMD-check/badge.svg)](https://github.com/loelschlaeger/optimizeR/actions)
+[![Codecov test
+coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/loelschlaeger/optimizeR?branch=master)
 <!-- badges: end -->
 
 This package provides a unified framework for numerical optimizers in R,
@@ -83,7 +85,7 @@ str(res)
 #>  $ :List of 6
 #>   ..$ v         : num 1.66e-06
 #>   ..$ z         : num [1:2] -2.91e-07 5.08e-07
-#>   ..$ time      : 'difftime' num 0.000670909881591797
+#>   ..$ time      : 'difftime' num 0.000700950622558594
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ gradient  : num [1:2] -0.00824 0.0144
 #>   ..$ code      : int 2
@@ -91,7 +93,7 @@ str(res)
 #>  $ :List of 6
 #>   ..$ v          : num 3.57
 #>   ..$ z          : num [1:2] -0.969 0.969
-#>   ..$ time       : 'difftime' num 0.00029301643371582
+#>   ..$ time       : 'difftime' num 0.000287055969238281
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ counts     : Named int [1:2] 45 NA
 #>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
@@ -100,7 +102,7 @@ str(res)
 #>  $ :List of 6
 #>   ..$ v          : num 0
 #>   ..$ z          : num [1:2] 0 0
-#>   ..$ time       : 'difftime' num 0.00113892555236816
+#>   ..$ time       : 'difftime' num 0.00160098075866699
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ count      : num 111
 #>   ..$ convergence: num 0
