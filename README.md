@@ -5,8 +5,6 @@
 
 <!-- badges: start -->
 
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/optimizeR)](https://CRAN.R-project.org/package=optimizeR)
 [![R-CMD-check](https://github.com/loelschlaeger/optimizeR/workflows/R-CMD-check/badge.svg)](https://github.com/loelschlaeger/optimizeR/actions)
@@ -85,7 +83,7 @@ str(res)
 #>  $ :List of 6
 #>   ..$ v         : num 1.66e-06
 #>   ..$ z         : num [1:2] -2.91e-07 5.08e-07
-#>   ..$ time      : 'difftime' num 0.000495195388793945
+#>   ..$ time      : 'difftime' num 0.000670909881591797
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ gradient  : num [1:2] -0.00824 0.0144
 #>   ..$ code      : int 2
@@ -93,7 +91,7 @@ str(res)
 #>  $ :List of 6
 #>   ..$ v          : num 3.57
 #>   ..$ z          : num [1:2] -0.969 0.969
-#>   ..$ time       : 'difftime' num 0.000224828720092773
+#>   ..$ time       : 'difftime' num 0.00029301643371582
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ counts     : Named int [1:2] 45 NA
 #>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
@@ -102,7 +100,7 @@ str(res)
 #>  $ :List of 6
 #>   ..$ v          : num 0
 #>   ..$ z          : num [1:2] 0 0
-#>   ..$ time       : 'difftime' num 0.00132107734680176
+#>   ..$ time       : 'difftime' num 0.00113892555236816
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ count      : num 111
 #>   ..$ convergence: num 0
