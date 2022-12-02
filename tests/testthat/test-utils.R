@@ -10,6 +10,13 @@ test_that("try an expression silently works", {
   expect_s3_class(try_silent(1 + "1"), "fail")
 })
 
+test_that("interruption of long evaluations works", {
+  foo <- function(x) { for(i in 1:10) Sys.sleep(x/10); return(x) }
+  expect_error(timed(foo(0.5), "1"))
+  expect_equal(timed(foo(0.5), 5), 0.5)
+  expect_null(timed(foo(5), 1))
+})
+
 test_that("measure computation time works", {
   what <- function(s) {
     Sys.sleep(s)

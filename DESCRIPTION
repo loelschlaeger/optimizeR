@@ -1,6 +1,6 @@
 Package: optimizeR
 Title: Unified Framework for Numerical Optimizer
-Version: 0.1.2
+Version: 0.2.0
 Authors@R: c(
     person("Lennart", "Oelschl\u00e4ger", 
            email = "oelschlaeger.lennart@gmail.com", 

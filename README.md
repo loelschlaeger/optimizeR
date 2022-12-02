@@ -12,8 +12,8 @@ status](https://www.r-pkg.org/badges/version/optimizeR)](https://CRAN.R-project.
 coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/loelschlaeger/optimizeR?branch=master)
 <!-- badges: end -->
 
-This package provides a unified framework for numerical optimizers in R,
-particularly for inputs and outputs.
+The {optimizeR} package provides a unified framework for numerical
+optimizers in R, particularly for their inputs and outputs.
 
 ## What is the problem?
 
@@ -28,13 +28,13 @@ the output of `nlm()` are labeled `estimate` and `minimum`,
 respectively, in `optim()` it is `par` and `value`. And all is different
 again with
 [`pracma::nelder_mead()`](https://CRAN.R-project.org/package=pracma).
-This inconsistency is painful, especially if one wants to apply or
+This inconsistency is painful, especially if one wants to apply and
 compare different optimizers.
 
 ## Our solution
 
 Simply specify optimizers with `set_optimizer()` and execute them with
-`optimizeR()`. The outputs are in a standardized format.
+`apply_optimizer()`. The outputs are in a standardized format.
 
 For demonstration, say we want to minimize the [Ackley
 function](https://en.wikipedia.org/wiki/Ackley_function)…
@@ -48,19 +48,24 @@ f_ackley <- function(x) {
 ```
 
 … and compare three optimizers: `nlm()`, `optim()`, and
-`pracma::nelder_mead()`. The first two are pre-specified…
+`pracma::nelder_mead()`. The first two are already pre-specified…
 
 ``` r
-library("optimizeR")
-opt_nlm <- set_optimizer_nlm()
-opt_optim <- set_optimizer_optim()
+# library("optimizeR")
+devtools::load_all()
+#> ℹ Loading optimizeR
+optimizer_nlm()
+#> <optimizer 'stats::nlm'>
+optimizer_optim()
+#> <optimizer 'stats::optim'>
 ```
 
-… and for the latter we can use the general constructor:
+… and for the latter (as for any other optimizer) we can use the general
+constructor:
 
 ``` r
-opt_nelder_mead <- set_optimizer(
-    opt = pracma::nelder_mead,
+optimizer_nelder_mead <- set_optimizer(
+    opt_fun = pracma::nelder_mead,
     f = "fn",
     p = "x0",
     v = "fmin",
@@ -68,11 +73,16 @@ opt_nelder_mead <- set_optimizer(
   )
 ```
 
-Now optimize (with initial parameter vector `p = c(-1,1)`):
+Now we optimize (with initial parameter vector `p = c(-1,1)`):
 
 ``` r
-opt <- list(opt_nlm, opt_optim, opt_nelder_mead)
-res <- lapply(opt, optimizeR, f = f_ackley, p = c(-1,1))
+res <- lapply(
+  list(optimizer_nlm(), optimizer_optim(), optimizer_nelder_mead),
+  apply_optimizer, 
+  f = f_ackley, 
+  p = c(-1,1)
+)
+names(res) <- c("nlm", "optim", "nelder_mead")
 ```
 
 In the optimization results, `v` and `z` consistently denote the optimal
@@ -82,27 +92,27 @@ outputs are preserved:
 ``` r
 str(res)
 #> List of 3
-#>  $ :List of 6
+#>  $ nlm        :List of 6
 #>   ..$ v         : num 1.66e-06
 #>   ..$ z         : num [1:2] -2.91e-07 5.08e-07
-#>   ..$ time      : 'difftime' num 0.000700950622558594
+#>   ..$ time      : 'difftime' num 0.000730991363525391
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ gradient  : num [1:2] -0.00824 0.0144
 #>   ..$ code      : int 2
 #>   ..$ iterations: int 33
-#>  $ :List of 6
+#>  $ optim      :List of 6
 #>   ..$ v          : num 3.57
 #>   ..$ z          : num [1:2] -0.969 0.969
-#>   ..$ time       : 'difftime' num 0.000287055969238281
+#>   ..$ time       : 'difftime' num 0.000398159027099609
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ counts     : Named int [1:2] 45 NA
 #>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
 #>   ..$ convergence: int 0
 #>   ..$ message    : NULL
-#>  $ :List of 6
+#>  $ nelder_mead:List of 6
 #>   ..$ v          : num 0
 #>   ..$ z          : num [1:2] 0 0
-#>   ..$ time       : 'difftime' num 0.00160098075866699
+#>   ..$ time       : 'difftime' num 0.00134801864624023
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ count      : num 111
 #>   ..$ convergence: num 0
@@ -111,8 +121,8 @@ str(res)
 #>   .. ..$ restarts: num 0
 ```
 
-Are you surprised that the `optim()` result is different from the
-others? The optimizer got stuck in a local minimum.
+P.S. Surprised that the `optim()` result is different from the others?
+It seems that this optimizer got stuck in a local minimum.
 
 ## Installation
 
@@ -129,3 +139,9 @@ install.packages("optimizeR")
 # install.packages("devtools")
 devtools::install_github("loelschlaeger/optimizeR")
 ```
+
+## Contact
+
+Have a question, found a bug, request a feature, want to contribute?
+[Please file an
+issue](https://github.com/loelschlaeger/optimizeR/issues/new/choose).

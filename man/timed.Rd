@@ -7,7 +7,7 @@
 timed(expr, secs)
 }
 \arguments{
-\item{expr}{An R expression to evaluate.}
+\item{expr}{An R expression to be evaluated.}
 
 \item{secs}{The number of seconds.}
 }
@@ -23,9 +23,11 @@ This function evaluates \code{expr} and interrupts the evaluation after
 This function is a wrapper for \code{\link[R.utils]{withTimeout}}.
 }
 \examples{
+\dontrun{
 foo <- function(x) { for(i in 1:10) Sys.sleep(x/10); return(x) }
 timed(foo(0.5), 1)
 timed(foo(1.5), 1)
+}
 
 }
 \keyword{internal}

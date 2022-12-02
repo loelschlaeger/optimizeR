@@ -1,7 +1,8 @@
 #' Specify numerical optimizer
 #'
 #' @description
-#' Use this function to specify the framework for a numerical optimizer.
+#' Use this function to specify the consistent framework for a numerical
+#' optimizer.
 #'
 #' @format
 #' The format of an \code{optimizer} object is documented in
@@ -17,14 +18,14 @@
 #' An object of class \code{optimizer}.
 #'
 #' @seealso
-#' [set_optimizer_nlm()] and [set_optimizer_optim()], two wrappers for the
+#' [optimizer_nlm()] and [optimizer_optim()], two wrappers for the
 #' \code{\link[stats]{nlm}} and \code{\link[stats]{optim}} optimizer.
 #'
 #' @export
 #'
 #' @examples
 #' set_optimizer(
-#'   opt = pracma::nelder_mead,
+#'   opt_fun = pracma::nelder_mead,
 #'   f = "fn",
 #'   p = "x0",
 #'   v = "fmin",
@@ -36,7 +37,7 @@
 #' specification
 
 set_optimizer <- function(
-    opt, f, p, v, z, ..., out_ign = character(),
+    opt_fun, f, p, v, z, ..., out_ign = character(),
     test_par = list(
       validate = TRUE,
       f_test = f_ackley,
@@ -48,34 +49,39 @@ set_optimizer <- function(
       opt_checks_time = 1
     )
 ) {
-  if(missing(opt)){
+  if(missing(opt_fun)){
     optimizeR_stop(
-      "Argument 'opt' is not specified."
+      "Please specify argument 'opt_fun'.",
+      "It should be a function that performs numerical optimization."
     )
   }
   if(missing(f)){
     optimizeR_stop(
-      "Argument 'f' is not specified."
+      "Please specify argument 'f'.",
+      "It should be the name of the function argument of 'opt_fun'."
     )
   }
   if(missing(p)){
     optimizeR_stop(
-      "Argument 'p' is not specified."
+      "Please specify argument 'p'.",
+      "It should be the name of the initial value argument of 'opt_fun'."
     )
   }
   if(missing(v)){
     optimizeR_stop(
-      "Argument 'v' is not specified."
+      "Please specify argument 'v'.",
+      "It should be the name of the optimal function value in the output list of 'opt_fun'."
     )
   }
   if(missing(z)){
     optimizeR_stop(
-      "Argument 'z' is not specified."
+      "Pleas specify argument 'z'.",
+      "It should be the name of the optimal parameter vector in the output list of 'opt_fun'."
     )
   }
   validate_optimizer(
     x = new_optimizer(
-      opt = opt, opt_name = deparse(substitute(opt)), add = list(...),
+      opt_fun = opt_fun, opt_name = deparse(substitute(opt_fun)), add = list(...),
       f = f, p = p, v = v, z = z, out_ign = out_ign
     ),
     test_par = test_par
@@ -91,50 +97,51 @@ set_optimizer <- function(
 #' The \code{optimizer} object defines a numerical optimizer.
 #'
 #' @format
-#' An \code{optimizer} object is a list of five elements:
-#' * The \code{opt} element is the optimization function \code{opt}.
-#' * The \code{opt_name} element is the name of \code{opt}.
-#' * The \code{add} element is a named list, where each element is an additional
-#'   function argument for \code{opt}.
-#' * The \code{arg_names} element is a named list of the characters:
-#'   * \code{f} (the name of the function input of \code{opt}),
-#'   * \code{p} (the name of the starting parameter values input of \code{opt}),
+#' An \code{optimizer} object is a \code{list} of five elements:
+#' * The \code{opt_fun} element is the optimization function \code{opt_fun}.
+#' * The \code{opt_name} element is the name of \code{opt_fun}.
+#' * The \code{add} element is a named \code{list}, where each element is an
+#'   additional function argument for \code{opt_fun}.
+#' * The \code{arg_names} element is a named \code{list} of \code{characters}:
+#'   * \code{f} (the name of the function input of \code{opt_fun}),
+#'   * \code{p} (the name of the starting parameter values input of \code{opt_fun}),
 #'   * \code{v} (the name of the optimal function value in the output list of
-#'     \code{opt}),
+#'     \code{opt_fun}),
 #'   * and \code{z} (the name of the optimal parameter vector in the output list
-#'     of \code{opt}).
-#' * The \code{out_ign} element is a character vector of element names in the
-#'   output of \code{opt} that are not saved. The elements \code{v} and \code{z}
+#'     of \code{opt_fun}).
+#' * The \code{out_ign} element is a \code{character} vector of element names in the
+#'   output of \code{opt_fun} that are not saved. The elements \code{v} and \code{z}
 #'   are added automatically to \code{opt_ign}, because they are saved
-#'   separately, see the output documentation of \code{\link{optimizeR}}.
+#'   separately, see the output documentation of \code{\link{apply_optimizer}}.
 #'
 #' @param x
-#' A list.
-#' @param opt
+#' A \code{list}.
+#' @param opt_fun
 #' An object of class \code{function}, a numerical optimizer.
-#' * It must have an input \code{f} for a function, which is optimized over its
-#'   first argument.
-#' * It must have an input \code{p} for the initial parameter values.
+#' * It must have an input \code{f} for a \code{function}, which is optimized
+#'   over its first argument.
+#' * It must have an input \code{p} for a \code{numerical} vector, the initial
+#'   parameter values.
 #' * It must have a \code{...} argument for additional parameters to \code{f}.
-#' * The output must be a named list, including the optimal function value
-#'   (named \code{v}) and parameter vector (named \code{z}).
-#' @param opt.name
-#' A character, the name of \code{opt}.
+#' * The output must be a named \code{list}, including the optimal function value
+#'   (named as \code{v}) and parameter vector (named as \code{z}).
+#' @param opt_name
+#' A \code{character}, the name of \code{opt_fun}.
 #' @param add
-#' A list of additional and named arguments to be passed to \code{opt}.
+#' A \code{list} of additional and named arguments to be passed to \code{opt_fun}.
 #' @param f
-#' The name of the function input of \code{opt}.
+#' A \code{character}, the name of the function input of \code{opt_fun}.
 #' @param p
-#' The name of the starting parameter values input of \code{opt}.
+#' A \code{character}, the name of the starting parameter values input of \code{opt_fun}.
 #' @param v
-#' The name of the optimal function value in the output list of \code{opt}.
+#' A \code{character}, the name of the optimal function value in the output list of \code{opt_fun}.
 #' @param z
-#' The name of the optimal parameter vector in the output list of \code{opt}.
+#' A \code{character}, the name of the optimal parameter vector in the output list of \code{opt_fun}.
 #' @param out_ign
-#' A character vector of element names in the output of \code{opt} that are not
+#' A \code{character} vector of element names in the output of \code{opt_fun} that are not
 #' saved. The elements \code{v} and \code{z} are added automatically to
 #' \code{opt_ign}, because they are saved separately, see the output
-#' documentation of \code{\link{optimizeR}}.
+#' documentation of \code{\link{apply_optimizer}}.
 #'
 #' @return
 #' An object of class \code{optimizer}.
@@ -143,12 +150,12 @@ set_optimizer <- function(
 #' internal
 
 new_optimizer <- function(
-    x = list(), opt = function() {}, opt_name = character(), add = list(),
+    x = list(), opt_fun = function() {}, opt_name = character(), add = list(),
     f = character(), p = character(), v = character(), z = character(),
     out_ign = character()
 ) {
   stopifnot(is.list(x))
-  stopifnot(is.function(opt))
+  stopifnot(is.function(opt_fun))
   stopifnot(is.character(opt_name))
   stopifnot(is.list(add))
   stopifnot(is.character(f))
@@ -156,7 +163,7 @@ new_optimizer <- function(
   stopifnot(is.character(v))
   stopifnot(is.character(z))
   stopifnot(is.character(out_ign))
-  x[["opt"]] <- opt
+  x[["opt_fun"]] <- opt_fun
   x[["opt_name"]] <- opt_name
   x[["add"]] <- add
   x[["arg_names"]] <- list(f = f, p = p, v = v, z = z)
@@ -172,27 +179,29 @@ new_optimizer <- function(
 #' @param x
 #' An object of class \code{optimizer}.
 #' @param test_par
-#' A list of test parameters for an \code{optimizer} object:
-#' * \code{validate}, a boolean, set to \code{TRUE} (\code{FALSE}) to (not)
-#'   validate the \code{optimizer} object. Per default, \code{validate = TRUE}.
-#' * \code{f_test}, a function to be optimized. Per default,
-#'   \code{f_test = fackley}.
+#' A \code{list} of test parameters for an \code{optimizer} object:
+#' * \code{validate}, a \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not)
+#'   validate the \code{optimizer} object.
+#'   By default, \code{validate = TRUE}.
+#' * \code{f_test}, a test \code{function} to be optimized.
+#'   By default, \code{f_test = \link{f_ackley}}.
 #' * \code{npar}, the length of the first argument of \code{f_test}, i.e. the
 #'   argument over which \code{f_test} is optimized.
-#' * \code{add}, a list of additional arguments to \code{f_test}.
-#' * \code{init_rest}, a list of two elements, \code{lower} and \code{upper},
+#' * \code{add}, a \code{list} of additional arguments to \code{f_test}.
+#' * \code{init_rest}, a \code{list} of two elements, \code{lower} and \code{upper},
 #'   with lower and upper limits, respectively, for test initial values for the
-#'   optimization of \code{f_test} with \code{opt}.
-#'   Can be single values (for joint limits) or numeric vectors of length
+#'   optimization of \code{f_test} with \code{opt_fun}.
+#'   Can be single values (for joint limits) or \code{numeric} vectors of length
 #'   \code{npar} (for individual limits).
-#'   Per default, \code{lower = -1} and \code{upper = 1}.
+#'   By default, \code{lower = -1} and \code{upper = 1}.
 #' * \code{init_digits}, the number of decimal places for the test initial
-#'   values. Per default, \code{init_digits = 2}.
-#' * \code{opt_checks}, the number of checks for \code{opt} with random initial
+#'   values.
+#'   By default, \code{init_digits = 2}.
+#' * \code{opt_checks}, the number of checks for \code{opt_fun} with random initial
 #'   values (that fulfill the \code{init_rest} restrictions).
-#'   Per default, \code{opt_checks = 10}.
+#'   By default, \code{opt_checks = 10}.
 #' * \code{opt_check_time}, the maximum number of seconds for a single check for
-#'   \code{opt}.
+#'   \code{opt_fun}.
 #'   A check is considered to be successful, if no error occurred
 #'   within \code{opt_check_time} seconds.
 #'
@@ -251,25 +260,27 @@ validate_optimizer <- function(x = new_optimizer(), test_par = list()) {
           )
         }
       )
-      opt_out <- try_silent_timed(
-        expr = do.call(
-          what = x[["opt"]],
-          args = c(
-            structure(
-              list(test_par[["f_test"]], init),
-              names = x[["arg_names"]][c("f","p")]
-            ),
-            x[["add"]], test_par[["add"]]
-          )
-        ),
-        secs = test_par[["opt_checks_time"]]
+      opt_out <- try_silent(
+        expr = timed(
+          do.call(
+            what = x[["opt_fun"]],
+            args = c(
+              structure(
+                list(test_par[["f_test"]], init),
+                names = x[["arg_names"]][c("f","p")]
+              ),
+              x[["add"]], test_par[["add"]]
+            )
+          ),
+          secs = test_par[["opt_checks_time"]]
+        )
       )
       if (is.null(opt_out)) {
         optimizeR_warn(
-          event = paste(
+          paste(
             "Optimizer test run", run, "cannot be validated."
           ),
-          debug = paste(
+          paste(
             "Initial values:", paste(init, collapse = " "), "\n",
             "The test run returned NULL. The optimization most likely reached",
             "the time limit. Try to increase 'opt_checks_time'."
@@ -278,50 +289,50 @@ validate_optimizer <- function(x = new_optimizer(), test_par = list()) {
         )
       } else if (inherits(opt_out, "fail")) {
         optimizeR_stop(
-          event = paste(
+          paste(
             "Optimizer test run", run, "failed."
           ),
-          debug = paste(
+          paste(
             opt_out, "\nInitial values:", paste(init, collapse = " ")
           )
         )
       } else {
         if (!is.list(opt_out)) {
           optimizeR_stop(
-            event = "Otimizer output is not a list.",
-            debug = "The 'opt' function must return a named list."
+            "Otimizer output is not a list.",
+            "The 'opt_fun' function must return a named list."
           )
         }
         if (!x[["arg_names"]][["v"]] %in% names(opt_out)) {
           optimizeR_stop(
-            event = "Element 'v' not contained in the optimizer output.",
-            debug = "Make sure that 'v' is contained in the output list."
+            "Element 'v' not contained in the optimizer output.",
+            "Make sure that 'v' is contained in the output list."
           )
         } else {
           value <- opt_out[[x[["arg_names"]][["v"]]]]
           if (!(is.numeric(value) && length(value) == 1)) {
             optimizeR_stop(
-              event = "The optimal function value is not a single numeric.",
-              debug = paste(
+              "The optimal function value is not a single numeric.",
+              paste(
                 "Initial values:", paste(init, collapse = " "), "\n",
-                "Optimal function value:", value, "\n",
+                "Optimal function value:", value, "\n"
               )
             )
           }
         }
         if (!x[["arg_names"]][["z"]] %in% names(opt_out)) {
           optimizeR_stop(
-            event = "Element 'z' not contained in the optimizer output.",
-            debug = "Make sure that 'z' is contained in the output list."
+            "Element 'z' not contained in the optimizer output.",
+            "Make sure that 'z' is contained in the output list."
           )
         } else {
           optimum <- opt_out[[x[["arg_names"]][["z"]]]]
           if (!(is.numeric(optimum) && length(optimum) == test_par[["npar"]])) {
             optimizeR_stop(
-              event = "The optimum is not a numeric value of length 'npar'.",
-              debug = paste(
+              "The optimum is not a numeric value of length 'npar'.",
+              paste(
                 "Initial values:", paste(init, collapse = " "), "\n",
-                "Optimum:", paste(optimum, collapse = " "), "\n",
+                "Optimum:", paste(optimum, collapse = " "), "\n"
               )
             )
           }
@@ -363,9 +374,9 @@ print.optimizer <- function(x, ...) {
 #'
 #' @importFrom stats nlm
 
-set_optimizer_nlm <- function(..., out_ign = character(), test_par = list()) {
+optimizer_nlm <- function(..., out_ign = character(), test_par = list()) {
   set_optimizer(
-    opt = stats::nlm,
+    opt_fun = stats::nlm,
     f = "f",
     p = "p",
     v = "minimum" ,
@@ -397,9 +408,9 @@ set_optimizer_nlm <- function(..., out_ign = character(), test_par = list()) {
 #'
 #' @importFrom stats optim
 
-set_optimizer_optim <- function(..., out_ign = character(), test_par = list()) {
+optimizer_optim <- function(..., out_ign = character(), test_par = list()) {
   set_optimizer(
-    opt = stats::optim,
+    opt_fun = stats::optim,
     f = "fn",
     p = "par",
     v = "value",
@@ -419,33 +430,36 @@ set_optimizer_optim <- function(..., out_ign = character(), test_par = list()) {
 #' @param optimizer
 #' An object of class \code{optimizer}.
 #' @param f
-#' The function to be optimized, returning a single numeric value.
-#' Its first argument must be a numeric vector of the length of \code{p}
+#' The \code{function} to be optimized, returning a single \code{numeric}.
+#' Its first argument must be a \code{numeric} vector of the length of \code{p},
 #' followed by any other arguments specified by the \code{...} argument.
 #' @param p
-#' A numeric vector with starting parameter values for the optimization.
+#' A \code{numeric} vector with starting parameter values for the optimization.
 #' @param ...
 #' Additional arguments to be passed to \code{f}.
 #'
 #' @return
-#' A list, containing the elements
+#' A named \code{list}, containing the elements
 #' * \code{v}, the value of the estimated optimum of \code{f},
 #' * \code{z}, the parameter vector where the optimum of \code{f} is obtained,
 #' * \code{time}, the total optimization time (as a \code{difftime} object),
-#' and additional output elements of the optimizer (if not excluded by the
+#' * and additional output elements of the optimizer (if not excluded by the
 #' \code{out_ign} element via \code{\link{set_optimizer}}).
 #'
 #' @seealso
 #' [set_optimizer()] for specifying an \code{optimizer} object.
 #'
 #' @export
+#'
+#' @examples
+#' apply_optimizer(optimizer_nlm(), function(x) -(x + 1)^2 + 1, 2)
 
-optimizeR <- function(
-    optimizer = set_optimizer_nlm(), f, p, ...
+apply_optimizer <- function(
+    optimizer = optimizer_nlm(), f, p, ...
 ) {
   start <- Sys.time()
   res <- do.call(
-    what = optimizer[["opt"]],
+    what = optimizer[["opt_fun"]],
     args = c(
       structure(list(f), names = optimizer[["arg_names"]][["f"]]),
       structure(list(p), names = optimizer[["arg_names"]][["p"]]),
@@ -462,4 +476,32 @@ optimizeR <- function(
     ),
     res[!names(res) %in% optimizer[["out_ign"]]]
   )
+}
+
+#' Ackley function
+#'
+#' @references
+#' https://en.wikipedia.org/wiki/Ackley_function
+#'
+#' @details
+#' The function has multiple local minima and one global minimum in the origin.
+#'
+#' @param x
+#' A \code{numeric} vector of length 2.
+#'
+#' @examples
+#' f_ackley(c(0, 0))
+#'
+#' @export
+#'
+#' @return
+#' The function value at \code{x}, a single \code{numeric} value.
+#'
+#' @keywords
+#' internal function
+
+f_ackley <- function(x) {
+  stopifnot(is.numeric(x), length(x) == 2)
+  -20 * exp(-0.2 * sqrt(0.5 * (x[1]^2 + x[2]^2))) -
+    exp(0.5 * (cos(2 * pi * x[1]) + cos(2 * pi * x[2]))) + exp(1) + 20
 }

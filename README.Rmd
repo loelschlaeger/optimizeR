@@ -22,19 +22,19 @@ set.seed(1)
 [![Codecov test coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/loelschlaeger/optimizeR?branch=master)
 <!-- badges: end -->
 
-This package provides a unified framework for numerical optimizers in R, particularly for inputs and outputs. 
+The {optimizeR} package provides a unified framework for numerical optimizers in R, particularly for their inputs and outputs. 
 
 ## What is the problem? 
 
-Look at the popular R optimizers [`nlm()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/nlm.html) and [`optim()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html): The function argument in `nlm()` is called `f`, in `optim()` it is `fn`. The argument for the initial values is called `p` in `nlm()`, and `par` in `optim()`. The optimal parameters and the optimal function values in the output of `nlm()` are labeled `estimate` and `minimum`, respectively, in `optim()` it is `par` and `value`. And all is different again with [`pracma::nelder_mead()`](https://CRAN.R-project.org/package=pracma). This inconsistency is painful, especially if one wants to apply or compare different optimizers. 
+Look at the popular R optimizers [`nlm()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/nlm.html) and [`optim()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html): The function argument in `nlm()` is called `f`, in `optim()` it is `fn`. The argument for the initial values is called `p` in `nlm()`, and `par` in `optim()`. The optimal parameters and the optimal function values in the output of `nlm()` are labeled `estimate` and `minimum`, respectively, in `optim()` it is `par` and `value`. And all is different again with [`pracma::nelder_mead()`](https://CRAN.R-project.org/package=pracma). This inconsistency is painful, especially if one wants to apply and compare different optimizers. 
 
 ## Our solution
 
-Simply specify optimizers with `set_optimizer()` and execute them with `optimizeR()`. The outputs are in a standardized format.
+Simply specify optimizers with `set_optimizer()` and execute them with `apply_optimizer()`. The outputs are in a standardized format.
 
 For demonstration, say we want to minimize the [Ackley function](https://en.wikipedia.org/wiki/Ackley_function)...
 
-``` r
+```{r, ackley, eval = FALSE}
 f_ackley <- function(x) {
   stopifnot(is.numeric(x), length(x) == 2)
   -20 * exp(-0.2 * sqrt(0.5 * (x[1]^2 + x[2]^2))) -
@@ -42,19 +42,19 @@ f_ackley <- function(x) {
 }
 ```
 
-... and compare three optimizers: `nlm()`, `optim()`, and `pracma::nelder_mead()`. The first two are pre-specified...
+... and compare three optimizers: `nlm()`, `optim()`, and `pracma::nelder_mead()`. The first two are already pre-specified...
 
 ```{r optimizer1}
 library("optimizeR")
-opt_nlm <- set_optimizer_nlm()
-opt_optim <- set_optimizer_optim()
+optimizer_nlm()
+optimizer_optim()
 ```
 
-... and for the latter we can use the general constructor:
+... and for the latter (as for any other optimizer) we can use the general constructor:
 
 ```{r optimizer2}
-opt_nelder_mead <- set_optimizer(
-    opt = pracma::nelder_mead,
+optimizer_nelder_mead <- set_optimizer(
+    opt_fun = pracma::nelder_mead,
     f = "fn",
     p = "x0",
     v = "fmin",
@@ -62,11 +62,16 @@ opt_nelder_mead <- set_optimizer(
   )
 ```
 
-Now optimize (with initial parameter vector `p = c(-1,1)`):
+Now we optimize (with initial parameter vector `p = c(-1,1)`):
 
 ```{r optimization}
-opt <- list(opt_nlm, opt_optim, opt_nelder_mead)
-res <- lapply(opt, optimizeR, f = f_ackley, p = c(-1,1))
+res <- lapply(
+  list(optimizer_nlm(), optimizer_optim(), optimizer_nelder_mead),
+  apply_optimizer, 
+  f = f_ackley, 
+  p = c(-1,1)
+)
+names(res) <- c("nlm", "optim", "nelder_mead")
 ```
 
 In the optimization results, `v` and `z` consistently denote the optimal function values and the optimal parameters, while optimizer-specific outputs are preserved:
@@ -75,7 +80,7 @@ In the optimization results, `v` and `z` consistently denote the optimal functio
 str(res)
 ```
 
-Are you surprised that the `optim()` result is different from the others? The optimizer got stuck in a local minimum. 
+P.S. Surprised that the `optim()` result is different from the others? It seems that this optimizer got stuck in a local minimum. 
 
 ## Installation
 
@@ -92,3 +97,6 @@ install.packages("optimizeR")
 devtools::install_github("loelschlaeger/optimizeR")
 ```
 
+## Contact
+
+Have a question, found a bug, request a feature, want to contribute? [Please file an issue](https://github.com/loelschlaeger/optimizeR/issues/new/choose).

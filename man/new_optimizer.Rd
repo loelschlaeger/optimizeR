@@ -4,31 +4,31 @@
 \alias{new_optimizer}
 \title{Constructor}
 \format{
-An \code{optimizer} object is a list of five elements:
+An \code{optimizer} object is a \code{list} of five elements:
 \itemize{
-\item The \code{opt} element is the optimization function \code{opt}.
-\item The \code{opt_name} element is the name of \code{opt}.
-\item The \code{add} element is a named list, where each element is an additional
-function argument for \code{opt}.
-\item The \code{arg_names} element is a named list of the characters:
+\item The \code{opt_fun} element is the optimization function \code{opt_fun}.
+\item The \code{opt_name} element is the name of \code{opt_fun}.
+\item The \code{add} element is a named \code{list}, where each element is an
+additional function argument for \code{opt_fun}.
+\item The \code{arg_names} element is a named \code{list} of \code{characters}:
 \itemize{
-\item \code{f} (the name of the function input of \code{opt}),
-\item \code{p} (the name of the starting parameter values input of \code{opt}),
+\item \code{f} (the name of the function input of \code{opt_fun}),
+\item \code{p} (the name of the starting parameter values input of \code{opt_fun}),
 \item \code{v} (the name of the optimal function value in the output list of
-\code{opt}),
+\code{opt_fun}),
 \item and \code{z} (the name of the optimal parameter vector in the output list
-of \code{opt}).
+of \code{opt_fun}).
 }
-\item The \code{out_ign} element is a character vector of element names in the
-output of \code{opt} that are not saved. The elements \code{v} and \code{z}
+\item The \code{out_ign} element is a \code{character} vector of element names in the
+output of \code{opt_fun} that are not saved. The elements \code{v} and \code{z}
 are added automatically to \code{opt_ign}, because they are saved
-separately, see the output documentation of \code{\link{optimizeR}}.
+separately, see the output documentation of \code{\link{apply_optimizer}}.
 }
 }
 \usage{
 new_optimizer(
   x = list(),
-  opt = function() {
+  opt_fun = function() {
  },
   opt_name = character(),
   add = list(),
@@ -40,34 +40,35 @@ new_optimizer(
 )
 }
 \arguments{
-\item{x}{A list.}
+\item{x}{A \code{list}.}
 
-\item{opt}{An object of class \code{function}, a numerical optimizer.
+\item{opt_fun}{An object of class \code{function}, a numerical optimizer.
 \itemize{
-\item It must have an input \code{f} for a function, which is optimized over its
-first argument.
-\item It must have an input \code{p} for the initial parameter values.
+\item It must have an input \code{f} for a \code{function}, which is optimized
+over its first argument.
+\item It must have an input \code{p} for a \code{numerical} vector, the initial
+parameter values.
 \item It must have a \code{...} argument for additional parameters to \code{f}.
-\item The output must be a named list, including the optimal function value
-(named \code{v}) and parameter vector (named \code{z}).
+\item The output must be a named \code{list}, including the optimal function value
+(named as \code{v}) and parameter vector (named as \code{z}).
 }}
 
-\item{add}{A list of additional and named arguments to be passed to \code{opt}.}
+\item{opt_name}{A \code{character}, the name of \code{opt_fun}.}
 
-\item{f}{The name of the function input of \code{opt}.}
+\item{add}{A \code{list} of additional and named arguments to be passed to \code{opt_fun}.}
 
-\item{p}{The name of the starting parameter values input of \code{opt}.}
+\item{f}{A \code{character}, the name of the function input of \code{opt_fun}.}
 
-\item{v}{The name of the optimal function value in the output list of \code{opt}.}
+\item{p}{A \code{character}, the name of the starting parameter values input of \code{opt_fun}.}
 
-\item{z}{The name of the optimal parameter vector in the output list of \code{opt}.}
+\item{v}{A \code{character}, the name of the optimal function value in the output list of \code{opt_fun}.}
 
-\item{out_ign}{A character vector of element names in the output of \code{opt} that are not
+\item{z}{A \code{character}, the name of the optimal parameter vector in the output list of \code{opt_fun}.}
+
+\item{out_ign}{A \code{character} vector of element names in the output of \code{opt_fun} that are not
 saved. The elements \code{v} and \code{z} are added automatically to
 \code{opt_ign}, because they are saved separately, see the output
-documentation of \code{\link{optimizeR}}.}
-
-\item{opt.name}{A character, the name of \code{opt}.}
+documentation of \code{\link{apply_optimizer}}.}
 }
 \value{
 An object of class \code{optimizer}.

@@ -21,8 +21,10 @@ error message if the execution failed.
 This function is a wrapper for \code{\link[base]{try}}.
 }
 \examples{
+\dontrun{
 try_silent(1 + 1)
 try_silent(1 + "1")
+}
 
 }
 \keyword{internal}

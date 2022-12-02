@@ -9,28 +9,30 @@ validate_optimizer(x = new_optimizer(), test_par = list())
 \arguments{
 \item{x}{An object of class \code{optimizer}.}
 
-\item{test_par}{A list of test parameters for an \code{optimizer} object:
+\item{test_par}{A \code{list} of test parameters for an \code{optimizer} object:
 \itemize{
-\item \code{validate}, a boolean, set to \code{TRUE} (\code{FALSE}) to (not)
-validate the \code{optimizer} object. Per default, \code{validate = TRUE}.
-\item \code{f_test}, a function to be optimized. Per default,
-\code{f_test = fackley}.
+\item \code{validate}, a \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not)
+validate the \code{optimizer} object.
+By default, \code{validate = TRUE}.
+\item \code{f_test}, a test \code{function} to be optimized.
+By default, \code{f_test = \link{f_ackley}}.
 \item \code{npar}, the length of the first argument of \code{f_test}, i.e. the
 argument over which \code{f_test} is optimized.
-\item \code{add}, a list of additional arguments to \code{f_test}.
-\item \code{init_rest}, a list of two elements, \code{lower} and \code{upper},
+\item \code{add}, a \code{list} of additional arguments to \code{f_test}.
+\item \code{init_rest}, a \code{list} of two elements, \code{lower} and \code{upper},
 with lower and upper limits, respectively, for test initial values for the
-optimization of \code{f_test} with \code{opt}.
-Can be single values (for joint limits) or numeric vectors of length
+optimization of \code{f_test} with \code{opt_fun}.
+Can be single values (for joint limits) or \code{numeric} vectors of length
 \code{npar} (for individual limits).
-Per default, \code{lower = -1} and \code{upper = 1}.
+By default, \code{lower = -1} and \code{upper = 1}.
 \item \code{init_digits}, the number of decimal places for the test initial
-values. Per default, \code{init_digits = 2}.
-\item \code{opt_checks}, the number of checks for \code{opt} with random initial
+values.
+By default, \code{init_digits = 2}.
+\item \code{opt_checks}, the number of checks for \code{opt_fun} with random initial
 values (that fulfill the \code{init_rest} restrictions).
-Per default, \code{opt_checks = 10}.
+By default, \code{opt_checks = 10}.
 \item \code{opt_check_time}, the maximum number of seconds for a single check for
-\code{opt}.
+\code{opt_fun}.
 A check is considered to be successful, if no error occurred
 within \code{opt_check_time} seconds.
 }}
