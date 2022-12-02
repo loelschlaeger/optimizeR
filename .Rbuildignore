@@ -7,3 +7,4 @@
 LICENSE
 ^CRAN-SUBMISSION$
 ^codecov\.yml$
+^cran-comments\.md$
