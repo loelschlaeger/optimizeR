@@ -54,7 +54,9 @@ test_that("optimizier validation works", {
     )
   ))
   expect_error(set_optimizer(
-    opt_fun = function(f, p) return(p),
+    opt_fun = function(f, p) {
+      return(p)
+    },
     f = "f",
     p = "p",
     v = "minimum",
@@ -114,4 +116,3 @@ test_that("optimization works", {
 test_that("Ackley function call works", {
   expect_equal(f_ackley(c(0, 0)), 0)
 })
-
