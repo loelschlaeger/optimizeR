@@ -19,6 +19,7 @@ set.seed(1)
 <!-- badges: start -->
 [![CRAN status](https://www.r-pkg.org/badges/version/optimizeR)](https://CRAN.R-project.org/package=optimizeR)
 [![R-CMD-check](https://github.com/loelschlaeger/optimizeR/workflows/R-CMD-check/badge.svg)](https://github.com/loelschlaeger/optimizeR/actions)
+[![Codecov test coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/loelschlaeger/optimizeR?branch=master)
 <!-- badges: end -->
 
 This package provides a unified framework for numerical optimizers in R, particularly for inputs and outputs. 

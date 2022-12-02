@@ -4,3 +4,4 @@
 ^\.github$
 LICENSE
 ^CRAN-SUBMISSION$
+^codecov\.yml$
