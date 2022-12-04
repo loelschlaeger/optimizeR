@@ -1,8 +1,7 @@
 source("renv/activate.R")
 
-Sys.setenv(LANG = "en")
-
 if (interactive()) {
+  Sys.setenv(LANG = "en")
   require(devtools, quietly = TRUE)
   require(usethis, quietly = TRUE)
 }
