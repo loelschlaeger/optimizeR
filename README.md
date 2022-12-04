@@ -7,6 +7,8 @@
 
 [![CRAN
 status](https://www.r-pkg.org/badges/version/optimizeR)](https://CRAN.R-project.org/package=optimizeR)
+[![metacran
+downloads](https://cranlogs.r-pkg.org/badges/last-month/optimizeR)](https://cran.r-project.org/package=optimizeR)
 [![R-CMD-check](https://github.com/loelschlaeger/optimizeR/workflows/R-CMD-check/badge.svg)](https://github.com/loelschlaeger/optimizeR/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/loelschlaeger/optimizeR?branch=master)
@@ -94,7 +96,7 @@ str(res)
 #>  $ nlm        :List of 6
 #>   ..$ v         : num 1.66e-06
 #>   ..$ z         : num [1:2] -2.91e-07 5.08e-07
-#>   ..$ time      : 'difftime' num 0.00101113319396973
+#>   ..$ time      : 'difftime' num 0.000993967056274414
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ gradient  : num [1:2] -0.00824 0.0144
 #>   ..$ code      : int 2
@@ -102,7 +104,7 @@ str(res)
 #>  $ optim      :List of 6
 #>   ..$ v          : num 3.57
 #>   ..$ z          : num [1:2] -0.969 0.969
-#>   ..$ time       : 'difftime' num 0.000370979309082031
+#>   ..$ time       : 'difftime' num 0.000637054443359375
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ counts     : Named int [1:2] 45 NA
 #>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
@@ -111,7 +113,7 @@ str(res)
 #>  $ nelder_mead:List of 6
 #>   ..$ v          : num 0
 #>   ..$ z          : num [1:2] 0 0
-#>   ..$ time       : 'difftime' num 0.00161194801330566
+#>   ..$ time       : 'difftime' num 0.00222516059875488
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ count      : num 111
 #>   ..$ convergence: num 0
