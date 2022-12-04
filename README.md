@@ -51,9 +51,8 @@ f_ackley <- function(x) {
 `pracma::nelder_mead()`. The first two are already pre-specified…
 
 ``` r
-# library("optimizeR")
-devtools::load_all()
-#> ℹ Loading optimizeR
+library("optimizeR")
+#> Warning: package 'optimizeR' was built under R version 4.2.2
 optimizer_nlm()
 #> <optimizer 'stats::nlm'>
 optimizer_optim()
@@ -95,7 +94,7 @@ str(res)
 #>  $ nlm        :List of 6
 #>   ..$ v         : num 1.66e-06
 #>   ..$ z         : num [1:2] -2.91e-07 5.08e-07
-#>   ..$ time      : 'difftime' num 0.000730991363525391
+#>   ..$ time      : 'difftime' num 0.00101113319396973
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ gradient  : num [1:2] -0.00824 0.0144
 #>   ..$ code      : int 2
@@ -103,7 +102,7 @@ str(res)
 #>  $ optim      :List of 6
 #>   ..$ v          : num 3.57
 #>   ..$ z          : num [1:2] -0.969 0.969
-#>   ..$ time       : 'difftime' num 0.000398159027099609
+#>   ..$ time       : 'difftime' num 0.000370979309082031
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ counts     : Named int [1:2] 45 NA
 #>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
@@ -112,7 +111,7 @@ str(res)
 #>  $ nelder_mead:List of 6
 #>   ..$ v          : num 0
 #>   ..$ z          : num [1:2] 0 0
-#>   ..$ time       : 'difftime' num 0.00134801864624023
+#>   ..$ time       : 'difftime' num 0.00161194801330566
 #>   .. ..- attr(*, "units")= chr "secs"
 #>   ..$ count      : num 111
 #>   ..$ convergence: num 0
