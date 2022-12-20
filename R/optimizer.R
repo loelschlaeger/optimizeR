@@ -369,9 +369,6 @@ print.optimizer <- function(x, ...) {
 #'
 #' @export
 #'
-#' @keywords
-#' internal
-#'
 #' @importFrom stats nlm
 
 optimizer_nlm <- function(..., out_ign = character(), test_par = list()) {
@@ -402,9 +399,6 @@ optimizer_nlm <- function(..., out_ign = character(), test_par = list()) {
 #' [set_optimizer()] for specifying a different optimizer.
 #'
 #' @export
-#'
-#' @keywords
-#' internal
 #'
 #' @importFrom stats optim
 

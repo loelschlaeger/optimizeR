@@ -53,4 +53,3 @@ This function is a wrapper for \code{\link{set_optimizer}} with the
 \seealso{
 \code{\link[=set_optimizer]{set_optimizer()}} for specifying a different optimizer.
 }
-\keyword{internal}
