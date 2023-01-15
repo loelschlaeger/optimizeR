@@ -2,37 +2,40 @@
 % Please edit documentation in R/optimizer.R
 \name{apply_optimizer}
 \alias{apply_optimizer}
-\title{Optimization}
+\title{Apply \code{optimizer} object}
 \usage{
-apply_optimizer(optimizer = optimizer_nlm(), f, p, ...)
+apply_optimizer(optimizer = optimizer_nlm(), objective, initial, ...)
 }
 \arguments{
 \item{optimizer}{An object of class \code{optimizer}.}
 
-\item{f}{The \code{function} to be optimized, returning a single \code{numeric}.
-Its first argument must be a \code{numeric} vector of the length of \code{p},
-followed by any other arguments specified by the \code{...} argument.}
+\item{objective}{The \code{function} to be optimized, returning a single \code{numeric}.
+Its first argument must be a \code{numeric} vector of the length of
+\code{initial}, followed by any other arguments specified by the \code{...}
+argument.}
 
-\item{p}{A \code{numeric} vector with starting parameter values for the optimization.}
+\item{initial}{A \code{numeric} vector with starting parameter values for the optimization.}
 
-\item{...}{Additional arguments to be passed to \code{f}.}
+\item{...}{Additional arguments to be passed to \code{objective}.}
 }
 \value{
-A named \code{list}, containing the elements
-\itemize{
-\item \code{v}, the value of the estimated optimum of \code{f},
-\item \code{z}, the parameter vector where the optimum of \code{f} is obtained,
-\item \code{time}, the total optimization time (as a \code{difftime} object),
-\item and additional output elements of the optimizer (if not excluded by the
-\code{out_ign} element via \code{\link{set_optimizer}}).
+A named \code{list}, containing at least three elements:
+\describe{
+\item{value}{A \code{numeric}, the value of the estimated optimum of
+\code{objective}.}
+\item{parameter}{A \code{numeric} vector, the parameter vector where the
+optimum of \code{objective} is obtained.}
+\code{seconds}{A \code{numeric}, the total optimization time in seconds.}
 }
+Additional output elements of the optimizer (if not excluded by the
+\code{output_ignore} element via \code{\link{set_optimizer}}) are appended.
 }
 \description{
 This function performs numerical optimization using an \code{optimizer}
 object.
 }
 \examples{
-apply_optimizer(optimizer_nlm(), function(x) -(x + 1)^2 + 1, 2)
+apply_optimizer(optimizer_nlm(), function(x) x^4 + 3*x - 5, 2)
 }
 \seealso{
 \code{\link[=set_optimizer]{set_optimizer()}} for specifying an \code{optimizer} object.

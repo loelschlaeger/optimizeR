@@ -2,28 +2,44 @@
 #'
 #' @description
 #' This package provides a unified framework for numerical optimizer,
-#' particularly for inputs and outputs.
+#' particularly for their inputs and outputs.
 #'
 #' @docType package
+#'
 #' @name optimizeR
-#' @keywords
-#' internal
+#'
+#' @keywords internal
 "_PACKAGE"
 
 #' @noRd
-#' @keywords
-#' internal
+#' @importFrom utils packageVersion
+#' @importFrom glue glue
+#' @keywords internal
 
-optimizeR_stop <- function(event, debug = character(), call. = FALSE) {
-  msg <- paste(event, debug, sep = "\n", collapse = "")
-  stop(msg, call. = call.)
+.onAttach <- function(lib, pkg) {
+  msg <- glue::glue("Thanks for using {{optimizeR}} {utils::packageVersion('optimizeR')}.")
+  packageStartupMessage(msg)
+  invisible()
 }
 
 #' @noRd
-#' @keywords
-#' internal
+#' @importFrom cli cli_abort
+#' @keywords internal
 
-optimizeR_warn <- function(event, debug = character(), call. = FALSE, immediate. = FALSE) {
-  msg <- paste(event, debug, sep = "\n", collapse = "")
-  warning(msg, call. = call., immediate. = immediate.)
+optimizeR_stop <- function(msg, ...) {
+  msg <- c(msg, ...)
+  names(msg)[1] <- "x"
+  names(msg)[-1] <- "*"
+  cli::cli_abort(msg, call = NULL)
+}
+
+#' @noRd
+#' @importFrom cli cli_warn
+#' @keywords internal
+
+optimizeR_warn <- function(msg, ...) {
+  msg <- c(msg, ...)
+  names(msg)[1] <- "!"
+  names(msg)[-1] <- "*"
+  cli::cli_warn(msg, call = NULL)
 }

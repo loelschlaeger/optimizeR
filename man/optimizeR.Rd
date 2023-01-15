@@ -7,7 +7,7 @@
 \title{optimizeR: Unified Framework for Numerical Optimizer}
 \description{
 This package provides a unified framework for numerical optimizer,
-particularly for inputs and outputs.
+particularly for their inputs and outputs.
 }
 \seealso{
 Useful links:

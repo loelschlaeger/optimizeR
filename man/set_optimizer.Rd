@@ -2,100 +2,153 @@
 % Please edit documentation in R/optimizer.R
 \name{set_optimizer}
 \alias{set_optimizer}
+\alias{optimizer_nlm}
+\alias{optimizer_optim}
 \title{Specify numerical optimizer}
-\format{
-The format of an \code{optimizer} object is documented in
-\code{\link{new_optimizer}}.
-}
 \usage{
 set_optimizer(
-  opt_fun,
-  f,
-  p,
-  v,
-  z,
+  optimizer,
+  objective,
+  initial,
+  value,
+  parameter,
   ...,
-  out_ign = character(),
-  test_par = list(validate = TRUE, f_test = f_ackley, npar = 2, add = list(), init_rest =
-    list(lower = -1, upper = 1), init_digits = 2, opt_checks = 10, opt_checks_time = 1)
+  output_ignore = character(0),
+  validate = TRUE,
+  validation_settings = list(objective_test = function(x) {
+     stopifnot(is.numeric(x),
+    length(x) == 2)
+     -20 * exp(-0.2 * sqrt(0.5 * (x[1]^2 + x[2]^2))) - exp(0.5 *
+    (cos(2 * pi * x[1]) + cos(2 * pi * x[2]))) + exp(1) + 20
+ }, objective_add = list(),
+    initial = round(stats::rnorm(2), 2), check_seconds = 10)
+)
+
+optimizer_nlm(
+  ...,
+  output_ignore = character(0),
+  validate = TRUE,
+  validation_settings = list()
+)
+
+optimizer_optim(
+  ...,
+  output_ignore = character(0),
+  validate = TRUE,
+  validation_settings = list()
 )
 }
 \arguments{
-\item{opt_fun}{An object of class \code{function}, a numerical optimizer.
-\itemize{
-\item It must have an input \code{f} for a \code{function}, which is optimized
-over its first argument.
-\item It must have an input \code{p} for a \code{numerical} vector, the initial
-parameter values.
-\item It must have a \code{...} argument for additional parameters to \code{f}.
-\item The output must be a named \code{list}, including the optimal function value
-(named as \code{v}) and parameter vector (named as \code{z}).
+\item{optimizer}{A \code{function}, a numerical optimizer. Four conditions must be met:
+\enumerate{
+\item It must have an input named \code{"objective"} for a \code{function}, the
+objective function which is optimized over its first argument.
+\item It must have an input named \code{"initial"} for a \code{numerical}
+vector, the initial parameter vector.
+\item It must have a \code{...} argument for additional parameters to
+the objective function.
+\item The output must be a named \code{list}, including the optimal function
+value and the optimal parameter vector.
 }}
 
-\item{f}{A \code{character}, the name of the function input of \code{opt_fun}.}
+\item{objective}{A \code{character}, the name of the function input of \code{optimizer}.}
 
-\item{p}{A \code{character}, the name of the starting parameter values input of \code{opt_fun}.}
+\item{initial}{A \code{character}, the name of the starting parameter values input of
+\code{optimizer}.}
 
-\item{v}{A \code{character}, the name of the optimal function value in the output list of \code{opt_fun}.}
+\item{value}{A \code{character}, the name of the optimal function value in the output list
+of \code{optimizer}.}
 
-\item{z}{A \code{character}, the name of the optimal parameter vector in the output list of \code{opt_fun}.}
+\item{parameter}{A \code{character}, the name of the optimal parameter vector in the output
+list of \code{optimizer}.}
 
 \item{...}{Additional arguments to be passed to the optimizer. Without
 specifications, the default values of the optimizer are used.}
 
-\item{out_ign}{A \code{character} vector of element names in the output of \code{opt_fun} that are not
-saved. The elements \code{v} and \code{z} are added automatically to
-\code{opt_ign}, because they are saved separately, see the output
-documentation of \code{\link{apply_optimizer}}.}
+\item{output_ignore}{A \code{character} vector of element names in the output of \code{optimizer}
+that are not saved. The elements \code{value} and \code{parameter} are
+added automatically to \code{output_ignore}, because they are saved
+separately, see the output documentation of \code{\link{apply_optimizer}}.}
 
-\item{test_par}{A \code{list} of test parameters for an \code{optimizer} object:
-\itemize{
-\item \code{validate}, a \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not)
-validate the \code{optimizer} object.
-By default, \code{validate = TRUE}.
-\item \code{f_test}, a test \code{function} to be optimized.
-By default, \code{f_test = \link{f_ackley}}.
-\item \code{npar}, the length of the first argument of \code{f_test}, i.e. the
-argument over which \code{f_test} is optimized.
-\item \code{add}, a \code{list} of additional arguments to \code{f_test}.
-\item \code{init_rest}, a \code{list} of two elements, \code{lower} and \code{upper},
-with lower and upper limits, respectively, for test initial values for the
-optimization of \code{f_test} with \code{opt_fun}.
-Can be single values (for joint limits) or \code{numeric} vectors of length
-\code{npar} (for individual limits).
-By default, \code{lower = -1} and \code{upper = 1}.
-\item \code{init_digits}, the number of decimal places for the test initial
-values.
-By default, \code{init_digits = 2}.
-\item \code{opt_checks}, the number of checks for \code{opt_fun} with random initial
-values (that fulfill the \code{init_rest} restrictions).
-By default, \code{opt_checks = 10}.
-\item \code{opt_check_time}, the maximum number of seconds for a single check for
-\code{opt_fun}.
-A check is considered to be successful, if no error occurred
-within \code{opt_check_time} seconds.
+\item{validate}{A \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not) validate the
+\code{optimizer} object.
+By default, \code{validate = TRUE}.}
+
+\item{validation_settings}{Ignored if \code{valdiate = FALSE}.
+Otherwise, a \code{list} of validation settings:
+\describe{
+\item{objective_test}{A \code{function}, the test function to be optimized.
+By default, it is the
+\href{https://en.wikipedia.org/wiki/Ackley_function}{Ackley function}.}
+\item{objective_add}{A \code{list} of additional arguments to
+\code{objective_test} (if any).
+By default, \code{objective_add = list()}, because the default function
+for \code{objective_test} does not have additional arguments.}
+\item{initial}{A \code{numeric} vector, the initial values for the
+optimization of \code{objective_test}.
+By default, \code{initial = round(stats::rnorm(2), 2)}.}
+\item{check_seconds}{An \code{integer}, the maximum number of seconds
+before the test is aborted.
+The test call is considered to be successful if no error occurred
+within \code{check_seconds} seconds.
+By default, \code{check_seconds = 10}.}
 }}
 }
 \value{
-An object of class \code{optimizer}.
+An \code{optimizer} object.
 }
 \description{
-Use this function to specify the consistent framework for a numerical
-optimizer.
+\code{set_optimizer} specifies the framework for a numerical optimizer.
+
+Two wrappers for common optimizer:
+\enumerate{
+\item \code{optimizer_nlm} specifies the \code{\link[stats]{nlm}} optimizer.
+\item \code{optimizer_optim} specifies the \code{\link[stats]{optim}} optimizer.
 }
+}
+\section{Format}{
+An \code{optimizer} object is a \code{list} of five elements:
+\describe{
+\item{optimizer}{A \code{function}, the optimization function
+\code{optimizer}.}
+\item{optimizer_name}{A \code{character}, the name of
+\code{optimizer}.}
+\item{optimizer_add}{A named \code{list}, where each element
+is an additional function argument for \code{optimizer}.}
+\item{argument_names}{A named \code{list} of four
+\code{character}:
+\describe{
+\item{objective}{the name of the function input of \code{optimizer}}
+\item{initial}{the name of the starting parameter values input of
+\code{optimizer}}
+\item{value}{the name of the optimal function value in the output list
+of \code{optimizer}}
+\item{parameter}{the name of the optimal parameter vector in the
+output list of \code{optimizer}.}
+}}
+\item{output_ignore}{A \code{character} vector of element
+names in the output \code{list} of \code{optimizer} that are ignored.
+The elements \code{value} and \code{parameter} are added automatically to
+\code{output_ignore}, because they are saved
+separately, see the output documentation of \code{\link{apply_optimizer}}.}
+}
+}
+
 \examples{
 set_optimizer(
-  opt_fun = pracma::nelder_mead,
-  f = "fn",
-  p = "x0",
-  v = "fmin",
-  z = "xmin",
-  tol = 1e-6
+  optimizer = pracma::nelder_mead,
+  objective = "fn",
+  initial = "x0",
+  value = "fmin",
+  parameter = "xmin",
+  output_ignore = c("fcount", "restarts", "errmess"), # ignore some outputs
+  tol = 1e-6, # an additional argument for pracma::nelder_mead()
+  validate = TRUE # validate the framework
 )
 
 }
 \seealso{
-\code{\link[=optimizer_nlm]{optimizer_nlm()}} and \code{\link[=optimizer_optim]{optimizer_optim()}}, two wrappers for the
-\code{\link[stats]{nlm}} and \code{\link[stats]{optim}} optimizer.
+Use \code{\link[=apply_optimizer]{apply_optimizer()}} to apply an \code{optimizer} object for numerical
+optimization.
 }
 \keyword{specification}

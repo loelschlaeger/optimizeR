@@ -50,7 +50,7 @@ is_number <- function(x) {
 try_silent <- function(expr) {
   out <- suppressWarnings(try(expr, silent = TRUE))
   if ("try-error" %in% class(out)) {
-    out <- structure(out[1], class = "fail")
+    out <- structure(as.character(out[1]), class = "fail")
   }
   return(out)
 }

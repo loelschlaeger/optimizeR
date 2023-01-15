@@ -2,39 +2,39 @@
 % Please edit documentation in R/optimizer.R
 \name{validate_optimizer}
 \alias{validate_optimizer}
-\title{Validator}
+\title{Validate \code{optimizer} object}
 \usage{
-validate_optimizer(x = new_optimizer(), test_par = list())
+validate_optimizer(
+  x = new_optimizer(),
+  validate = TRUE,
+  validation_settings = list()
+)
 }
 \arguments{
 \item{x}{An object of class \code{optimizer}.}
 
-\item{test_par}{A \code{list} of test parameters for an \code{optimizer} object:
-\itemize{
-\item \code{validate}, a \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not)
-validate the \code{optimizer} object.
-By default, \code{validate = TRUE}.
-\item \code{f_test}, a test \code{function} to be optimized.
-By default, \code{f_test = \link{f_ackley}}.
-\item \code{npar}, the length of the first argument of \code{f_test}, i.e. the
-argument over which \code{f_test} is optimized.
-\item \code{add}, a \code{list} of additional arguments to \code{f_test}.
-\item \code{init_rest}, a \code{list} of two elements, \code{lower} and \code{upper},
-with lower and upper limits, respectively, for test initial values for the
-optimization of \code{f_test} with \code{opt_fun}.
-Can be single values (for joint limits) or \code{numeric} vectors of length
-\code{npar} (for individual limits).
-By default, \code{lower = -1} and \code{upper = 1}.
-\item \code{init_digits}, the number of decimal places for the test initial
-values.
-By default, \code{init_digits = 2}.
-\item \code{opt_checks}, the number of checks for \code{opt_fun} with random initial
-values (that fulfill the \code{init_rest} restrictions).
-By default, \code{opt_checks = 10}.
-\item \code{opt_check_time}, the maximum number of seconds for a single check for
-\code{opt_fun}.
-A check is considered to be successful, if no error occurred
-within \code{opt_check_time} seconds.
+\item{validate}{A \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not) validate the
+\code{optimizer} object.
+By default, \code{validate = TRUE}.}
+
+\item{validation_settings}{Ignored if \code{valdiate = FALSE}.
+Otherwise, a \code{list} of validation settings:
+\describe{
+\item{objective_test}{A \code{function}, the test function to be optimized.
+By default, it is the
+\href{https://en.wikipedia.org/wiki/Ackley_function}{Ackley function}.}
+\item{objective_add}{A \code{list} of additional arguments to
+\code{objective_test} (if any).
+By default, \code{objective_add = list()}, because the default function
+for \code{objective_test} does not have additional arguments.}
+\item{initial}{A \code{numeric} vector, the initial values for the
+optimization of \code{objective_test}.
+By default, \code{initial = round(stats::rnorm(2), 2)}.}
+\item{check_seconds}{An \code{integer}, the maximum number of seconds
+before the test is aborted.
+The test call is considered to be successful if no error occurred
+within \code{check_seconds} seconds.
+By default, \code{check_seconds = 10}.}
 }}
 }
 \value{
