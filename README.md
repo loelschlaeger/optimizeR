@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# {optimizeR}
+# optimizeR <img src="man/figures/logo.png" align="right" height="139" />
 
 <!-- badges: start -->
 
@@ -54,7 +54,7 @@ f_ackley <- function(x) {
 
 ``` r
 library("optimizeR")
-#> Warning: package 'optimizeR' was built under R version 4.2.2
+#> Thanks for using {optimizeR} 0.2.0.9000.
 optimizer_nlm()
 #> <optimizer 'stats::nlm'>
 optimizer_optim()
@@ -66,55 +66,53 @@ constructor:
 
 ``` r
 optimizer_nelder_mead <- set_optimizer(
-    opt_fun = pracma::nelder_mead,
-    f = "fn",
-    p = "x0",
-    v = "fmin",
-    z = "xmin"
+    optimizer = pracma::nelder_mead,
+    objective = "fn",
+    initial = "x0",
+    value = "fmin",
+    parameter = "xmin"
   )
 ```
 
-Now we optimize (with initial parameter vector `p = c(-1,1)`):
+Now we optimize (with initial parameter vector `initial = c(-1,1)`):
 
 ``` r
 res <- lapply(
   list(optimizer_nlm(), optimizer_optim(), optimizer_nelder_mead),
   apply_optimizer, 
-  f = f_ackley, 
-  p = c(-1,1)
+  objective = f_ackley, 
+  initial = c(-1,1)
 )
 names(res) <- c("nlm", "optim", "nelder_mead")
 ```
 
-In the optimization results, `v` and `z` consistently denote the optimal
-function values and the optimal parameters, while optimizer-specific
-outputs are preserved:
+In the optimization results, `value` and `parameter` consistently denote
+the optimal function values and the optimal parameters, while
+optimizer-specific outputs are preserved. The optimization time in
+seconds, `seconds` is automatically added.
 
 ``` r
 str(res)
 #> List of 3
 #>  $ nlm        :List of 6
-#>   ..$ v         : num 1.66e-06
-#>   ..$ z         : num [1:2] -2.91e-07 5.08e-07
-#>   ..$ time      : 'difftime' num 0.000993967056274414
-#>   .. ..- attr(*, "units")= chr "secs"
+#>   ..$ value     : num 1.66e-06
+#>   ..$ parameter : num [1:2] -2.91e-07 5.08e-07
+#>   ..$ seconds   : num 0.00126
 #>   ..$ gradient  : num [1:2] -0.00824 0.0144
 #>   ..$ code      : int 2
 #>   ..$ iterations: int 33
 #>  $ optim      :List of 6
-#>   ..$ v          : num 3.57
-#>   ..$ z          : num [1:2] -0.969 0.969
-#>   ..$ time       : 'difftime' num 0.000637054443359375
-#>   .. ..- attr(*, "units")= chr "secs"
+#>   ..$ value      : num 3.57
+#>   ..$ parameter  : num [1:2] -0.969 0.969
+#>   ..$ seconds    : num 0.000489
 #>   ..$ counts     : Named int [1:2] 45 NA
 #>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
 #>   ..$ convergence: int 0
 #>   ..$ message    : NULL
 #>  $ nelder_mead:List of 6
-#>   ..$ v          : num 0
-#>   ..$ z          : num [1:2] 0 0
-#>   ..$ time       : 'difftime' num 0.00222516059875488
-#>   .. ..- attr(*, "units")= chr "secs"
+#>   ..$ value      : num 0
+#>   ..$ parameter  : num [1:2] 0 0
+#>   ..$ seconds    : num 0.00195
 #>   ..$ count      : num 111
 #>   ..$ convergence: num 0
 #>   ..$ info       :List of 2
@@ -122,8 +120,8 @@ str(res)
 #>   .. ..$ restarts: num 0
 ```
 
-P.S. Surprised that the `optim()` result is different from the others?
-It seems that this optimizer got stuck in a local minimum.
+P.S. Surprised that the `optim` result differs from the others? It seems
+that this optimizer got stuck in a local minimum.
 
 ## Installation
 
