@@ -22,7 +22,7 @@ test_that("construct optimizer works", {
 
 test_that("optimizier validation works", {
   expect_error(set_optimizer(
-    optimizer = function (fn, x) stop("error"),
+    optimizer = function(fn, x) stop("error"),
     objective = "fn",
     initial = "x",
     value = "fmin",
@@ -45,10 +45,12 @@ test_that("optimizier validation works", {
     validate = TRUE,
     validation_settings = list(
       check_seconds = 1
-    )), "Optimizer test run cannot be validated."
-  )
+    )
+  ), "Optimizer test run cannot be validated.")
   expect_error(set_optimizer(
-    optimizer = function(f, p) return(p),
+    optimizer = function(f, p) {
+      return(p)
+    },
     objective = "f",
     initial = "p",
     value = "minimum",
@@ -86,9 +88,9 @@ test_that("optimizier validation works", {
 
 test_that("unnamed optimizer can be specified", {
   opt <- set_optimizer(
-    optimizer = function (f, p) {
-        list("minimum" = 0, "parameter" = p)
-      },
+    optimizer = function(f, p) {
+      list("minimum" = 0, "parameter" = p)
+    },
     objective = "f",
     initial = "p",
     value = "minimum",
