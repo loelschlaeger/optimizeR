@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# optimizeR <img src="man/figures/logo.png" align="right" height="139" />
+# optimizeR
 
 <!-- badges: start -->
 
@@ -94,25 +94,28 @@ seconds, `seconds` is automatically added.
 ``` r
 str(res)
 #> List of 3
-#>  $ nlm        :List of 6
+#>  $ nlm        :List of 7
 #>   ..$ value     : num 1.66e-06
 #>   ..$ parameter : num [1:2] -2.91e-07 5.08e-07
-#>   ..$ seconds   : num 0.00126
+#>   ..$ seconds   : num 0.00197
+#>   ..$ initial   : num [1:2] -1 1
 #>   ..$ gradient  : num [1:2] -0.00824 0.0144
 #>   ..$ code      : int 2
 #>   ..$ iterations: int 33
-#>  $ optim      :List of 6
+#>  $ optim      :List of 7
 #>   ..$ value      : num 3.57
 #>   ..$ parameter  : num [1:2] -0.969 0.969
-#>   ..$ seconds    : num 0.000489
+#>   ..$ seconds    : num 0.000744
+#>   ..$ initial    : num [1:2] -1 1
 #>   ..$ counts     : Named int [1:2] 45 NA
 #>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
 #>   ..$ convergence: int 0
 #>   ..$ message    : NULL
-#>  $ nelder_mead:List of 6
+#>  $ nelder_mead:List of 7
 #>   ..$ value      : num 0
 #>   ..$ parameter  : num [1:2] 0 0
-#>   ..$ seconds    : num 0.00195
+#>   ..$ seconds    : num 0.00245
+#>   ..$ initial    : num [1:2] -1 1
 #>   ..$ count      : num 111
 #>   ..$ convergence: num 0
 #>   ..$ info       :List of 2

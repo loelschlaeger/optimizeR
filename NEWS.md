@@ -21,8 +21,6 @@ the documentation of `set_optimizer()`.
   
 * Element `initial` (the starting parameter vector) was added to the output
 of `apply_optimizer()`.
-  
-* Added pkgdown site: https://loelschlaeger.de/optimizeR
 
 # optimizeR 0.2.0
 
