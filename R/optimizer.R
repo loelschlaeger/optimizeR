@@ -407,6 +407,7 @@ print.optimizer <- function(x, ...) {
 #'   \item{parameter}{A \code{numeric} vector, the parameter vector where the
 #'         optimum of \code{objective} is obtained.}
 #'   \code{seconds}{A \code{numeric}, the total optimization time in seconds.}
+#'   \code{initial}{A \code{numeric}, the initial parameter values.}
 #' }
 #' Additional output elements of the optimizer (if not excluded by the
 #' \code{output_ignore} element via \code{\link{set_optimizer}}) are appended.
@@ -436,8 +437,9 @@ apply_optimizer <- function(
     structure(
       list(res[[optimizer[["argument_names"]][["value"]]]],
            res[[optimizer[["argument_names"]][["parameter"]]]],
-           as.numeric(difftime(end, start, units = "secs"))),
-      names = c("value", "parameter", "seconds")
+           as.numeric(difftime(end, start, units = "secs")),
+           initial),
+      names = c("value", "parameter", "seconds", "initial")
     ),
     res[!names(res) %in% optimizer[["output_ignore"]]]
   )

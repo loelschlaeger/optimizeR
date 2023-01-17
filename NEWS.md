@@ -10,13 +10,17 @@
   * `out_ign` -> `output_ignore`
   * `test_par` -> `validation_settings`
   
-* Elements for input `validation_settings` have been simplified.
+* Elements for input `validation_settings` have been simplified, please see
+the documentation of `set_optimizer()`.
 
 * Elements in the output of `apply_optimizer()` were renamed for clarity:
 
   * `v` -> `value` 
   * `z` -> `parameter`
   * `time` -> `seconds` (now just a `numeric`) 
+  
+* Element `initial` (the starting parameter vector) was added to the output
+of `apply_optimizer()`.
   
 * Added pkgdown site: https://loelschlaeger.de/optimizeR
 

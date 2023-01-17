@@ -26,6 +26,7 @@ A named \code{list}, containing at least three elements:
 \item{parameter}{A \code{numeric} vector, the parameter vector where the
 optimum of \code{objective} is obtained.}
 \code{seconds}{A \code{numeric}, the total optimization time in seconds.}
+\code{initial}{A \code{numeric}, the initial parameter values.}
 }
 Additional output elements of the optimizer (if not excluded by the
 \code{output_ignore} element via \code{\link{set_optimizer}}) are appended.
