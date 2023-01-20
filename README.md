@@ -53,8 +53,7 @@ f_ackley <- function(x) {
 `pracma::nelder_mead()`. The first two are already pre-specified…
 
 ``` r
-#library("optimizeR")
-devtools::load_all()
+library("optimizeR")
 #> ℹ Loading optimizeR
 #> Thanks for using {optimizeR} 0.3.0.
 optimizer_nlm()
