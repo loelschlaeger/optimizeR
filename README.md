@@ -35,7 +35,7 @@ compare different optimizers.
 
 ## Our solution
 
-Simply specify optimizers with `set_optimizer()` and execute them with
+Simply specify optimizers with `define_optimizer()` and apply them with
 `apply_optimizer()`. The outputs are in a standardized format.
 
 For demonstration, say we want to minimize the [Ackley
@@ -53,8 +53,10 @@ f_ackley <- function(x) {
 `pracma::nelder_mead()`. The first two are already pre-specified…
 
 ``` r
-library("optimizeR")
-#> Thanks for using {optimizeR} 0.2.0.9000.
+#library("optimizeR")
+devtools::load_all()
+#> ℹ Loading optimizeR
+#> Thanks for using {optimizeR} 0.3.0.
 optimizer_nlm()
 #> <optimizer 'stats::nlm'>
 optimizer_optim()
@@ -65,7 +67,7 @@ optimizer_optim()
 constructor:
 
 ``` r
-optimizer_nelder_mead <- set_optimizer(
+optimizer_nelder_mead <- define_optimizer(
     optimizer = pracma::nelder_mead,
     objective = "fn",
     initial = "x0",
@@ -97,7 +99,7 @@ str(res)
 #>  $ nlm        :List of 7
 #>   ..$ value     : num 1.66e-06
 #>   ..$ parameter : num [1:2] -2.91e-07 5.08e-07
-#>   ..$ seconds   : num 0.00197
+#>   ..$ seconds   : num 0.0012
 #>   ..$ initial   : num [1:2] -1 1
 #>   ..$ gradient  : num [1:2] -0.00824 0.0144
 #>   ..$ code      : int 2
@@ -105,7 +107,7 @@ str(res)
 #>  $ optim      :List of 7
 #>   ..$ value      : num 3.57
 #>   ..$ parameter  : num [1:2] -0.969 0.969
-#>   ..$ seconds    : num 0.000744
+#>   ..$ seconds    : num 0.000548
 #>   ..$ initial    : num [1:2] -1 1
 #>   ..$ counts     : Named int [1:2] 45 NA
 #>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
@@ -114,7 +116,7 @@ str(res)
 #>  $ nelder_mead:List of 7
 #>   ..$ value      : num 0
 #>   ..$ parameter  : num [1:2] 0 0
-#>   ..$ seconds    : num 0.00245
+#>   ..$ seconds    : num 0.00246
 #>   ..$ initial    : num [1:2] -1 1
 #>   ..$ count      : num 111
 #>   ..$ convergence: num 0
