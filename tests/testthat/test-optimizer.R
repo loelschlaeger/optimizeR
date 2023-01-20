@@ -1,10 +1,10 @@
 test_that("construct optimizer works", {
-  expect_error(set_optimizer(), "specify argument 'optimizer'.")
-  expect_error(set_optimizer(optimizer = stats::nlm), "Please specify argument 'objective'.")
-  expect_error(set_optimizer(optimizer = stats::nlm, objective = "f"), "Please specify argument 'initial'.")
-  expect_error(set_optimizer(optimizer = stats::nlm, objective = "f", initial = "p"), "Please specify argument 'value'.")
-  expect_error(set_optimizer(optimizer = stats::nlm, objective = "f", initial = "p", value = "v"), "Please specify argument 'parameter'.")
-  expect_error(set_optimizer(optimizer = stats::nlm, objective = "f", initial = "p", parameter = "z"), "Please specify argument 'value'.")
+  expect_error(define_optimizer(), "specify argument 'optimizer'.")
+  expect_error(define_optimizer(optimizer = stats::nlm), "Please specify argument 'objective'.")
+  expect_error(define_optimizer(optimizer = stats::nlm, objective = "f"), "Please specify argument 'initial'.")
+  expect_error(define_optimizer(optimizer = stats::nlm, objective = "f", initial = "p"), "Please specify argument 'value'.")
+  expect_error(define_optimizer(optimizer = stats::nlm, objective = "f", initial = "p", value = "v"), "Please specify argument 'parameter'.")
+  expect_error(define_optimizer(optimizer = stats::nlm, objective = "f", initial = "p", parameter = "z"), "Please specify argument 'value'.")
   optimizer <- new_optimizer(
     optimizer = pracma::nelder_mead,
     optimizer_name = "nelder_mead",
@@ -21,14 +21,14 @@ test_that("construct optimizer works", {
 })
 
 test_that("optimizier validation works", {
-  expect_error(set_optimizer(
+  expect_error(define_optimizer(
     optimizer = function(fn, x) stop("error"),
     objective = "fn",
     initial = "x",
     value = "fmin",
     parameter = "xmin"
   ), "Optimizer test run failed.")
-  expect_error(set_optimizer(
+  expect_error(define_optimizer(
     optimizer = stats::nlm,
     objective = "f",
     initial = "p",
@@ -36,7 +36,7 @@ test_that("optimizier validation works", {
     parameter = "value",
     validate = TRUE
   ), "The optimal function value is not a single numeric.")
-  expect_warning(set_optimizer(
+  expect_warning(define_optimizer(
     optimizer = function(f, p) Sys.sleep(10),
     objective = "f",
     initial = "p",
@@ -47,7 +47,7 @@ test_that("optimizier validation works", {
       check_seconds = 1
     )
   ), "Optimizer test run cannot be validated.")
-  expect_error(set_optimizer(
+  expect_error(define_optimizer(
     optimizer = function(f, p) {
       return(p)
     },
@@ -56,28 +56,28 @@ test_that("optimizier validation works", {
     value = "minimum",
     parameter = "estimate"
   ), "Optimizer output is not a `list`.")
-  expect_error(set_optimizer(
+  expect_error(define_optimizer(
     optimizer = stats::nlm,
     objective = "f",
     initial = "p",
     value = "bad_name",
     parameter = "estimate"
   ), "Element 'value' is not contained in the optimizer output.")
-  expect_error(set_optimizer(
+  expect_error(define_optimizer(
     optimizer = function(f, p) list("minimum" = "not_a_numeric"),
     objective = "f",
     initial = "p",
     value = "minimum",
     parameter = "estimate"
   ), "The optimal function value is not a single numeric.")
-  expect_error(set_optimizer(
+  expect_error(define_optimizer(
     optimizer = stats::nlm,
     objective = "f",
     initial = "p",
     value = "minimum",
     parameter = "bad_name"
   ), "Element 'parameter' is not contained in the optimizer output.")
-  expect_error(set_optimizer(
+  expect_error(define_optimizer(
     optimizer = function(f, p) list("minimum" = 0, "estimate" = "not_a_numeric"),
     objective = "f",
     initial = "p",
@@ -87,7 +87,7 @@ test_that("optimizier validation works", {
 })
 
 test_that("unnamed optimizer can be specified", {
-  opt <- set_optimizer(
+  opt <- define_optimizer(
     optimizer = function(f, p) {
       list("minimum" = 0, "parameter" = p)
     },

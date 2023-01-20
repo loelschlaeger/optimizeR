@@ -31,7 +31,7 @@ Look at the popular R optimizers [`nlm()`](https://stat.ethz.ch/R-manual/R-devel
 
 ## Our solution
 
-Simply specify optimizers with `set_optimizer()` and execute them with `apply_optimizer()`. The outputs are in a standardized format.
+Simply specify optimizers with `define_optimizer()` and apply them with `apply_optimizer()`. The outputs are in a standardized format.
 
 For demonstration, say we want to minimize the [Ackley function](https://en.wikipedia.org/wiki/Ackley_function)...
 
@@ -54,7 +54,7 @@ optimizer_optim()
 ... and for the latter (as for any other optimizer) we can use the general constructor:
 
 ```{r optimizer2}
-optimizer_nelder_mead <- set_optimizer(
+optimizer_nelder_mead <- define_optimizer(
     optimizer = pracma::nelder_mead,
     objective = "fn",
     initial = "x0",

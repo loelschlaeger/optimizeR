@@ -1,6 +1,8 @@
-# optimizeR 0.2.0.9000
+# optimizeR 0.3.0
 
-* Inputs for `set_optimizer()` were renamed for clarity:
+* Function `set_optimizer()` was renamed to `define_optimizer()`.
+
+* Inputs for `define_optimizer()` were renamed for clarity:
   
   * `opt_fun` -> `optimizer`
   * `f` -> `objective`
@@ -11,7 +13,7 @@
   * `test_par` -> `validation_settings`
   
 * Elements for input `validation_settings` have been simplified, please see
-the documentation of `set_optimizer()`.
+the documentation of `define_optimizer()`.
 
 * Elements in the output of `apply_optimizer()` were renamed for clarity:
 

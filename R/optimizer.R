@@ -1,7 +1,7 @@
 #' Specify numerical optimizer
 #'
 #' @description
-#' \code{set_optimizer} specifies the framework for a numerical optimizer.
+#' This function specifies the framework for a numerical optimizer.
 #'
 #' Two wrappers for common optimizer:
 #' 1. \code{optimizer_nlm} specifies the \code{\link[stats]{nlm}} optimizer.
@@ -27,7 +27,7 @@
 #' @importFrom stats rnorm
 #'
 #' @examples
-#' set_optimizer(
+#' define_optimizer(
 #'   optimizer = pracma::nelder_mead,
 #'   objective = "fn",
 #'   initial = "x0",
@@ -40,7 +40,7 @@
 #'
 #' @keywords specification
 
-set_optimizer <- function(
+define_optimizer <- function(
     optimizer, objective, initial, value, parameter, ...,
     output_ignore = character(0), validate = TRUE,
     validation_settings = list(
@@ -105,7 +105,7 @@ set_optimizer <- function(
   )
 }
 
-#' @rdname set_optimizer
+#' @rdname define_optimizer
 #' @export
 #' @importFrom stats nlm
 
@@ -113,7 +113,7 @@ optimizer_nlm <- function(
     ..., output_ignore = character(0), validate = TRUE,
     validation_settings = list()
   ) {
-  set_optimizer(
+  define_optimizer(
     optimizer = stats::nlm,
     objective = "f",
     initial = "p",
@@ -126,7 +126,7 @@ optimizer_nlm <- function(
   )
 }
 
-#' @rdname set_optimizer
+#' @rdname define_optimizer
 #' @export
 #' @importFrom stats optim
 
@@ -134,7 +134,7 @@ optimizer_optim <- function(
     ..., output_ignore = character(0), validate = TRUE,
     validation_settings = list()
   ) {
-  set_optimizer(
+  define_optimizer(
     optimizer = stats::optim,
     objective = "fn",
     initial = "par",
@@ -410,10 +410,11 @@ print.optimizer <- function(x, ...) {
 #'   \code{initial}{A \code{numeric}, the initial parameter values.}
 #' }
 #' Additional output elements of the optimizer (if not excluded by the
-#' \code{output_ignore} element via \code{\link{set_optimizer}}) are appended.
+#' \code{output_ignore} element via \code{\link{define_optimizer}}) are
+#' appended.
 #'
 #' @seealso
-#' [set_optimizer()] for specifying an \code{optimizer} object.
+#' [define_optimizer()] for specifying an \code{optimizer} object.
 #'
 #' @export
 #'

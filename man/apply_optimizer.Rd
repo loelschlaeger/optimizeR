@@ -29,7 +29,8 @@ optimum of \code{objective} is obtained.}
 \code{initial}{A \code{numeric}, the initial parameter values.}
 }
 Additional output elements of the optimizer (if not excluded by the
-\code{output_ignore} element via \code{\link{set_optimizer}}) are appended.
+\code{output_ignore} element via \code{\link{define_optimizer}}) are
+appended.
 }
 \description{
 This function performs numerical optimization using an \code{optimizer}
@@ -39,5 +40,5 @@ object.
 apply_optimizer(optimizer_nlm(), function(x) x^4 + 3*x - 5, 2)
 }
 \seealso{
-\code{\link[=set_optimizer]{set_optimizer()}} for specifying an \code{optimizer} object.
+\code{\link[=define_optimizer]{define_optimizer()}} for specifying an \code{optimizer} object.
 }

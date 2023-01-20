@@ -2,9 +2,9 @@
 
 S3method(print,optimizer)
 export(apply_optimizer)
+export(define_optimizer)
 export(optimizer_nlm)
 export(optimizer_optim)
-export(set_optimizer)
 importFrom(cli,cli_abort)
 importFrom(cli,cli_warn)
 importFrom(glue,glue)
