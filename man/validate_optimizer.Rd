@@ -6,7 +6,7 @@
 \usage{
 validate_optimizer(
   x = new_optimizer(),
-  validate = TRUE,
+  validate = FALSE,
   validation_settings = list()
 )
 }
@@ -15,7 +15,7 @@ validate_optimizer(
 
 \item{validate}{A \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not) validate the
 \code{optimizer} object.
-By default, \code{validate = TRUE}.}
+By default, \code{validate = FALSE}.}
 
 \item{validation_settings}{Ignored if \code{valdiate = FALSE}.
 Otherwise, a \code{list} of validation settings:

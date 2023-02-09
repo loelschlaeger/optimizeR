@@ -14,7 +14,7 @@ define_optimizer(
   parameter,
   ...,
   output_ignore = character(0),
-  validate = TRUE,
+  validate = FALSE,
   validation_settings = list(objective_test = function(x) {
      stopifnot(is.numeric(x),
     length(x) == 2)
@@ -27,14 +27,14 @@ define_optimizer(
 optimizer_nlm(
   ...,
   output_ignore = character(0),
-  validate = TRUE,
+  validate = FALSE,
   validation_settings = list()
 )
 
 optimizer_optim(
   ...,
   output_ignore = character(0),
-  validate = TRUE,
+  validate = FALSE,
   validation_settings = list()
 )
 }
@@ -72,7 +72,7 @@ separately, see the output documentation of \code{\link{apply_optimizer}}.}
 
 \item{validate}{A \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not) validate the
 \code{optimizer} object.
-By default, \code{validate = TRUE}.}
+By default, \code{validate = FALSE}.}
 
 \item{validation_settings}{Ignored if \code{valdiate = FALSE}.
 Otherwise, a \code{list} of validation settings:

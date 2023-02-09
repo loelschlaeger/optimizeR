@@ -26,7 +26,8 @@ test_that("optimizier validation works", {
     objective = "fn",
     initial = "x",
     value = "fmin",
-    parameter = "xmin"
+    parameter = "xmin",
+    validate = TRUE
   ), "Optimizer test run failed.")
   expect_error(define_optimizer(
     optimizer = stats::nlm,
@@ -54,36 +55,45 @@ test_that("optimizier validation works", {
     objective = "f",
     initial = "p",
     value = "minimum",
-    parameter = "estimate"
+    parameter = "estimate",
+    validate = TRUE
   ), "Optimizer output is not a `list`.")
   expect_error(define_optimizer(
     optimizer = stats::nlm,
     objective = "f",
     initial = "p",
     value = "bad_name",
-    parameter = "estimate"
+    parameter = "estimate",
+    validate = TRUE
   ), "Element 'value' is not contained in the optimizer output.")
   expect_error(define_optimizer(
     optimizer = function(f, p) list("minimum" = "not_a_numeric"),
     objective = "f",
     initial = "p",
     value = "minimum",
-    parameter = "estimate"
+    parameter = "estimate",
+    validate = TRUE
   ), "The optimal function value is not a single numeric.")
   expect_error(define_optimizer(
     optimizer = stats::nlm,
     objective = "f",
     initial = "p",
     value = "minimum",
-    parameter = "bad_name"
+    parameter = "bad_name",
+    validate = TRUE
   ), "Element 'parameter' is not contained in the optimizer output.")
   expect_error(define_optimizer(
     optimizer = function(f, p) list("minimum" = 0, "estimate" = "not_a_numeric"),
     objective = "f",
     initial = "p",
     value = "minimum",
-    parameter = "estimate"
+    parameter = "estimate",
+    validate = TRUE
   ), "The optimum is not a numeric value.")
+  expect_s3_class(
+    validate_optimizer(x = optimizer_nlm(), validate = TRUE),
+    "optimizer"
+  )
 })
 
 test_that("unnamed optimizer can be specified", {

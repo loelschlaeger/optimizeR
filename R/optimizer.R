@@ -42,7 +42,7 @@
 
 define_optimizer <- function(
     optimizer, objective, initial, value, parameter, ...,
-    output_ignore = character(0), validate = TRUE,
+    output_ignore = character(0), validate = FALSE,
     validation_settings = list(
       "objective_test" = function(x) {
         # Ackley test function
@@ -110,7 +110,7 @@ define_optimizer <- function(
 #' @importFrom stats nlm
 
 optimizer_nlm <- function(
-    ..., output_ignore = character(0), validate = TRUE,
+    ..., output_ignore = character(0), validate = FALSE,
     validation_settings = list()
   ) {
   define_optimizer(
@@ -131,7 +131,7 @@ optimizer_nlm <- function(
 #' @importFrom stats optim
 
 optimizer_optim <- function(
-    ..., output_ignore = character(0), validate = TRUE,
+    ..., output_ignore = character(0), validate = FALSE,
     validation_settings = list()
   ) {
   define_optimizer(
@@ -256,7 +256,7 @@ new_optimizer <- function(
 #' @param validate
 #' A \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not) validate the
 #' \code{optimizer} object.
-#' By default, \code{validate = TRUE}.
+#' By default, \code{validate = FALSE}.
 #' @param validation_settings
 #' Ignored if \code{valdiate = FALSE}.
 #' Otherwise, a \code{list} of validation settings:
@@ -287,7 +287,7 @@ new_optimizer <- function(
 #' @importFrom stats runif
 
 validate_optimizer <- function(
-    x = new_optimizer(), validate = TRUE, validation_settings = list()
+    x = new_optimizer(), validate = FALSE, validation_settings = list()
 ) {
   stopifnot(inherits(x, "optimizer"))
   stopifnot(isTRUE(validate) || isFALSE(validate))
