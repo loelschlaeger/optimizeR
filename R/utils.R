@@ -96,11 +96,9 @@ timed <- function(expr, secs) {
       expr
     },
     error = function(e) {
-      if (grepl("reached elapsed time limit|reached CPU time limit", e$message)) {
-        return(NULL)
-      } else {
-        stop(e, call. = FALSE)
-      }
+      msg <- e$message
+      tl <- grepl("reached elapsed time limit|reached CPU time limit", msg)
+      if (tl) return(NULL) else stop(msg, call. = FALSE)
     }
   )
 }

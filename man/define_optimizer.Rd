@@ -100,10 +100,10 @@ An \code{optimizer} object.
 \description{
 This function specifies the framework for a numerical optimizer.
 
-Two wrappers for common optimizer:
+Two wrappers for common optimizer are available:
 \enumerate{
-\item \code{optimizer_nlm} specifies the \code{\link[stats]{nlm}} optimizer.
-\item \code{optimizer_optim} specifies the \code{\link[stats]{optim}} optimizer.
+\item \code{optimizer_nlm()} for the \code{\link[stats]{nlm}} optimizer
+\item \code{optimizer_optim()} for the \code{\link[stats]{optim}} optimizer
 }
 }
 \section{Format}{
@@ -145,10 +145,8 @@ define_optimizer(
   tol = 1e-6, # an additional argument for pracma::nelder_mead()
   validate = TRUE # validate the framework
 )
-
 }
 \seealso{
 Use \code{\link[=apply_optimizer]{apply_optimizer()}} to apply an \code{optimizer} object for numerical
 optimization.
 }
-\keyword{specification}

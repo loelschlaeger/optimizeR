@@ -3,16 +3,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
-logo.R
 README.html
 LICENSE
 ^\.github$
-^_pkgdown\.yml$
-^docs$
-^pkgdown$
-^README\.Rmd$
 ^codecov\.yml$
-^doc$
-^Meta$
 ^CRAN-SUBMISSION$
 ^cran-comments\.md$

@@ -2,7 +2,7 @@
 #'
 #' @description
 #' This package provides a unified framework for numerical optimizer,
-#' particularly for their inputs and outputs.
+#' in particular for their inputs and outputs.
 #'
 #' @docType package
 #'
@@ -17,7 +17,9 @@
 #' @keywords internal
 
 .onAttach <- function(lib, pkg) {
-  msg <- glue::glue("Thanks for using {{optimizeR}} {utils::packageVersion('optimizeR')}.")
+  msg <- glue::glue(
+    "Thanks for using {{optimizeR}} {utils::packageVersion('optimizeR')}."
+  )
   packageStartupMessage(msg)
   invisible()
 }

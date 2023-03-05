@@ -53,9 +53,6 @@ f_ackley <- function(x) {
 `pracma::nelder_mead()`. The first two are already pre-specified…
 
 ``` r
-library("optimizeR")
-#> ℹ Loading optimizeR
-#> Thanks for using {optimizeR} 0.3.0.
 optimizer_nlm()
 #> <optimizer 'stats::nlm'>
 optimizer_optim()
@@ -67,38 +64,38 @@ constructor:
 
 ``` r
 optimizer_nelder_mead <- define_optimizer(
-    optimizer = pracma::nelder_mead,
-    objective = "fn",
-    initial = "x0",
-    value = "fmin",
-    parameter = "xmin"
-  )
+  optimizer = pracma::nelder_mead,
+  objective = "fn",
+  initial = "x0",
+  value = "fmin",
+  parameter = "xmin"
+)
 ```
 
 Now we optimize (with initial parameter vector `initial = c(-1,1)`):
 
 ``` r
-res <- lapply(
+results <- lapply(
   list(optimizer_nlm(), optimizer_optim(), optimizer_nelder_mead),
   apply_optimizer, 
   objective = f_ackley, 
   initial = c(-1,1)
 )
-names(res) <- c("nlm", "optim", "nelder_mead")
+names(results) <- c("nlm", "optim", "nelder_mead")
 ```
 
 In the optimization results, `value` and `parameter` consistently denote
 the optimal function values and the optimal parameters, while
 optimizer-specific outputs are preserved. The optimization time in
-seconds, `seconds` is automatically added.
+seconds, `seconds`, is automatically added:
 
 ``` r
-str(res)
+str(results)
 #> List of 3
 #>  $ nlm        :List of 7
 #>   ..$ value     : num 1.66e-06
 #>   ..$ parameter : num [1:2] -2.91e-07 5.08e-07
-#>   ..$ seconds   : num 0.0012
+#>   ..$ seconds   : num 0.0347
 #>   ..$ initial   : num [1:2] -1 1
 #>   ..$ gradient  : num [1:2] -0.00824 0.0144
 #>   ..$ code      : int 2
@@ -106,7 +103,7 @@ str(res)
 #>  $ optim      :List of 7
 #>   ..$ value      : num 3.57
 #>   ..$ parameter  : num [1:2] -0.969 0.969
-#>   ..$ seconds    : num 0.000548
+#>   ..$ seconds    : num 0.000317
 #>   ..$ initial    : num [1:2] -1 1
 #>   ..$ counts     : Named int [1:2] 45 NA
 #>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
@@ -115,7 +112,7 @@ str(res)
 #>  $ nelder_mead:List of 7
 #>   ..$ value      : num 0
 #>   ..$ parameter  : num [1:2] 0 0
-#>   ..$ seconds    : num 0.00246
+#>   ..$ seconds    : num 0.00139
 #>   ..$ initial    : num [1:2] -1 1
 #>   ..$ count      : num 111
 #>   ..$ convergence: num 0
@@ -136,7 +133,7 @@ You can install the released version of {optimizeR} from
 install.packages("optimizeR")
 ```
 
-…and the development version from [GitHub](https://github.com/) with:
+… and the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")

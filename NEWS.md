@@ -1,6 +1,6 @@
 # optimizerR 0.3.1
 
-* In `define_optimizer()`, now `validate = FALSE` per default.
+* In `define_optimizer()`, now `validate = FALSE` by default.
 
 # optimizeR 0.3.0
 
