@@ -15,20 +15,21 @@ coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badg
 <!-- badges: end -->
 
 The {optimizeR} package provides a unified framework for numerical
-optimizers in R, particularly for their inputs and outputs.
+optimizers in R, in particular for their inputs and outputs.
 
 ## What is the problem?
 
 Look at the popular R optimizers
-[`nlm()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/nlm.html)
+[`stats::nlm()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/nlm.html)
 and
-[`optim()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html):
-The function argument in `nlm()` is called `f`, in `optim()` it is `fn`.
-The argument for the initial values is called `p` in `nlm()`, and `par`
-in `optim()`. The optimal parameters and the optimal function values in
-the output of `nlm()` are labeled `estimate` and `minimum`,
-respectively, in `optim()` it is `par` and `value`. And all is different
-again with
+[`stats::optim()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html):
+The function argument in `stats::nlm()` is called `f`, in
+`stats::optim()` it is `fn`. The argument for the initial values is
+called `p` in `stats::nlm()`, and `par` in `stats::optim()`. The optimal
+parameters and the optimal function values in the output of
+`stats::nlm()` are labeled `estimate` and `minimum`, respectively, in
+`stats::optim()` it is `par` and `value`. And all is different again
+with, for example,
 [`pracma::nelder_mead()`](https://CRAN.R-project.org/package=pracma).
 This inconsistency is painful, especially if one wants to apply and
 compare different optimizers.
@@ -36,10 +37,11 @@ compare different optimizers.
 ## Our solution
 
 Simply specify optimizers with `define_optimizer()` and apply them with
-`apply_optimizer()`. The outputs are in a standardized format.
+`apply_optimizer()`. The inputs and outputs will be in a standardized
+format.
 
 For demonstration, say we want to minimize the [Ackley
-function](https://en.wikipedia.org/wiki/Ackley_function)…
+function](https://en.wikipedia.org/wiki/Ackley_function) …
 
 ``` r
 f_ackley <- function(x) {
@@ -49,8 +51,9 @@ f_ackley <- function(x) {
 }
 ```
 
-… and compare three optimizers: `nlm()`, `optim()`, and
-`pracma::nelder_mead()`. The first two are already pre-specified…
+… and compare the performance of three optimizers: `stats::nlm()`,
+`stats::optim()`, and `pracma::nelder_mead()`. The first two are already
+pre-specified …
 
 ``` r
 optimizer_nlm()
@@ -59,8 +62,8 @@ optimizer_optim()
 #> <optimizer 'stats::optim'>
 ```
 
-… and for the latter (as for any other optimizer) we can use the general
-constructor:
+… and for the latter (as for any other optimizer you like) we can use
+the general constructor:
 
 ``` r
 optimizer_nelder_mead <- define_optimizer(
@@ -79,40 +82,41 @@ results <- lapply(
   list(optimizer_nlm(), optimizer_optim(), optimizer_nelder_mead),
   apply_optimizer, 
   objective = f_ackley, 
-  initial = c(-1,1)
+  initial = c(-1, 1)
 )
-names(results) <- c("nlm", "optim", "nelder_mead")
+names(results) <- c("stats::nlm", "stats::optim", "pracma::nelder_mead")
 ```
 
 In the optimization results, `value` and `parameter` consistently denote
 the optimal function values and the optimal parameters, while
 optimizer-specific outputs are preserved. The optimization time in
-seconds, `seconds`, is automatically added:
+seconds, `seconds`, and the initial parameter vector, `initial`, are
+added:
 
 ``` r
 str(results)
 #> List of 3
-#>  $ nlm        :List of 7
+#>  $ stats::nlm         :List of 7
 #>   ..$ value     : num 1.66e-06
 #>   ..$ parameter : num [1:2] -2.91e-07 5.08e-07
-#>   ..$ seconds   : num 0.0347
+#>   ..$ seconds   : num 0.0285
 #>   ..$ initial   : num [1:2] -1 1
 #>   ..$ gradient  : num [1:2] -0.00824 0.0144
 #>   ..$ code      : int 2
 #>   ..$ iterations: int 33
-#>  $ optim      :List of 7
+#>  $ stats::optim       :List of 7
 #>   ..$ value      : num 3.57
 #>   ..$ parameter  : num [1:2] -0.969 0.969
-#>   ..$ seconds    : num 0.000317
+#>   ..$ seconds    : num 0.000475
 #>   ..$ initial    : num [1:2] -1 1
 #>   ..$ counts     : Named int [1:2] 45 NA
 #>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
 #>   ..$ convergence: int 0
 #>   ..$ message    : NULL
-#>  $ nelder_mead:List of 7
+#>  $ pracma::nelder_mead:List of 7
 #>   ..$ value      : num 0
 #>   ..$ parameter  : num [1:2] 0 0
-#>   ..$ seconds    : num 0.00139
+#>   ..$ seconds    : num 0.00137
 #>   ..$ initial    : num [1:2] -1 1
 #>   ..$ count      : num 111
 #>   ..$ convergence: num 0
@@ -121,8 +125,8 @@ str(results)
 #>   .. ..$ restarts: num 0
 ```
 
-P.S. Surprised that the `optim` result differs from the others? It seems
-that this optimizer got stuck in a local minimum.
+P.S. Surprised that the `stats::optim` result differs from the others?
+It seems that this optimizer got stuck in a local minimum.
 
 ## Installation
 
