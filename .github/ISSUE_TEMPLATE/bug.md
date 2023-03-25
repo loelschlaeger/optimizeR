@@ -4,4 +4,4 @@ about: Describe a bug you've seen.
 labels: bug
 ---
 
-You found a bug? Thanks for reporting! Please briefly describe below what and where via a [reprex](https://www.tidyverse.org/help/#reprex).
+You found a bug? Thanks for reporting! Please briefly describe below what and where via a minimal [reprex](https://www.tidyverse.org/help/#reprex).
