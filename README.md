@@ -105,7 +105,7 @@ str(results)
 #>  $ stats::nlm         :List of 7
 #>   ..$ value     : num 1.66e-06
 #>   ..$ parameter : num [1:2] -2.91e-07 5.08e-07
-#>   ..$ seconds   : num 0.0316
+#>   ..$ seconds   : num 0.0305
 #>   ..$ initial   : num [1:2] -1 1
 #>   ..$ gradient  : num [1:2] -0.00824 0.0144
 #>   ..$ code      : int 2
@@ -113,7 +113,7 @@ str(results)
 #>  $ stats::optim       :List of 7
 #>   ..$ value      : num 3.57
 #>   ..$ parameter  : num [1:2] -0.969 0.969
-#>   ..$ seconds    : num 0.000361
+#>   ..$ seconds    : num 0.000356
 #>   ..$ initial    : num [1:2] -1 1
 #>   ..$ counts     : Named int [1:2] 45 NA
 #>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
@@ -122,7 +122,7 @@ str(results)
 #>  $ pracma::nelder_mead:List of 7
 #>   ..$ value      : num 0
 #>   ..$ parameter  : num [1:2] 0 0
-#>   ..$ seconds    : num 0.0014
+#>   ..$ seconds    : num 0.00217
 #>   ..$ initial    : num [1:2] -1 1
 #>   ..$ count      : num 111
 #>   ..$ convergence: num 0
@@ -136,12 +136,6 @@ is different from the other optimizers? It seems that this optimizer has
 become trapped in a local minimum. If you are interested in exploring
 the initialization problem in numerical optimization, you may find the
 [{ino} R package](https://github.com/loelschlaeger/ino) to be useful.
-
-By the way, are you surprised that the result from `stats::optim()`
-differs from the other optimizers? It appears that this optimizer got
-stuck in a local minimum. If you are interested in the initialization
-problem of numerical optimization, you might find the {ino} package
-helpful.
 
 ## Installation
 

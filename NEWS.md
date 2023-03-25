@@ -1,4 +1,8 @@
-# optimizerR 0.3.1
+# optimizeR 0.3.2
+
+* Just added package logo and created package website (https://loelschlaeger.de/optimizeR) with the [{pkgdown}](https://pkgdown.r-lib.org/) package. No code changes.
+
+# optimizeR 0.3.1
 
 * In `define_optimizer()`, now `validate = FALSE` by default.
 
