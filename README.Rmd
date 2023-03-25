@@ -83,8 +83,6 @@ str(results)
 
 By the way, are you surprised to see that `value` for `stats::optim()` is different from the other optimizers? It seems that this optimizer has become trapped in a local minimum. If you are interested in exploring the initialization problem in numerical optimization, you may find the [{ino} R package](https://github.com/loelschlaeger/ino) to be useful.
 
-By the way, are you surprised that the result from `stats::optim()` differs from the other optimizers? It appears that this optimizer got stuck in a local minimum. If you are interested in the initialization problem of numerical optimization, you might find the {ino} package helpful.
-
 ## Installation
 
 You can install the released version of {optimizeR} from [CRAN](https://CRAN.R-project.org) with:
