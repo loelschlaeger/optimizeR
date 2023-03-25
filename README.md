@@ -14,31 +14,37 @@ downloads](https://cranlogs.r-pkg.org/badges/last-month/optimizeR)](https://cran
 coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/loelschlaeger/optimizeR?branch=master)
 <!-- badges: end -->
 
-The {optimizeR} package provides a unified framework for numerical
-optimizers in R, in particular for their inputs and outputs.
+If you’re looking for a way to standardize the inputs and outputs of
+numerical optimizers in R, you might find the {optimizeR} package
+useful. This package provides a unified framework for representing the
+inputs and outputs of different optimizers. It does not actually
+implement any optimizer functions itself.
 
 ## What is the problem?
 
-Look at the popular R optimizers
+When working with popular R optimizers such as
 [`stats::nlm()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/nlm.html)
 and
-[`stats::optim()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html):
-The function argument in `stats::nlm()` is called `f`, in
-`stats::optim()` it is `fn`. The argument for the initial values is
-called `p` in `stats::nlm()`, and `par` in `stats::optim()`. The optimal
-parameters and the optimal function values in the output of
-`stats::nlm()` are labeled `estimate` and `minimum`, respectively, in
-`stats::optim()` it is `par` and `value`. And all is different again
-with, for example,
+[`stats::optim()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html),
+it can be challenging to compare their results due to inconsistencies in
+function arguments and output labels. For instance, `stats::nlm()` uses
+`f` as its function argument and `p` as the argument for initial values,
+while `stats::optim()` uses `fn` for its function argument and `par` for
+initial values. Additionally, the optimal parameters and function values
+are labeled differently, with `estimate` and `minimum` used in
+`stats::nlm()` and `par` and `value` in `stats::optim()`. And all is
+different again with, for example,
 [`pracma::nelder_mead()`](https://CRAN.R-project.org/package=pracma).
-This inconsistency is painful, especially if one wants to apply and
+This inconsistency is frustrating, especially if one wants to apply and
 compare different optimizers.
 
 ## Our solution
 
-Simply specify optimizers with `define_optimizer()` and apply them with
-`apply_optimizer()`. The inputs and outputs will be in a standardized
-format.
+To standardize the inputs and outputs of different R optimizers and make
+them easier to apply and compare, you can define them using the
+`define_optimizer()` function and then apply them using
+`apply_optimizer()`. This way, the inputs and outputs will always be in
+a consistent format across different optimizers.
 
 For demonstration, say we want to minimize the [Ackley
 function](https://en.wikipedia.org/wiki/Ackley_function) …
@@ -75,7 +81,7 @@ optimizer_nelder_mead <- define_optimizer(
 )
 ```
 
-Now we optimize (with initial parameter vector `initial = c(-1,1)`):
+Now we optimize (with initial parameter vector `initial = c(-1, 1)`):
 
 ``` r
 results <- lapply(
@@ -87,8 +93,8 @@ results <- lapply(
 names(results) <- c("stats::nlm", "stats::optim", "pracma::nelder_mead")
 ```
 
-In the optimization results, `value` and `parameter` consistently denote
-the optimal function values and the optimal parameters, while
+In the optimization output, `value` and `parameter` consistently denote
+the optimal function values and the optimal parameters, while additional
 optimizer-specific outputs are preserved. The optimization time in
 seconds, `seconds`, and the initial parameter vector, `initial`, are
 added:
@@ -99,7 +105,7 @@ str(results)
 #>  $ stats::nlm         :List of 7
 #>   ..$ value     : num 1.66e-06
 #>   ..$ parameter : num [1:2] -2.91e-07 5.08e-07
-#>   ..$ seconds   : num 0.0335
+#>   ..$ seconds   : num 0.0302
 #>   ..$ initial   : num [1:2] -1 1
 #>   ..$ gradient  : num [1:2] -0.00824 0.0144
 #>   ..$ code      : int 2
@@ -107,7 +113,7 @@ str(results)
 #>  $ stats::optim       :List of 7
 #>   ..$ value      : num 3.57
 #>   ..$ parameter  : num [1:2] -0.969 0.969
-#>   ..$ seconds    : num 0.000742
+#>   ..$ seconds    : num 0.000353
 #>   ..$ initial    : num [1:2] -1 1
 #>   ..$ counts     : Named int [1:2] 45 NA
 #>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
@@ -116,7 +122,7 @@ str(results)
 #>  $ pracma::nelder_mead:List of 7
 #>   ..$ value      : num 0
 #>   ..$ parameter  : num [1:2] 0 0
-#>   ..$ seconds    : num 0.00167
+#>   ..$ seconds    : num 0.00156
 #>   ..$ initial    : num [1:2] -1 1
 #>   ..$ count      : num 111
 #>   ..$ convergence: num 0
@@ -125,8 +131,17 @@ str(results)
 #>   .. ..$ restarts: num 0
 ```
 
-P.S. Surprised that the `stats::optim` result differs from the others?
-It seems that this optimizer got stuck in a local minimum.
+By the way, are you surprised to see that `value` for `stats::optim()`
+is different from the other optimizers? It seems that this optimizer has
+become trapped in a local minimum. If you are interested in exploring
+the initialization problem in numerical optimization, you may find the
+[{ino} R package](https://github.com/loelschlaeger/ino) to be useful.
+
+By the way, are you surprised that the result from `stats::optim()`
+differs from the other optimizers? It appears that this optimizer got
+stuck in a local minimum. If you are interested in the initialization
+problem of numerical optimization, you might find the {ino} package
+helpful.
 
 ## Installation
 
@@ -147,5 +162,5 @@ devtools::install_github("loelschlaeger/optimizeR")
 ## Contact
 
 Have a question, found a bug, request a feature, want to contribute?
-[Please file an
-issue](https://github.com/loelschlaeger/optimizeR/issues/new/choose).
+[Please file an issue on
+GitHub](https://github.com/loelschlaeger/optimizeR/issues/new/choose).
