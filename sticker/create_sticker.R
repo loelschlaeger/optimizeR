@@ -30,7 +30,7 @@ sticker_file <- sticker(
   l_width = 2,
   l_height = 1,
   l_alpha = 0.8,
-  white_around_sticker = TRUE,
+  white_around_sticker = FALSE,
   ### URL
   url = "loelschlaeger.de/optimizeR",
   u_x = 1,
