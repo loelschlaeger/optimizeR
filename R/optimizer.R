@@ -387,7 +387,7 @@ print.optimizer <- function(x, ...) {
 #' @param optimizer
 #' An object of class \code{optimizer}.
 #' @param objective
-#' The \code{function} to be optimized, returning a single \code{numeric}.
+#' A \code{function} to be optimized, returning a single \code{numeric}.
 #' Its first argument must be a \code{numeric} vector of the length of
 #' \code{initial}, followed by any other arguments specified by the \code{...}
 #' argument.
@@ -397,21 +397,21 @@ print.optimizer <- function(x, ...) {
 #' Additional arguments to be passed to \code{objective}.
 #'
 #' @return
-#' A named \code{list}, containing at least three elements:
+#' A named \code{list}, containing at least these four elements:
 #' \describe{
-#'   \item{value}{A \code{numeric}, the value of the estimated optimum of
+#'   \item{\code{value}}{A \code{numeric}, the value of the estimated optimum of
 #'         \code{objective}.}
-#'   \item{parameter}{A \code{numeric} vector, the parameter vector where the
-#'         optimum of \code{objective} is obtained.}
-#'   \code{seconds}{A \code{numeric}, the total optimization time in seconds.}
-#'   \code{initial}{A \code{numeric}, the initial parameter values.}
+#'   \item{\code{parameter}}{A \code{numeric} vector, the parameter vector where
+#'         the optimum of \code{objective} is obtained.}
+#'   \item{\code{seconds}}{A \code{numeric}, the total optimization time in
+#'         seconds.}
+#'   \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
 #' }
-#' Additional output elements of the optimizer (if not excluded by the
-#' \code{output_ignore} element via \code{\link{define_optimizer}}) are
-#' appended.
+#' Appended are additional output elements of the optimizer (if not excluded by
+#' the \code{output_ignore} element via \code{\link{define_optimizer}}).
 #'
 #' @seealso
-#' [define_optimizer()] for specifying an \code{optimizer} object.
+#' [define_optimizer()] for creating an \code{optimizer} object.
 #'
 #' @export
 #'
