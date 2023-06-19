@@ -3,9 +3,9 @@
 #' @description
 #' This function specifies the framework for a numerical optimizer.
 #'
-#' Two wrappers for common optimizer:
-#' 1. \code{optimizer_nlm} specifies the \code{\link[stats]{nlm}} optimizer.
-#' 2. \code{optimizer_optim} specifies the \code{\link[stats]{optim}} optimizer.
+#' Two wrappers for common optimizer are available:
+#' 1. \code{optimizer_nlm()} for the \code{\link[stats]{nlm}} optimizer
+#' 2. \code{optimizer_optim()} for the \code{\link[stats]{optim}} optimizer
 #'
 #' @inheritSection new_optimizer Format
 #'
@@ -37,15 +37,12 @@
 #'   tol = 1e-6, # an additional argument for pracma::nelder_mead()
 #'   validate = TRUE # validate the framework
 #' )
-#'
-#' @keywords specification
 
 define_optimizer <- function(
     optimizer, objective, initial, value, parameter, ...,
-    output_ignore = character(0), validate = TRUE,
+    output_ignore = character(0), validate = FALSE,
     validation_settings = list(
       "objective_test" = function(x) {
-        # Ackley test function
         stopifnot(is.numeric(x), length(x) == 2)
         -20 * exp(-0.2 * sqrt(0.5 * (x[1]^2 + x[2]^2))) -
           exp(0.5 * (cos(2 * pi * x[1]) + cos(2 * pi * x[2]))) + exp(1) + 20
@@ -57,32 +54,34 @@ define_optimizer <- function(
 ) {
   if(missing(optimizer)){
     optimizeR_stop(
-      "Please specify argument 'optimizer'.",
-      "It should be a function that performs numerical optimization."
+      "Please specify argument {.var optimizer}.",
+      "It should be a {.cls function} that performs numerical optimization."
     )
   }
   if(missing(objective)){
     optimizeR_stop(
-      "Please specify argument 'objective'.",
-      "It should be the name of the function argument of 'optimizer'."
+      "Please specify argument {.var objective}.",
+      "It should be the name of the function argument of {.var optimizer}."
     )
   }
   if(missing(initial)){
     optimizeR_stop(
-      "Please specify argument 'initial'.",
-      "It should be the name of the initial value argument of 'optimizer'."
+      "Please specify argument {.var initial}.",
+      "It should be the name of the initial value argument of {.var optimizer}."
     )
   }
   if(missing(value)){
     optimizeR_stop(
-      "Please specify argument 'value'.",
-      "It should be the name of the optimal function value in the output list of 'optimizer'."
+      "Please specify argument {.var value}.",
+      "It should be the name of the optimal function value in the output list
+      of {.var optimizer}."
     )
   }
   if(missing(parameter)){
     optimizeR_stop(
-      "Please specify argument 'parameter'.",
-      "It should be the name of the optimal parameter vector in the output list of 'optimizer'."
+      "Please specify argument {.var parameter}.",
+      "It should be the name of the optimal parameter vector in the output list
+      of {.var optimizer}."
     )
   }
   optimizer_name <- deparse(substitute(optimizer))
@@ -110,7 +109,7 @@ define_optimizer <- function(
 #' @importFrom stats nlm
 
 optimizer_nlm <- function(
-    ..., output_ignore = character(0), validate = TRUE,
+    ..., output_ignore = character(0), validate = FALSE,
     validation_settings = list()
   ) {
   define_optimizer(
@@ -131,7 +130,7 @@ optimizer_nlm <- function(
 #' @importFrom stats optim
 
 optimizer_optim <- function(
-    ..., output_ignore = character(0), validate = TRUE,
+    ..., output_ignore = character(0), validate = FALSE,
     validation_settings = list()
   ) {
   define_optimizer(
@@ -256,7 +255,7 @@ new_optimizer <- function(
 #' @param validate
 #' A \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not) validate the
 #' \code{optimizer} object.
-#' By default, \code{validate = TRUE}.
+#' By default, \code{validate = FALSE}.
 #' @param validation_settings
 #' Ignored if \code{valdiate = FALSE}.
 #' Otherwise, a \code{list} of validation settings:
@@ -287,7 +286,7 @@ new_optimizer <- function(
 #' @importFrom stats runif
 
 validate_optimizer <- function(
-    x = new_optimizer(), validate = TRUE, validation_settings = list()
+    x = new_optimizer(), validate = FALSE, validation_settings = list()
 ) {
   stopifnot(inherits(x, "optimizer"))
   stopifnot(isTRUE(validate) || isFALSE(validate))
@@ -328,43 +327,41 @@ validate_optimizer <- function(
     if (is.null(opt_out)) {
       optimizeR_warn(
         "Optimizer test run cannot be validated.",
-        "The test run returned `NULL`.
-        The optimization most likely reached the time limit.",
-        "Try to increase 'check_seconds'."
+        "The test run returned {.val NULL},
+        the optimization most likely reached the time limit.",
+        "Try to increase {.var check_seconds}."
       )
     } else if (inherits(opt_out, "fail")) {
-      stop("Optimizer test run failed.\n", opt_out[1], call. = FALSE)
+      optimizeR_stop(
+        "Optimizer test run failed.",
+        glue::glue("Message: {opt_out[1]}")
+      )
     } else {
       if (!is.list(opt_out)) {
         optimizeR_stop(
-          "Optimizer output is not a `list`.",
-          "The 'optimizer' function should return a named `list`."
+          "Optimizer output is not a {.cls list}."
         )
       }
       if (!x[["argument_names"]][["value"]] %in% names(opt_out)) {
         optimizeR_stop(
-          "Element 'value' is not contained in the optimizer output.",
-          "Please make sure that 'value' is contained in the output list."
+          "Element {.var value} is not contained in the optimizer output."
         )
       } else {
         value <- opt_out[[x[["argument_names"]][["value"]]]]
         if (!(is.numeric(value) && length(value) == 1)) {
           optimizeR_stop(
-            "The optimal function value is not a single numeric."
+            "The optimal function value is not a single {.cls numeric}."
           )
         }
       }
       if (!x[["argument_names"]][["parameter"]] %in% names(opt_out)) {
         optimizeR_stop(
-          "Element 'parameter' is not contained in the optimizer output.",
-          "Please make sure that 'parameter' is contained in the output list."
+          "Element {.var parameter} is not contained in the optimizer output."
         )
       } else {
         optimum <- opt_out[[x[["argument_names"]][["parameter"]]]]
         if (!is.numeric(optimum)) {
-          optimizeR_stop(
-            "The optimum is not a numeric value."
-          )
+          optimizeR_stop("The optimum is not a {.cls numeric}.")
         }
       }
     }
@@ -428,8 +425,12 @@ apply_optimizer <- function(
   res <- do.call(
     what = optimizer[["optimizer"]],
     args = c(
-      structure(list(objective), names = optimizer[["argument_names"]][["objective"]]),
-      structure(list(initial), names = optimizer[["argument_names"]][["initial"]]),
+      structure(
+        list(objective), names = optimizer[["argument_names"]][["objective"]]
+      ),
+      structure(
+        list(initial), names = optimizer[["argument_names"]][["initial"]]
+      ),
       optimizer[["optimizer_add"]], list(...)
     )
   )

@@ -1,0 +1,11 @@
+template:
+  bootstrap: 5
+
+url: https://loelschlaeger.de/optimizeR/
+
+home:
+  title: Unified Framework for Numerical Optimizers
+
+authors:
+  Lennart Oelschläger:
+    href: https://loelschlaeger.de

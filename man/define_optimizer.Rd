@@ -14,7 +14,7 @@ define_optimizer(
   parameter,
   ...,
   output_ignore = character(0),
-  validate = TRUE,
+  validate = FALSE,
   validation_settings = list(objective_test = function(x) {
      stopifnot(is.numeric(x),
     length(x) == 2)
@@ -27,14 +27,14 @@ define_optimizer(
 optimizer_nlm(
   ...,
   output_ignore = character(0),
-  validate = TRUE,
+  validate = FALSE,
   validation_settings = list()
 )
 
 optimizer_optim(
   ...,
   output_ignore = character(0),
-  validate = TRUE,
+  validate = FALSE,
   validation_settings = list()
 )
 }
@@ -72,7 +72,7 @@ separately, see the output documentation of \code{\link{apply_optimizer}}.}
 
 \item{validate}{A \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not) validate the
 \code{optimizer} object.
-By default, \code{validate = TRUE}.}
+By default, \code{validate = FALSE}.}
 
 \item{validation_settings}{Ignored if \code{valdiate = FALSE}.
 Otherwise, a \code{list} of validation settings:
@@ -100,10 +100,10 @@ An \code{optimizer} object.
 \description{
 This function specifies the framework for a numerical optimizer.
 
-Two wrappers for common optimizer:
+Two wrappers for common optimizer are available:
 \enumerate{
-\item \code{optimizer_nlm} specifies the \code{\link[stats]{nlm}} optimizer.
-\item \code{optimizer_optim} specifies the \code{\link[stats]{optim}} optimizer.
+\item \code{optimizer_nlm()} for the \code{\link[stats]{nlm}} optimizer
+\item \code{optimizer_optim()} for the \code{\link[stats]{optim}} optimizer
 }
 }
 \section{Format}{
@@ -145,10 +145,8 @@ define_optimizer(
   tol = 1e-6, # an additional argument for pracma::nelder_mead()
   validate = TRUE # validate the framework
 )
-
 }
 \seealso{
 Use \code{\link[=apply_optimizer]{apply_optimizer()}} to apply an \code{optimizer} object for numerical
 optimization.
 }
-\keyword{specification}

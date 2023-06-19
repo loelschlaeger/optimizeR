@@ -7,11 +7,12 @@
 \title{optimizeR: Unified Framework for Numerical Optimizer}
 \description{
 This package provides a unified framework for numerical optimizer,
-particularly for their inputs and outputs.
+in particular for their inputs and outputs.
 }
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://loelschlaeger.de/optimizeR}
   \item \url{https://github.com/loelschlaeger/optimizeR}
   \item Report bugs at \url{https://github.com/loelschlaeger/optimizeR/issues}
 }

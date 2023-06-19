@@ -1,10 +1,32 @@
 test_that("construct optimizer works", {
-  expect_error(define_optimizer(), "specify argument 'optimizer'.")
-  expect_error(define_optimizer(optimizer = stats::nlm), "Please specify argument 'objective'.")
-  expect_error(define_optimizer(optimizer = stats::nlm, objective = "f"), "Please specify argument 'initial'.")
-  expect_error(define_optimizer(optimizer = stats::nlm, objective = "f", initial = "p"), "Please specify argument 'value'.")
-  expect_error(define_optimizer(optimizer = stats::nlm, objective = "f", initial = "p", value = "v"), "Please specify argument 'parameter'.")
-  expect_error(define_optimizer(optimizer = stats::nlm, objective = "f", initial = "p", parameter = "z"), "Please specify argument 'value'.")
+  expect_error(
+    define_optimizer(),
+    "specify argument"
+  )
+  expect_error(
+    define_optimizer(optimizer = stats::nlm),
+    "specify argument"
+  )
+  expect_error(
+    define_optimizer(optimizer = stats::nlm, objective = "f"),
+    "specify argument"
+  )
+  expect_error(
+    define_optimizer(optimizer = stats::nlm, objective = "f", initial = "p"),
+    "specify argument"
+  )
+  expect_error(
+    define_optimizer(
+      optimizer = stats::nlm, objective = "f", initial = "p", value = "v"
+    ),
+    "specify argument"
+  )
+  expect_error(
+    define_optimizer(
+      optimizer = stats::nlm, objective = "f", initial = "p", parameter = "z"
+    ),
+    "specify argument"
+  )
   optimizer <- new_optimizer(
     optimizer = pracma::nelder_mead,
     optimizer_name = "nelder_mead",
@@ -21,69 +43,105 @@ test_that("construct optimizer works", {
 })
 
 test_that("optimizier validation works", {
-  expect_error(define_optimizer(
-    optimizer = function(fn, x) stop("error"),
-    objective = "fn",
-    initial = "x",
-    value = "fmin",
-    parameter = "xmin"
-  ), "Optimizer test run failed.")
-  expect_error(define_optimizer(
-    optimizer = stats::nlm,
-    objective = "f",
-    initial = "p",
-    value = "estimate",
-    parameter = "value",
-    validate = TRUE
-  ), "The optimal function value is not a single numeric.")
-  expect_warning(define_optimizer(
-    optimizer = function(f, p) Sys.sleep(10),
-    objective = "f",
-    initial = "p",
-    value = "minimum",
-    parameter = "estimate",
-    validate = TRUE,
-    validation_settings = list(
-      check_seconds = 1
-    )
-  ), "Optimizer test run cannot be validated.")
-  expect_error(define_optimizer(
-    optimizer = function(f, p) {
-      return(p)
-    },
-    objective = "f",
-    initial = "p",
-    value = "minimum",
-    parameter = "estimate"
-  ), "Optimizer output is not a `list`.")
-  expect_error(define_optimizer(
-    optimizer = stats::nlm,
-    objective = "f",
-    initial = "p",
-    value = "bad_name",
-    parameter = "estimate"
-  ), "Element 'value' is not contained in the optimizer output.")
-  expect_error(define_optimizer(
-    optimizer = function(f, p) list("minimum" = "not_a_numeric"),
-    objective = "f",
-    initial = "p",
-    value = "minimum",
-    parameter = "estimate"
-  ), "The optimal function value is not a single numeric.")
-  expect_error(define_optimizer(
-    optimizer = stats::nlm,
-    objective = "f",
-    initial = "p",
-    value = "minimum",
-    parameter = "bad_name"
-  ), "Element 'parameter' is not contained in the optimizer output.")
-  expect_error(define_optimizer(
-    optimizer = function(f, p) list("minimum" = 0, "estimate" = "not_a_numeric"),
-    objective = "f",
-    initial = "p",
-    value = "minimum",
-    parameter = "estimate"
-  ), "The optimum is not a numeric value.")
+  expect_error(
+    define_optimizer(
+      optimizer = function(fn, x) stop("error"),
+      objective = "fn",
+      initial = "x",
+      value = "fmin",
+      parameter = "xmin",
+      validate = TRUE
+    ),
+    "Optimizer test run failed"
+  )
+  expect_error(
+    define_optimizer(
+      optimizer = stats::nlm,
+      objective = "f",
+      initial = "p",
+      value = "estimate",
+      parameter = "value",
+      validate = TRUE
+    ),
+    "The optimal function value is not a single"
+  )
+  expect_warning(
+    define_optimizer(
+      optimizer = function(f, p) Sys.sleep(10),
+      objective = "f",
+      initial = "p",
+      value = "minimum",
+      parameter = "estimate",
+      validate = TRUE,
+      validation_settings = list(
+        check_seconds = 1
+      )
+    ),
+    "Optimizer test run cannot be validated."
+  )
+  expect_error(
+    define_optimizer(
+      optimizer = function(f, p) {
+        return(p)
+      },
+      objective = "f",
+      initial = "p",
+      value = "minimum",
+      parameter = "estimate",
+      validate = TRUE
+    ),
+    "Optimizer output is not a"
+  )
+  expect_error(
+    define_optimizer(
+      optimizer = stats::nlm,
+      objective = "f",
+      initial = "p",
+      value = "bad_name",
+      parameter = "estimate",
+      validate = TRUE
+    ),
+    "is not contained in the optimizer output."
+  )
+  expect_error(
+    define_optimizer(
+      optimizer = function(f, p) list("minimum" = "not_a_numeric"),
+      objective = "f",
+      initial = "p",
+      value = "minimum",
+      parameter = "estimate",
+      validate = TRUE
+    ),
+    "The optimal function value is not a single"
+  )
+  expect_error(
+    define_optimizer(
+      optimizer = stats::nlm,
+      objective = "f",
+      initial = "p",
+      value = "minimum",
+      parameter = "bad_name",
+      validate = TRUE
+    ),
+    "is not contained in the optimizer output."
+  )
+  expect_error(
+    define_optimizer(
+      optimizer = function(f, p) {
+        list("minimum" = 0, "estimate" = "not_a_numeric")
+      },
+      objective = "f",
+      initial = "p",
+      value = "minimum",
+      parameter = "estimate",
+      validate = TRUE
+    ),
+    "The optimum is not a"
+  )
+  expect_s3_class(
+    validate_optimizer(x = optimizer_nlm(), validate = TRUE),
+    "optimizer"
+  )
 })
 
 test_that("unnamed optimizer can be specified", {
@@ -115,7 +173,6 @@ test_that("pre-specified optim optimizer works", {
 
 test_that("optimization works", {
   f_ackley <- function(x) {
-    # Ackley test function
     stopifnot(is.numeric(x), length(x) == 2)
     -20 * exp(-0.2 * sqrt(0.5 * (x[1]^2 + x[2]^2))) -
       exp(0.5 * (cos(2 * pi * x[1]) + cos(2 * pi * x[2]))) + exp(1) + 20
