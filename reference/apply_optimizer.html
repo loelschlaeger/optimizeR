@@ -64,7 +64,7 @@ object.</p>
 
 
 <dt>objective</dt>
-<dd><p>The <code>function</code> to be optimized, returning a single <code>numeric</code>.
+<dd><p>A <code>function</code> to be optimized, returning a single <code>numeric</code>.
 Its first argument must be a <code>numeric</code> vector of the length of
 <code>initial</code>, followed by any other arguments specified by the <code>...</code>
 argument.</p></dd>
@@ -82,24 +82,28 @@ argument.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A named <code>list</code>, containing at least three elements:</p><dl><dt>value</dt>
+<p>A named <code>list</code>, containing at least these four elements:</p><dl><dt><code>value</code></dt>
 <dd><p>A <code>numeric</code>, the value of the estimated optimum of
 <code>objective</code>.</p></dd>
 
-<dt>parameter</dt>
-<dd><p>A <code>numeric</code> vector, the parameter vector where the
-optimum of <code>objective</code> is obtained.</p></dd>
+<dt><code>parameter</code></dt>
+<dd><p>A <code>numeric</code> vector, the parameter vector where
+the optimum of <code>objective</code> is obtained.</p></dd>
 
-secondsA <code>numeric</code>, the total optimization time in seconds.
-initialA <code>numeric</code>, the initial parameter values.
+<dt><code>seconds</code></dt>
+<dd><p>A <code>numeric</code>, the total optimization time in
+seconds.</p></dd>
 
-</dl><p>Additional output elements of the optimizer (if not excluded by the
-<code>output_ignore</code> element via <code><a href="define_optimizer.html">define_optimizer</a></code>) are
-appended.</p>
+<dt><code>initial</code></dt>
+<dd><p>A <code>numeric</code>, the initial parameter values.</p></dd>
+
+
+</dl><p>Appended are additional output elements of the optimizer (if not excluded by
+the <code>output_ignore</code> element via <code><a href="define_optimizer.html">define_optimizer</a></code>).</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="define_optimizer.html">define_optimizer()</a></code> for specifying an <code>optimizer</code> object.</p></div>
+    <div class="dont-index"><p><code><a href="define_optimizer.html">define_optimizer()</a></code> for creating an <code>optimizer</code> object.</p></div>
     </div>
 
     <div class="section level2">
@@ -112,7 +116,7 @@ appended.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.9085614</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.0008387566</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001318455</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
