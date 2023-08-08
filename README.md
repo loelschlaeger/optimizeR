@@ -15,10 +15,10 @@ coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badg
 <!-- badges: end -->
 
 If you’re looking for a way to standardize the inputs and outputs of
-numerical optimizers in R, you might find the {optimizeR} package
-useful. This package provides a unified framework for representing the
-inputs and outputs of different optimizers. It does not actually
-implement any optimizer functions itself.
+numerical optimizers in R, you might find the `{optimizeR}` package
+useful. This package provides a unified framework for the inputs and
+outputs of any R optimizer. Note that it does not actually implement any
+optimizer functions itself.
 
 ## What is the problem?
 
@@ -58,8 +58,8 @@ f_ackley <- function(x) {
 ```
 
 … and compare the performance of three optimizers: `stats::nlm()`,
-`stats::optim()`, and `pracma::nelder_mead()`. The first two are already
-pre-specified …
+`stats::optim()`, and `pracma::nelder_mead()`. Wrappers for the first
+two are already available …
 
 ``` r
 optimizer_nlm()
@@ -73,13 +73,30 @@ the general constructor:
 
 ``` r
 optimizer_nelder_mead <- define_optimizer(
-  optimizer = pracma::nelder_mead,
-  objective = "fn",
-  initial = "x0",
-  value = "fmin",
-  parameter = "xmin"
+  .optimizer = pracma::nelder_mead,
+  .objective = "fn",
+  .initial = "x0",
+  .value = "fmin",
+  .parameter = "xmin",
+  .direction = "min"
 )
 ```
+
+Here,
+
+- `.optimizer` is the optimization algorithm,
+
+- `.objective` is the name of the function input,
+
+- `.initial` is the name of starting parameter values input,
+
+- `.value` is the name of the optimal function value in the output,
+
+- `.parameter` is the name of the optimal parameter vector in the
+  output,
+
+- and `.direction` indicates whether the optimizer minimizes or
+  maximizes.
 
 Now we optimize (with initial parameter vector `initial = c(-1, 1)`):
 
@@ -105,7 +122,7 @@ str(results)
 #>  $ stats::nlm         :List of 7
 #>   ..$ value     : num 1.66e-06
 #>   ..$ parameter : num [1:2] -2.91e-07 5.08e-07
-#>   ..$ seconds   : num 0.0305
+#>   ..$ seconds   : num 0.0333
 #>   ..$ initial   : num [1:2] -1 1
 #>   ..$ gradient  : num [1:2] -0.00824 0.0144
 #>   ..$ code      : int 2
@@ -113,7 +130,7 @@ str(results)
 #>  $ stats::optim       :List of 7
 #>   ..$ value      : num 3.57
 #>   ..$ parameter  : num [1:2] -0.969 0.969
-#>   ..$ seconds    : num 0.000356
+#>   ..$ seconds    : num 0.00053
 #>   ..$ initial    : num [1:2] -1 1
 #>   ..$ counts     : Named int [1:2] 45 NA
 #>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
@@ -122,7 +139,7 @@ str(results)
 #>  $ pracma::nelder_mead:List of 7
 #>   ..$ value      : num 0
 #>   ..$ parameter  : num [1:2] 0 0
-#>   ..$ seconds    : num 0.00217
+#>   ..$ seconds    : num 0.00126
 #>   ..$ initial    : num [1:2] -1 1
 #>   ..$ count      : num 111
 #>   ..$ convergence: num 0
@@ -132,10 +149,11 @@ str(results)
 ```
 
 By the way, are you surprised to see that `value` for `stats::optim()`
-is different from the other optimizers? It seems that this optimizer has
-become trapped in a local minimum. If you are interested in exploring
-the initialization problem in numerical optimization, you may find the
-[{ino} R package](https://github.com/loelschlaeger/ino) to be useful.
+is different from the other two optimizers? Apparently, this optimizer
+has become trapped in a local minimum. If you are interested in
+exploring the initialization problem in numerical optimization, you may
+find the [{ino} R package](https://github.com/loelschlaeger/ino) to be
+useful.
 
 ## Installation
 

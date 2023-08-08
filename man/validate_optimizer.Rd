@@ -6,18 +6,18 @@
 \usage{
 validate_optimizer(
   x = new_optimizer(),
-  validate = FALSE,
-  validation_settings = list()
+  .validate = FALSE,
+  .validation_settings = list()
 )
 }
 \arguments{
 \item{x}{An object of class \code{optimizer}.}
 
-\item{validate}{A \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not) validate the
+\item{.validate}{A \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not) validate the
 \code{optimizer} object.
-By default, \code{validate = FALSE}.}
+By default, \code{.validate = FALSE}.}
 
-\item{validation_settings}{Ignored if \code{valdiate = FALSE}.
+\item{.validation_settings}{Ignored if \code{.valdiate = FALSE}.
 Otherwise, a \code{list} of validation settings:
 \describe{
 \item{objective_test}{A \code{function}, the test function to be optimized.

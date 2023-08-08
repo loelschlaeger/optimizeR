@@ -7,45 +7,45 @@
 \title{Specify numerical optimizer}
 \usage{
 define_optimizer(
-  optimizer,
-  objective,
-  initial,
-  value,
-  parameter,
-  direction,
+  .optimizer,
+  .objective,
+  .initial,
+  .value,
+  .parameter,
+  .direction,
   ...,
-  output_ignore = character(0),
-  validate = FALSE,
-  validation_settings = list(objective_test = function(x) {
-     stopifnot(is.numeric(x),
-    length(x) == 2)
-     -20 * exp(-0.2 * sqrt(0.5 * (x[1]^2 + x[2]^2))) - exp(0.5 *
-    (cos(2 * pi * x[1]) + cos(2 * pi * x[2]))) + exp(1) + 20
- }, objective_add = list(),
-    initial = round(stats::rnorm(2), 2), check_seconds = 10)
+  .output_ignore = character(0),
+  .validate = FALSE,
+  .validation_settings = list(objective_test = function(x) {
+    
+    stopifnot(is.numeric(x), length(x) == 2)
+     -20 * exp(-0.2 * sqrt(0.5 * (x[1]^2 +
+    x[2]^2))) - exp(0.5 * (cos(2 * pi * x[1]) + cos(2 * pi * x[2]))) + exp(1) + 20
+ },
+    objective_add = list(), initial = round(stats::rnorm(2), 2), check_seconds = 10)
 )
 
 optimizer_nlm(
   ...,
-  output_ignore = character(0),
-  validate = FALSE,
-  validation_settings = list()
+  .output_ignore = character(0),
+  .validate = FALSE,
+  .validation_settings = list()
 )
 
 optimizer_optim(
   ...,
-  direction = "min",
-  output_ignore = character(0),
-  validate = FALSE,
-  validation_settings = list()
+  .direction = "min",
+  .output_ignore = character(0),
+  .validate = FALSE,
+  .validation_settings = list()
 )
 }
 \arguments{
-\item{optimizer}{A \code{function}, a numerical optimizer. Four conditions must be met:
+\item{.optimizer}{A \code{function}, a numerical optimizer. Four conditions must be met:
 \enumerate{
-\item It must have an input named \code{"objective"} for a \code{function}, the
+\item It must have an input named \code{.objective} for a \code{function}, the
 objective function which is optimized over its first argument.
-\item It must have an input named \code{"initial"} for a \code{numerical}
+\item It must have an input named \code{.initial} for a \code{numerical}
 vector, the initial parameter vector.
 \item It must have a \code{...} argument for additional parameters to
 the objective function.
@@ -53,33 +53,33 @@ the objective function.
 value and the optimal parameter vector.
 }}
 
-\item{objective}{A \code{character}, the name of the function input of \code{optimizer}.}
+\item{.objective}{A \code{character}, the name of the function input of \code{optimizer}.}
 
-\item{initial}{A \code{character}, the name of the starting parameter values input of
+\item{.initial}{A \code{character}, the name of the starting parameter values input of
 \code{optimizer}.}
 
-\item{value}{A \code{character}, the name of the optimal function value in the output list
+\item{.value}{A \code{character}, the name of the optimal function value in the output list
 of \code{optimizer}.}
 
-\item{parameter}{A \code{character}, the name of the optimal parameter vector in the output
+\item{.parameter}{A \code{character}, the name of the optimal parameter vector in the output
 list of \code{optimizer}.}
 
-\item{direction}{A \code{character}, indication whether the optimizer minimizes (\code{"min"})
+\item{.direction}{A \code{character}, indicates whether the optimizer minimizes (\code{"min"})
 or maximizes (\code{"max"}).}
 
 \item{...}{Additional arguments to be passed to the optimizer. Without
 specifications, the default values of the optimizer are used.}
 
-\item{output_ignore}{A \code{character} vector of element names in the output of \code{optimizer}
-that are not saved. The elements \code{value} and \code{parameter} are
-added automatically to \code{output_ignore}, because they are saved
+\item{.output_ignore}{A \code{character} vector of element names in the output of \code{.optimizer}
+that are not saved. The elements \code{.value} and \code{.parameter} are
+added automatically to \code{.output_ignore}, because they are saved
 separately, see the output documentation of \code{\link{apply_optimizer}}.}
 
-\item{validate}{A \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not) validate the
+\item{.validate}{A \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not) validate the
 \code{optimizer} object.
-By default, \code{validate = FALSE}.}
+By default, \code{.validate = FALSE}.}
 
-\item{validation_settings}{Ignored if \code{valdiate = FALSE}.
+\item{.validation_settings}{Ignored if \code{.valdiate = FALSE}.
 Otherwise, a \code{list} of validation settings:
 \describe{
 \item{objective_test}{A \code{function}, the test function to be optimized.
@@ -114,15 +114,14 @@ Two wrappers for well-known optimizers are already available:
 \section{Format}{
 An \code{optimizer} object is a \code{list} of six elements:
 \describe{
-\item{optimizer}{A \code{function}, the optimization function
-\code{optimizer}.}
+\item{optimizer}{A \code{function}, the optimization algorithm.}
 \item{optimizer_name}{A \code{character}, the name of
 \code{optimizer}.}
-\item{optimizer_add}{A named \code{list}, where each element
+\item{optimizer_arguments}{A named \code{list}, where each element
 is an additional function argument for \code{optimizer}.}
 \item{optimizer_direction}{Either \code{"min"} if the optimizer minimizes
 or \code{"max"} if the optimizer maximizes.}
-\item{argument_names}{A named \code{list} of four
+\item{optimizer_labels}{A named \code{list} of four
 \code{character}:
 \describe{
 \item{objective}{the name of the function input of \code{optimizer}}
@@ -143,14 +142,15 @@ separately, see the output documentation of \code{\link{apply_optimizer}}.}
 
 \examples{
 define_optimizer(
-  optimizer = pracma::nelder_mead,
-  objective = "fn",
-  initial = "x0",
-  value = "fmin",
-  parameter = "xmin",
-  output_ignore = c("fcount", "restarts", "errmess"), # ignore some outputs
-  tol = 1e-6, # an additional argument for pracma::nelder_mead()
-  validate = TRUE # validate the framework
+  .optimizer = pracma::nelder_mead,           # optimization function
+  .objective = "fn",                          # name of function input
+  .initial = "x0",                            # name of initial input
+  .value = "fmin",                            # name of value output
+  .parameter = "xmin",                        # name of parameter output
+  .direction = "min",                         # optimizer minimizes
+  .output_ignore = c("restarts", "errmess"),  # ignore some outputs
+  tol = 1e-6,                                 # additional optimizer argument
+  .validate = TRUE                            # validate the object
 )
 }
 \seealso{

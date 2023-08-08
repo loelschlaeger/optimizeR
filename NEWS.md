@@ -4,6 +4,10 @@
 
 * Solved clash between additional function and optimizer arguments. (#1)
 
+* Added the `.direction` argument to `define_optimizer()` to specify whether the optimizer minimizes or maximizes.
+
+* Added a dot before the argument names for `define_optimizer()` to avoid clashes with the `...` argument.
+
 # 0.3.2
 
 * Just added package logo and created package website (https://loelschlaeger.de/optimizeR) with the [{pkgdown}](https://pkgdown.r-lib.org/) package. No code changes.

@@ -28,20 +28,21 @@
 #'
 #' @examples
 #' define_optimizer(
-#'   optimizer = pracma::nelder_mead,
-#'   objective = "fn",
-#'   initial = "x0",
-#'   value = "fmin",
-#'   parameter = "xmin",
-#'   output_ignore = c("fcount", "restarts", "errmess"), # ignore some outputs
-#'   tol = 1e-6, # an additional argument for pracma::nelder_mead()
-#'   validate = TRUE # validate the framework
+#'   .optimizer = pracma::nelder_mead,           # optimization function
+#'   .objective = "fn",                          # name of function input
+#'   .initial = "x0",                            # name of initial input
+#'   .value = "fmin",                            # name of value output
+#'   .parameter = "xmin",                        # name of parameter output
+#'   .direction = "min",                         # optimizer minimizes
+#'   .output_ignore = c("restarts", "errmess"),  # ignore some outputs
+#'   tol = 1e-6,                                 # additional optimizer argument
+#'   .validate = TRUE                            # validate the object
 #' )
 
 define_optimizer <- function(
-    optimizer, objective, initial, value, parameter, direction, ...,
-    output_ignore = character(0), validate = FALSE,
-    validation_settings = list(
+    .optimizer, .objective, .initial, .value, .parameter, .direction, ...,
+    .output_ignore = character(0), .validate = FALSE,
+    .validation_settings = list(
       "objective_test" = function(x) {
         stopifnot(is.numeric(x), length(x) == 2)
         -20 * exp(-0.2 * sqrt(0.5 * (x[1]^2 + x[2]^2))) -
@@ -52,63 +53,64 @@ define_optimizer <- function(
       "check_seconds" = 10
     )
 ) {
-  if (missing(optimizer)) {
+  if (missing(.optimizer)) {
     optimizeR_stop(
-      "Please specify argument {.var optimizer}.",
+      "Please specify argument {.var .optimizer}.",
       "It should be a {.cls function} that performs numerical optimization."
     )
   }
-  if (missing(objective)) {
+  if (missing(.objective)) {
     optimizeR_stop(
-      "Please specify argument {.var objective}.",
-      "It should be the name of the function argument of {.var optimizer}."
+      "Please specify argument {.var .objective}.",
+      "It should be the name of the function argument of {.var .optimizer}."
     )
   }
-  if (missing(initial)) {
+  if (missing(.initial)) {
     optimizeR_stop(
-      "Please specify argument {.var initial}.",
-      "It should be the name of the initial value argument of {.var optimizer}."
+      "Please specify argument {.var .initial}.",
+      "It should be the name of the initial value argument of
+      {.var .optimizer}."
     )
   }
-  if (missing(value)) {
+  if (missing(.value)) {
     optimizeR_stop(
-      "Please specify argument {.var value}.",
+      "Please specify argument {.var .value}.",
       "It should be the name of the optimal function value in the output list
-      of {.var optimizer}."
+      of {.var .optimizer}."
     )
   }
-  if (missing(parameter)) {
+  if (missing(.parameter)) {
     optimizeR_stop(
-      "Please specify argument {.var parameter}.",
+      "Please specify argument {.var .parameter}.",
       "It should be the name of the optimal parameter vector in the output list
-      of {.var optimizer}."
+      of {.var .optimizer}."
     )
   }
-  if (missing(direction)) {
+  if (missing(.direction)) {
     optimizeR_stop(
-      "Please specify argument {.var direction}.",
-      "It indicates wether the optimizer minimizes ({.val min}) or
+      "Please specify argument {.var .direction}.",
+      "It indicates whether the optimizer minimizes ({.val min}) or
       maximizes ({.val max})."
     )
   }
-  optimizer_name <- deparse(substitute(optimizer))
+  optimizer_name <- deparse(substitute(.optimizer))
   if (!is.character(optimizer_name) || length(optimizer_name) != 1) {
     optimizer_name <- "unnamed_optimizer"
   }
   validate_optimizer(
     x = new_optimizer(
-      optimizer = optimizer,
+      .optimizer = .optimizer,
       optimizer_name = optimizer_name,
-      optimizer_add = list(...),
-      objective = objective,
-      initial = initial,
-      value = value,
-      parameter = parameter,
-      direction = direction,
-      output_ignore = output_ignore
+      optimizer_arguments = list(...),
+      .objective = .objective,
+      .initial = .initial,
+      .value = .value,
+      .parameter = .parameter,
+      .direction = .direction,
+      .output_ignore = .output_ignore
     ),
-    validate = validate,
-    validation_settings = validation_settings
+    .validate = .validate,
+    .validation_settings = .validation_settings
   )
 }
 
@@ -117,20 +119,20 @@ define_optimizer <- function(
 #' @importFrom stats nlm
 
 optimizer_nlm <- function(
-    ..., output_ignore = character(0), validate = FALSE,
-    validation_settings = list()
+    ..., .output_ignore = character(0), .validate = FALSE,
+    .validation_settings = list()
   ) {
   define_optimizer(
-    optimizer = stats::nlm,
-    objective = "f",
-    initial = "p",
-    value = "minimum" ,
-    parameter = "estimate",
-    direction = "min",
+    .optimizer = stats::nlm,
+    .objective = "f",
+    .initial = "p",
+    .value = "minimum" ,
+    .parameter = "estimate",
+    .direction = "min",
     ...,
-    output_ignore = output_ignore,
-    validate = validate,
-    validation_settings = validation_settings
+    .output_ignore = .output_ignore,
+    .validate = .validate,
+    .validation_settings = .validation_settings
   )
 }
 
@@ -139,24 +141,24 @@ optimizer_nlm <- function(
 #' @importFrom stats optim
 
 optimizer_optim <- function(
-    ..., direction = "min", output_ignore = character(0), validate = FALSE,
-    validation_settings = list()
+    ..., .direction = "min", .output_ignore = character(0), .validate = FALSE,
+    .validation_settings = list()
   ) {
   define_optimizer(
-    optimizer = stats::optim,
-    objective = "fn",
-    initial = "par",
-    value = "value",
-    parameter = "par",
-    direction = direction,
+    .optimizer = stats::optim,
+    .objective = "fn",
+    .initial = "par",
+    .value = "value",
+    .parameter = "par",
+    .direction = .direction,
     ...,
-    output_ignore = output_ignore,
-    validate = validate,
-    validation_settings = validation_settings
+    .output_ignore = .output_ignore,
+    .validate = .validate,
+    .validation_settings = .validation_settings
   )
 }
 
-#' Construct `optimizer` object
+#' Construct \code{optimizer} object
 #'
 #' @description
 #' This function constructs an S3 \code{optimizer} object.
@@ -165,15 +167,14 @@ optimizer_optim <- function(
 #' # Format
 #' An \code{optimizer} object is a \code{list} of six elements:
 #' \describe{
-#'   \item{optimizer}{A \code{function}, the optimization function
-#'   \code{optimizer}.}
+#'   \item{optimizer}{A \code{function}, the optimization algorithm.}
 #'   \item{optimizer_name}{A \code{character}, the name of
 #'   \code{optimizer}.}
-#'   \item{optimizer_add}{A named \code{list}, where each element
+#'   \item{optimizer_arguments}{A named \code{list}, where each element
 #'   is an additional function argument for \code{optimizer}.}
 #'   \item{optimizer_direction}{Either \code{"min"} if the optimizer minimizes
 #'   or \code{"max"} if the optimizer maximizes.}
-#'   \item{argument_names}{A named \code{list} of four
+#'   \item{optimizer_labels}{A named \code{list} of four
 #'   \code{character}:
 #'   \describe{
 #'     \item{objective}{the name of the function input of \code{optimizer}}
@@ -193,11 +194,11 @@ optimizer_optim <- function(
 #'
 #' @param x
 #' A \code{list}.
-#' @param optimizer
+#' @param .optimizer
 #' A \code{function}, a numerical optimizer. Four conditions must be met:
-#' 1. It must have an input named \code{"objective"} for a \code{function}, the
+#' 1. It must have an input named \code{.objective} for a \code{function}, the
 #'    objective function which is optimized over its first argument.
-#' 2. It must have an input named \code{"initial"} for a \code{numerical}
+#' 2. It must have an input named \code{.initial} for a \code{numerical}
 #'    vector, the initial parameter vector.
 #' 3. It must have a \code{...} argument for additional parameters to
 #'    the objective function.
@@ -205,27 +206,27 @@ optimizer_optim <- function(
 #'    value and the optimal parameter vector.
 #' @param optimizer_name
 #' A \code{character}, the name of \code{optimizer}.
-#' @param optimizer_add
+#' @param optimizer_arguments
 #' A \code{list} of additional and named arguments to be passed to
 #' \code{optimizer}.
-#' @param objective
+#' @param .objective
 #' A \code{character}, the name of the function input of \code{optimizer}.
-#' @param initial
+#' @param .initial
 #' A \code{character}, the name of the starting parameter values input of
 #' \code{optimizer}.
-#' @param value
+#' @param .value
 #' A \code{character}, the name of the optimal function value in the output list
 #' of \code{optimizer}.
-#' @param direction
-#' A \code{character}, indication whether the optimizer minimizes (\code{"min"})
-#' or maximizes (\code{"max"}).
-#' @param parameter
+#' @param .parameter
 #' A \code{character}, the name of the optimal parameter vector in the output
 #' list of \code{optimizer}.
-#' @param output_ignore
-#' A \code{character} vector of element names in the output of \code{optimizer}
-#' that are not saved. The elements \code{value} and \code{parameter} are
-#' added automatically to \code{output_ignore}, because they are saved
+#' @param .direction
+#' A \code{character}, indicates whether the optimizer minimizes (\code{"min"})
+#' or maximizes (\code{"max"}).
+#' @param .output_ignore
+#' A \code{character} vector of element names in the output of \code{.optimizer}
+#' that are not saved. The elements \code{.value} and \code{.parameter} are
+#' added automatically to \code{.output_ignore}, because they are saved
 #' separately, see the output documentation of \code{\link{apply_optimizer}}.
 #'
 #' @return
@@ -234,32 +235,32 @@ optimizer_optim <- function(
 #' @keywords internal
 
 new_optimizer <- function(
-    x = list(), optimizer = function() {}, optimizer_name = character(),
-    optimizer_add = list(), objective = character(), initial = character(),
-    value = character(), parameter = character(), direction = character(),
-    output_ignore = character()
+    x = list(), .optimizer = function() {}, optimizer_name = character(),
+    optimizer_arguments = list(), .objective = character(),
+    .initial = character(), .value = character(), .parameter = character(),
+    .direction = character(), .output_ignore = character()
 ) {
   stopifnot(is.list(x))
-  stopifnot(is.function(optimizer))
+  stopifnot(is.function(.optimizer))
   stopifnot(is.character(optimizer_name), length(optimizer_name) == 1)
-  stopifnot(is.list(optimizer_add))
-  stopifnot(is.character(objective), length(objective) == 1)
-  stopifnot(is.character(initial), length(initial) == 1)
-  stopifnot(is.character(value), length(value) == 1)
-  stopifnot(is.character(parameter), length(parameter) == 1)
-  stopifnot(identical(direction, "min") || identical(direction, "max"))
-  stopifnot(is.character(output_ignore))
-  x[["optimizer"]] <- optimizer
+  stopifnot(is.list(optimizer_arguments))
+  stopifnot(is.character(.objective), length(.objective) == 1)
+  stopifnot(is.character(.initial), length(.initial) == 1)
+  stopifnot(is.character(.value), length(.value) == 1)
+  stopifnot(is.character(.parameter), length(.parameter) == 1)
+  stopifnot(identical(.direction, "min") || identical(.direction, "max"))
+  stopifnot(is.character(.output_ignore))
+  x[["optimizer"]] <- .optimizer
   x[["optimizer_name"]] <- optimizer_name
-  x[["optimizer_add"]] <- optimizer_add
-  x[["optimizer_direction"]] <- direction
-  x[["argument_names"]] <- list(
-    "objective" = objective,
-    "initial" = initial,
-    "value" = value,
-    "parameter" = parameter
+  x[["optimizer_arguments"]] <- optimizer_arguments
+  x[["optimizer_direction"]] <- .direction
+  x[["optimizer_labels"]] <- list(
+    "objective" = .objective,
+    "initial" = .initial,
+    "value" = .value,
+    "parameter" = .parameter
   )
-  x[["output_ignore"]] <- union(output_ignore, c(value, parameter))
+  x[["output_ignore"]] <- union(.output_ignore, c(.value, .parameter))
   structure(x, class = "optimizer")
 }
 
@@ -270,12 +271,12 @@ new_optimizer <- function(
 #'
 #' @param x
 #' An object of class \code{optimizer}.
-#' @param validate
+#' @param .validate
 #' A \code{logical}, set to \code{TRUE} (\code{FALSE}) to (not) validate the
 #' \code{optimizer} object.
-#' By default, \code{validate = FALSE}.
-#' @param validation_settings
-#' Ignored if \code{valdiate = FALSE}.
+#' By default, \code{.validate = FALSE}.
+#' @param .validation_settings
+#' Ignored if \code{.valdiate = FALSE}.
 #' Otherwise, a \code{list} of validation settings:
 #' \describe{
 #'   \item{objective_test}{A \code{function}, the test function to be optimized.
@@ -303,42 +304,42 @@ new_optimizer <- function(
 #' @importFrom stats runif
 
 validate_optimizer <- function(
-    x = new_optimizer(), validate = FALSE, validation_settings = list()
+    x = new_optimizer(), .validate = FALSE, .validation_settings = list()
 ) {
   stopifnot(inherits(x, "optimizer"))
-  stopifnot(isTRUE(validate) || isFALSE(validate))
-  stopifnot(is.list(validation_settings))
-  if (validate) {
-    if (!exists("objective_test", where = validation_settings)) {
-      validation_settings[["objective_test"]] <- function(x) {
+  stopifnot(isTRUE(.validate) || isFALSE(.validate))
+  stopifnot(is.list(.validation_settings))
+  if (.validate) {
+    if (!exists("objective_test", where = .validation_settings)) {
+      .validation_settings[["objective_test"]] <- function(x) {
         stopifnot(is.numeric(x), length(x) == 2)
         -20 * exp(-0.2 * sqrt(0.5 * (x[1]^2 + x[2]^2))) -
           exp(0.5 * (cos(2 * pi * x[1]) + cos(2 * pi * x[2]))) + exp(1) + 20
       }
     }
-    if (!exists("objective_add", where = validation_settings)) {
-      validation_settings[["objective_add"]] <- list()
+    if (!exists("objective_add", where = .validation_settings)) {
+      .validation_settings[["objective_add"]] <- list()
     }
-    if (!exists("initial", where = validation_settings)) {
-      validation_settings[["initial"]] <- round(stats::rnorm(2), 2)
+    if (!exists("initial", where = .validation_settings)) {
+      .validation_settings[["initial"]] <- round(stats::rnorm(2), 2)
     }
-    if (!exists("check_seconds", where = validation_settings)) {
-      validation_settings[["check_seconds"]] <- 10
+    if (!exists("check_seconds", where = .validation_settings)) {
+      .validation_settings[["check_seconds"]] <- 10
     }
-    initial <- validation_settings[["initial"]]
+    initial <- .validation_settings[["initial"]]
     opt_out <- try_silent(
       expr = timed(
         do.call(
           what = x[["optimizer"]],
           args = c(
             structure(
-              list(validation_settings[["objective_test"]], initial),
-              names = x[["argument_names"]][c("objective", "initial")]
+              list(.validation_settings[["objective_test"]], initial),
+              names = x[["optimizer_labels"]][c("objective", "initial")]
             ),
-            x[["optimizer_add"]], validation_settings[["objective_add"]]
+            x[["optimizer_arguments"]], .validation_settings[["objective_add"]]
           )
         ),
-        secs = validation_settings[["check_seconds"]]
+        secs = .validation_settings[["check_seconds"]]
       )
     )
     if (is.null(opt_out)) {
@@ -359,24 +360,24 @@ validate_optimizer <- function(
           "Optimizer output is not a {.cls list}."
         )
       }
-      if (!x[["argument_names"]][["value"]] %in% names(opt_out)) {
+      if (!x[["optimizer_labels"]][["value"]] %in% names(opt_out)) {
         optimizeR_stop(
           "Element {.var value} is not contained in the optimizer output."
         )
       } else {
-        value <- opt_out[[x[["argument_names"]][["value"]]]]
+        value <- opt_out[[x[["optimizer_labels"]][["value"]]]]
         if (!(is.numeric(value) && length(value) == 1)) {
           optimizeR_stop(
             "The optimal function value is not a single {.cls numeric}."
           )
         }
       }
-      if (!x[["argument_names"]][["parameter"]] %in% names(opt_out)) {
+      if (!x[["optimizer_labels"]][["parameter"]] %in% names(opt_out)) {
         optimizeR_stop(
           "Element {.var parameter} is not contained in the optimizer output."
         )
       } else {
-        optimum <- opt_out[[x[["argument_names"]][["parameter"]]]]
+        optimum <- opt_out[[x[["optimizer_labels"]][["parameter"]]]]
         if (!is.numeric(optimum)) {
           optimizeR_stop("The optimum is not a {.cls numeric}.")
         }
@@ -444,20 +445,20 @@ apply_optimizer <- function(
     args = c(
       structure(
         list(function(p) objective(p, ...)),
-        names = optimizer[["argument_names"]][["objective"]]
+        names = optimizer[["optimizer_labels"]][["objective"]]
       ),
       structure(
-        list(initial), names = optimizer[["argument_names"]][["initial"]]
+        list(initial), names = optimizer[["optimizer_labels"]][["initial"]]
       ),
-      optimizer[["optimizer_add"]]
+      optimizer[["optimizer_arguments"]]
     ),
     quote = TRUE
   )
   end <- Sys.time()
   c(
     structure(
-      list(res[[optimizer[["argument_names"]][["value"]]]],
-           res[[optimizer[["argument_names"]][["parameter"]]]],
+      list(res[[optimizer[["optimizer_labels"]][["value"]]]],
+           res[[optimizer[["optimizer_labels"]][["parameter"]]]],
            as.numeric(difftime(end, start, units = "secs")),
            initial),
       names = c("value", "parameter", "seconds", "initial")

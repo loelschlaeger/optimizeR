@@ -6,26 +6,26 @@
 \usage{
 new_optimizer(
   x = list(),
-  optimizer = function() {
+  .optimizer = function() {
  },
   optimizer_name = character(),
-  optimizer_add = list(),
-  objective = character(),
-  initial = character(),
-  value = character(),
-  parameter = character(),
-  direction = character(),
-  output_ignore = character()
+  optimizer_arguments = list(),
+  .objective = character(),
+  .initial = character(),
+  .value = character(),
+  .parameter = character(),
+  .direction = character(),
+  .output_ignore = character()
 )
 }
 \arguments{
 \item{x}{A \code{list}.}
 
-\item{optimizer}{A \code{function}, a numerical optimizer. Four conditions must be met:
+\item{.optimizer}{A \code{function}, a numerical optimizer. Four conditions must be met:
 \enumerate{
-\item It must have an input named \code{"objective"} for a \code{function}, the
+\item It must have an input named \code{.objective} for a \code{function}, the
 objective function which is optimized over its first argument.
-\item It must have an input named \code{"initial"} for a \code{numerical}
+\item It must have an input named \code{.initial} for a \code{numerical}
 vector, the initial parameter vector.
 \item It must have a \code{...} argument for additional parameters to
 the objective function.
@@ -35,26 +35,26 @@ value and the optimal parameter vector.
 
 \item{optimizer_name}{A \code{character}, the name of \code{optimizer}.}
 
-\item{optimizer_add}{A \code{list} of additional and named arguments to be passed to
+\item{optimizer_arguments}{A \code{list} of additional and named arguments to be passed to
 \code{optimizer}.}
 
-\item{objective}{A \code{character}, the name of the function input of \code{optimizer}.}
+\item{.objective}{A \code{character}, the name of the function input of \code{optimizer}.}
 
-\item{initial}{A \code{character}, the name of the starting parameter values input of
+\item{.initial}{A \code{character}, the name of the starting parameter values input of
 \code{optimizer}.}
 
-\item{value}{A \code{character}, the name of the optimal function value in the output list
+\item{.value}{A \code{character}, the name of the optimal function value in the output list
 of \code{optimizer}.}
 
-\item{parameter}{A \code{character}, the name of the optimal parameter vector in the output
+\item{.parameter}{A \code{character}, the name of the optimal parameter vector in the output
 list of \code{optimizer}.}
 
-\item{direction}{A \code{character}, indication whether the optimizer minimizes (\code{"min"})
+\item{.direction}{A \code{character}, indicates whether the optimizer minimizes (\code{"min"})
 or maximizes (\code{"max"}).}
 
-\item{output_ignore}{A \code{character} vector of element names in the output of \code{optimizer}
-that are not saved. The elements \code{value} and \code{parameter} are
-added automatically to \code{output_ignore}, because they are saved
+\item{.output_ignore}{A \code{character} vector of element names in the output of \code{.optimizer}
+that are not saved. The elements \code{.value} and \code{.parameter} are
+added automatically to \code{.output_ignore}, because they are saved
 separately, see the output documentation of \code{\link{apply_optimizer}}.}
 }
 \value{
@@ -66,15 +66,14 @@ This function constructs an S3 \code{optimizer} object.
 \section{Format}{
 An \code{optimizer} object is a \code{list} of six elements:
 \describe{
-\item{optimizer}{A \code{function}, the optimization function
-\code{optimizer}.}
+\item{optimizer}{A \code{function}, the optimization algorithm.}
 \item{optimizer_name}{A \code{character}, the name of
 \code{optimizer}.}
-\item{optimizer_add}{A named \code{list}, where each element
+\item{optimizer_arguments}{A named \code{list}, where each element
 is an additional function argument for \code{optimizer}.}
 \item{optimizer_direction}{Either \code{"min"} if the optimizer minimizes
 or \code{"max"} if the optimizer maximizes.}
-\item{argument_names}{A named \code{list} of four
+\item{optimizer_labels}{A named \code{list} of four
 \code{character}:
 \describe{
 \item{objective}{the name of the function input of \code{optimizer}}

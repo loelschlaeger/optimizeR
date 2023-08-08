@@ -4,177 +4,180 @@ test_that("construct optimizer works", {
     "specify argument"
   )
   expect_error(
-    define_optimizer(optimizer = stats::nlm),
+    define_optimizer(.optimizer = stats::nlm),
     "specify argument"
   )
   expect_error(
-    define_optimizer(optimizer = stats::nlm, objective = "f"),
-    "specify argument"
-  )
-  expect_error(
-    define_optimizer(optimizer = stats::nlm, objective = "f", initial = "p"),
+    define_optimizer(.optimizer = stats::nlm, .objective = "f"),
     "specify argument"
   )
   expect_error(
     define_optimizer(
-      optimizer = stats::nlm, objective = "f", initial = "p", value = "v"
+      .optimizer = stats::nlm, .objective = "f", .initial = "p"
     ),
     "specify argument"
   )
   expect_error(
     define_optimizer(
-      optimizer = stats::nlm, objective = "f", initial = "p", parameter = "z"
+      .optimizer = stats::nlm, .objective = "f", .initial = "p", .value = "v"
     ),
     "specify argument"
   )
   expect_error(
     define_optimizer(
-      optimizer = stats::nlm, objective = "f", initial = "p", value = "v",
-      parameter = "z"
+      .optimizer = stats::nlm, .objective = "f", .initial = "p",
+      .parameter = "z"
+    ),
+    "specify argument"
+  )
+  expect_error(
+    define_optimizer(
+      .optimizer = stats::nlm, .objective = "f", .initial = "p", .value = "v",
+      .parameter = "z"
     ),
     "specify argument"
   )
   optimizer <- new_optimizer(
-    optimizer = pracma::nelder_mead,
+    .optimizer = pracma::nelder_mead,
     optimizer_name = "nelder_mead",
-    optimizer_add = list("tol" = 1e-10),
-    objective = "fn",
-    initial = "x0",
-    value = "fmin",
-    parameter = "xmin",
-    direction = "min",
-    output_ignore = "restarts"
+    optimizer_arguments = list("tol" = 1e-10),
+    .objective = "fn",
+    .initial = "x0",
+    .value = "fmin",
+    .parameter = "xmin",
+    .direction = "min",
+    .output_ignore = "restarts"
   )
   expect_s3_class(optimizer, "optimizer")
   optimizer <- validate_optimizer(optimizer)
   expect_s3_class(optimizer, "optimizer")
   expect_named(
     optimizer,
-    c("optimizer", "optimizer_name", "optimizer_add", "optimizer_direction",
-      "argument_names", "output_ignore")
+    c("optimizer", "optimizer_name", "optimizer_arguments",
+      "optimizer_direction", "optimizer_labels", "output_ignore")
   )
 })
 
 test_that("optimizier validation works", {
   expect_error(
     define_optimizer(
-      optimizer = function(fn, x) stop("error"),
-      objective = "fn",
-      initial = "x",
-      value = "fmin",
-      parameter = "xmin",
-      direction = "min",
-      validate = TRUE
+      .optimizer = function(fn, x) stop("error"),
+      .objective = "fn",
+      .initial = "x",
+      .value = "fmin",
+      .parameter = "xmin",
+      .direction = "min",
+      .validate = TRUE
     ),
     "Optimizer test run failed"
   )
   expect_error(
     define_optimizer(
-      optimizer = stats::nlm,
-      objective = "f",
-      initial = "p",
-      value = "estimate",
-      parameter = "value",
-      direction = "min",
-      validate = TRUE
+      .optimizer = stats::nlm,
+      .objective = "f",
+      .initial = "p",
+      .value = "estimate",
+      .parameter = "value",
+      .direction = "min",
+      .validate = TRUE
     ),
     "The optimal function value is not a single"
   )
   expect_warning(
     define_optimizer(
-      optimizer = function(f, p) Sys.sleep(10),
-      objective = "f",
-      initial = "p",
-      value = "minimum",
-      parameter = "estimate",
-      direction = "min",
-      validate = TRUE,
-      validation_settings = list(
-        check_seconds = 1
+      .optimizer = function(f, p) Sys.sleep(10),
+      .objective = "f",
+      .initial = "p",
+      .value = "minimum",
+      .parameter = "estimate",
+      .direction = "min",
+      .validate = TRUE,
+      .validation_settings = list(
+        "check_seconds" = 1
       )
     ),
     "Optimizer test run cannot be validated."
   )
   expect_error(
     define_optimizer(
-      optimizer = function(f, p) {
+      .optimizer = function(f, p) {
         return(p)
       },
-      objective = "f",
-      initial = "p",
-      value = "minimum",
-      parameter = "estimate",
-      direction = "min",
-      validate = TRUE
+      .objective = "f",
+      .initial = "p",
+      .value = "minimum",
+      .parameter = "estimate",
+      .direction = "min",
+      .validate = TRUE
     ),
     "Optimizer output is not a"
   )
   expect_error(
     define_optimizer(
-      optimizer = stats::nlm,
-      objective = "f",
-      initial = "p",
-      value = "bad_name",
-      parameter = "estimate",
-      direction = "min",
-      validate = TRUE
+      .optimizer = stats::nlm,
+      .objective = "f",
+      .initial = "p",
+      .value = "bad_name",
+      .parameter = "estimate",
+      .direction = "min",
+      .validate = TRUE
     ),
     "is not contained in the optimizer output."
   )
   expect_error(
     define_optimizer(
-      optimizer = function(f, p) list("minimum" = "not_a_numeric"),
-      objective = "f",
-      initial = "p",
-      value = "minimum",
-      parameter = "estimate",
-      direction = "min",
-      validate = TRUE
+      .optimizer = function(f, p) list("minimum" = "not_a_numeric"),
+      .objective = "f",
+      .initial = "p",
+      .value = "minimum",
+      .parameter = "estimate",
+      .direction = "min",
+      .validate = TRUE
     ),
     "The optimal function value is not a single"
   )
   expect_error(
     define_optimizer(
-      optimizer = stats::nlm,
-      objective = "f",
-      initial = "p",
-      value = "minimum",
-      parameter = "bad_name",
-      direction = "min",
-      validate = TRUE
+      .optimizer = stats::nlm,
+      .objective = "f",
+      .initial = "p",
+      .value = "minimum",
+      .parameter = "bad_name",
+      .direction = "min",
+      .validate = TRUE
     ),
     "is not contained in the optimizer output."
   )
   expect_error(
     define_optimizer(
-      optimizer = function(f, p) {
+      .optimizer = function(f, p) {
         list("minimum" = 0, "estimate" = "not_a_numeric")
       },
-      objective = "f",
-      initial = "p",
-      value = "minimum",
-      parameter = "estimate",
-      direction = "min",
-      validate = TRUE
+      .objective = "f",
+      .initial = "p",
+      .value = "minimum",
+      .parameter = "estimate",
+      .direction = "min",
+      .validate = TRUE
     ),
     "The optimum is not a"
   )
   expect_s3_class(
-    validate_optimizer(x = optimizer_nlm(), validate = TRUE),
+    validate_optimizer(x = optimizer_nlm(), .validate = TRUE),
     "optimizer"
   )
 })
 
 test_that("unnamed optimizer can be specified", {
   opt <- define_optimizer(
-    optimizer = function(f, p) {
+    .optimizer = function(f, p) {
       list("minimum" = 0, "parameter" = p)
     },
-    objective = "f",
-    initial = "p",
-    value = "minimum",
-    parameter = "parameter",
-    direction = "min"
+    .objective = "f",
+    .initial = "p",
+    .value = "minimum",
+    .parameter = "parameter",
+    .direction = "min"
   )
   expect_equal(opt$optimizer_name, "unnamed_optimizer")
 })
