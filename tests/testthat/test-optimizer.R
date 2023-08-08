@@ -27,6 +27,13 @@ test_that("construct optimizer works", {
     ),
     "specify argument"
   )
+  expect_error(
+    define_optimizer(
+      optimizer = stats::nlm, objective = "f", initial = "p", value = "v",
+      parameter = "z"
+    ),
+    "specify argument"
+  )
   optimizer <- new_optimizer(
     optimizer = pracma::nelder_mead,
     optimizer_name = "nelder_mead",
@@ -35,11 +42,17 @@ test_that("construct optimizer works", {
     initial = "x0",
     value = "fmin",
     parameter = "xmin",
+    direction = "min",
     output_ignore = "restarts"
   )
   expect_s3_class(optimizer, "optimizer")
   optimizer <- validate_optimizer(optimizer)
   expect_s3_class(optimizer, "optimizer")
+  expect_named(
+    optimizer,
+    c("optimizer", "optimizer_name", "optimizer_add", "optimizer_direction",
+      "argument_names", "output_ignore")
+  )
 })
 
 test_that("optimizier validation works", {
@@ -50,6 +63,7 @@ test_that("optimizier validation works", {
       initial = "x",
       value = "fmin",
       parameter = "xmin",
+      direction = "min",
       validate = TRUE
     ),
     "Optimizer test run failed"
@@ -61,6 +75,7 @@ test_that("optimizier validation works", {
       initial = "p",
       value = "estimate",
       parameter = "value",
+      direction = "min",
       validate = TRUE
     ),
     "The optimal function value is not a single"
@@ -72,6 +87,7 @@ test_that("optimizier validation works", {
       initial = "p",
       value = "minimum",
       parameter = "estimate",
+      direction = "min",
       validate = TRUE,
       validation_settings = list(
         check_seconds = 1
@@ -88,6 +104,7 @@ test_that("optimizier validation works", {
       initial = "p",
       value = "minimum",
       parameter = "estimate",
+      direction = "min",
       validate = TRUE
     ),
     "Optimizer output is not a"
@@ -99,6 +116,7 @@ test_that("optimizier validation works", {
       initial = "p",
       value = "bad_name",
       parameter = "estimate",
+      direction = "min",
       validate = TRUE
     ),
     "is not contained in the optimizer output."
@@ -110,6 +128,7 @@ test_that("optimizier validation works", {
       initial = "p",
       value = "minimum",
       parameter = "estimate",
+      direction = "min",
       validate = TRUE
     ),
     "The optimal function value is not a single"
@@ -121,6 +140,7 @@ test_that("optimizier validation works", {
       initial = "p",
       value = "minimum",
       parameter = "bad_name",
+      direction = "min",
       validate = TRUE
     ),
     "is not contained in the optimizer output."
@@ -134,6 +154,7 @@ test_that("optimizier validation works", {
       initial = "p",
       value = "minimum",
       parameter = "estimate",
+      direction = "min",
       validate = TRUE
     ),
     "The optimum is not a"
@@ -152,7 +173,8 @@ test_that("unnamed optimizer can be specified", {
     objective = "f",
     initial = "p",
     value = "minimum",
-    parameter = "parameter"
+    parameter = "parameter",
+    direction = "min"
   )
   expect_equal(opt$optimizer_name, "unnamed_optimizer")
 })

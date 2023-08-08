@@ -3,7 +3,7 @@
 #' @description
 #' This function specifies the framework for a numerical optimizer.
 #'
-#' Two wrappers for common optimizer are available:
+#' Two wrappers for well-known optimizers are already available:
 #' 1. \code{optimizer_nlm()} for the \code{\link[stats]{nlm}} optimizer
 #' 2. \code{optimizer_optim()} for the \code{\link[stats]{optim}} optimizer
 #'
@@ -39,7 +39,7 @@
 #' )
 
 define_optimizer <- function(
-    optimizer, objective, initial, value, parameter, ...,
+    optimizer, objective, initial, value, parameter, direction, ...,
     output_ignore = character(0), validate = FALSE,
     validation_settings = list(
       "objective_test" = function(x) {
@@ -52,36 +52,43 @@ define_optimizer <- function(
       "check_seconds" = 10
     )
 ) {
-  if(missing(optimizer)){
+  if (missing(optimizer)) {
     optimizeR_stop(
       "Please specify argument {.var optimizer}.",
       "It should be a {.cls function} that performs numerical optimization."
     )
   }
-  if(missing(objective)){
+  if (missing(objective)) {
     optimizeR_stop(
       "Please specify argument {.var objective}.",
       "It should be the name of the function argument of {.var optimizer}."
     )
   }
-  if(missing(initial)){
+  if (missing(initial)) {
     optimizeR_stop(
       "Please specify argument {.var initial}.",
       "It should be the name of the initial value argument of {.var optimizer}."
     )
   }
-  if(missing(value)){
+  if (missing(value)) {
     optimizeR_stop(
       "Please specify argument {.var value}.",
       "It should be the name of the optimal function value in the output list
       of {.var optimizer}."
     )
   }
-  if(missing(parameter)){
+  if (missing(parameter)) {
     optimizeR_stop(
       "Please specify argument {.var parameter}.",
       "It should be the name of the optimal parameter vector in the output list
       of {.var optimizer}."
+    )
+  }
+  if (missing(direction)) {
+    optimizeR_stop(
+      "Please specify argument {.var direction}.",
+      "It indicates wether the optimizer minimizes ({.val min}) or
+      maximizes ({.val max})."
     )
   }
   optimizer_name <- deparse(substitute(optimizer))
@@ -97,6 +104,7 @@ define_optimizer <- function(
       initial = initial,
       value = value,
       parameter = parameter,
+      direction = direction,
       output_ignore = output_ignore
     ),
     validate = validate,
@@ -118,6 +126,7 @@ optimizer_nlm <- function(
     initial = "p",
     value = "minimum" ,
     parameter = "estimate",
+    direction = "min",
     ...,
     output_ignore = output_ignore,
     validate = validate,
@@ -130,7 +139,7 @@ optimizer_nlm <- function(
 #' @importFrom stats optim
 
 optimizer_optim <- function(
-    ..., output_ignore = character(0), validate = FALSE,
+    ..., direction = "min", output_ignore = character(0), validate = FALSE,
     validation_settings = list()
   ) {
   define_optimizer(
@@ -139,6 +148,7 @@ optimizer_optim <- function(
     initial = "par",
     value = "value",
     parameter = "par",
+    direction = direction,
     ...,
     output_ignore = output_ignore,
     validate = validate,
@@ -153,7 +163,7 @@ optimizer_optim <- function(
 #'
 #' @details
 #' # Format
-#' An \code{optimizer} object is a \code{list} of five elements:
+#' An \code{optimizer} object is a \code{list} of six elements:
 #' \describe{
 #'   \item{optimizer}{A \code{function}, the optimization function
 #'   \code{optimizer}.}
@@ -161,6 +171,8 @@ optimizer_optim <- function(
 #'   \code{optimizer}.}
 #'   \item{optimizer_add}{A named \code{list}, where each element
 #'   is an additional function argument for \code{optimizer}.}
+#'   \item{optimizer_direction}{Either \code{"min"} if the optimizer minimizes
+#'   or \code{"max"} if the optimizer maximizes.}
 #'   \item{argument_names}{A named \code{list} of four
 #'   \code{character}:
 #'   \describe{
@@ -204,6 +216,9 @@ optimizer_optim <- function(
 #' @param value
 #' A \code{character}, the name of the optimal function value in the output list
 #' of \code{optimizer}.
+#' @param direction
+#' A \code{character}, indication whether the optimizer minimizes (\code{"min"})
+#' or maximizes (\code{"max"}).
 #' @param parameter
 #' A \code{character}, the name of the optimal parameter vector in the output
 #' list of \code{optimizer}.
@@ -221,20 +236,23 @@ optimizer_optim <- function(
 new_optimizer <- function(
     x = list(), optimizer = function() {}, optimizer_name = character(),
     optimizer_add = list(), objective = character(), initial = character(),
-    value = character(), parameter = character(), output_ignore = character()
+    value = character(), parameter = character(), direction = character(),
+    output_ignore = character()
 ) {
   stopifnot(is.list(x))
   stopifnot(is.function(optimizer))
-  stopifnot(is.character(optimizer_name))
+  stopifnot(is.character(optimizer_name), length(optimizer_name) == 1)
   stopifnot(is.list(optimizer_add))
-  stopifnot(is.character(objective))
-  stopifnot(is.character(initial))
-  stopifnot(is.character(value))
-  stopifnot(is.character(parameter))
+  stopifnot(is.character(objective), length(objective) == 1)
+  stopifnot(is.character(initial), length(initial) == 1)
+  stopifnot(is.character(value), length(value) == 1)
+  stopifnot(is.character(parameter), length(parameter) == 1)
+  stopifnot(identical(direction, "min") || identical(direction, "max"))
   stopifnot(is.character(output_ignore))
   x[["optimizer"]] <- optimizer
   x[["optimizer_name"]] <- optimizer_name
   x[["optimizer_add"]] <- optimizer_add
+  x[["optimizer_direction"]] <- direction
   x[["argument_names"]] <- list(
     "objective" = objective,
     "initial" = initial,
@@ -259,7 +277,6 @@ new_optimizer <- function(
 #' @param validation_settings
 #' Ignored if \code{valdiate = FALSE}.
 #' Otherwise, a \code{list} of validation settings:
-
 #' \describe{
 #'   \item{objective_test}{A \code{function}, the test function to be optimized.
 #'   By default, it is the

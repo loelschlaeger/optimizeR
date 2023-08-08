@@ -14,6 +14,7 @@ new_optimizer(
   initial = character(),
   value = character(),
   parameter = character(),
+  direction = character(),
   output_ignore = character()
 )
 }
@@ -48,6 +49,9 @@ of \code{optimizer}.}
 \item{parameter}{A \code{character}, the name of the optimal parameter vector in the output
 list of \code{optimizer}.}
 
+\item{direction}{A \code{character}, indication whether the optimizer minimizes (\code{"min"})
+or maximizes (\code{"max"}).}
+
 \item{output_ignore}{A \code{character} vector of element names in the output of \code{optimizer}
 that are not saved. The elements \code{value} and \code{parameter} are
 added automatically to \code{output_ignore}, because they are saved
@@ -60,7 +64,7 @@ An S3 object of class \code{optimizer}.
 This function constructs an S3 \code{optimizer} object.
 }
 \section{Format}{
-An \code{optimizer} object is a \code{list} of five elements:
+An \code{optimizer} object is a \code{list} of six elements:
 \describe{
 \item{optimizer}{A \code{function}, the optimization function
 \code{optimizer}.}
@@ -68,6 +72,8 @@ An \code{optimizer} object is a \code{list} of five elements:
 \code{optimizer}.}
 \item{optimizer_add}{A named \code{list}, where each element
 is an additional function argument for \code{optimizer}.}
+\item{optimizer_direction}{Either \code{"min"} if the optimizer minimizes
+or \code{"max"} if the optimizer maximizes.}
 \item{argument_names}{A named \code{list} of four
 \code{character}:
 \describe{

@@ -12,6 +12,7 @@ define_optimizer(
   initial,
   value,
   parameter,
+  direction,
   ...,
   output_ignore = character(0),
   validate = FALSE,
@@ -33,6 +34,7 @@ optimizer_nlm(
 
 optimizer_optim(
   ...,
+  direction = "min",
   output_ignore = character(0),
   validate = FALSE,
   validation_settings = list()
@@ -61,6 +63,9 @@ of \code{optimizer}.}
 
 \item{parameter}{A \code{character}, the name of the optimal parameter vector in the output
 list of \code{optimizer}.}
+
+\item{direction}{A \code{character}, indication whether the optimizer minimizes (\code{"min"})
+or maximizes (\code{"max"}).}
 
 \item{...}{Additional arguments to be passed to the optimizer. Without
 specifications, the default values of the optimizer are used.}
@@ -100,14 +105,14 @@ An \code{optimizer} object.
 \description{
 This function specifies the framework for a numerical optimizer.
 
-Two wrappers for common optimizer are available:
+Two wrappers for well-known optimizers are already available:
 \enumerate{
 \item \code{optimizer_nlm()} for the \code{\link[stats]{nlm}} optimizer
 \item \code{optimizer_optim()} for the \code{\link[stats]{optim}} optimizer
 }
 }
 \section{Format}{
-An \code{optimizer} object is a \code{list} of five elements:
+An \code{optimizer} object is a \code{list} of six elements:
 \describe{
 \item{optimizer}{A \code{function}, the optimization function
 \code{optimizer}.}
@@ -115,6 +120,8 @@ An \code{optimizer} object is a \code{list} of five elements:
 \code{optimizer}.}
 \item{optimizer_add}{A named \code{list}, where each element
 is an additional function argument for \code{optimizer}.}
+\item{optimizer_direction}{Either \code{"min"} if the optimizer minimizes
+or \code{"max"} if the optimizer maximizes.}
 \item{argument_names}{A named \code{list} of four
 \code{character}:
 \describe{
