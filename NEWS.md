@@ -1,12 +1,16 @@
-# optimizeR 0.3.2
+# 0.3.3
+
+* Removed package start-up message.
+
+# 0.3.2
 
 * Just added package logo and created package website (https://loelschlaeger.de/optimizeR) with the [{pkgdown}](https://pkgdown.r-lib.org/) package. No code changes.
 
-# optimizeR 0.3.1
+# 0.3.1
 
 * In `define_optimizer()`, now `validate = FALSE` by default.
 
-# optimizeR 0.3.0
+# 0.3.0
 
 * Function `set_optimizer()` was renamed to `define_optimizer()`.
 
@@ -32,7 +36,7 @@ the documentation of `define_optimizer()`.
 * Element `initial` (the starting parameter vector) was added to the output
 of `apply_optimizer()`.
 
-# optimizeR 0.2.0
+# 0.2.0
 
 * Some functions were renamed:
 
@@ -44,6 +48,6 @@ of `apply_optimizer()`.
 
 * Function `try_silent_timed()` was removed.
 
-# optimizeR 0.1.0
+# 0.1.0
 
 * Initial version.

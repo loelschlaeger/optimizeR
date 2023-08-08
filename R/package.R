@@ -11,18 +11,18 @@
 #' @keywords internal
 "_PACKAGE"
 
-#' @noRd
-#' @importFrom utils packageVersion
-#' @importFrom glue glue
-#' @keywords internal
-
-.onAttach <- function(lib, pkg) {
-  msg <- glue::glue(
-    "Thanks for using {{optimizeR}} {utils::packageVersion('optimizeR')}."
-  )
-  packageStartupMessage(msg)
-  invisible()
-}
+# #' @noRd
+# #' @importFrom utils packageVersion
+# #' @importFrom glue glue
+# #' @keywords internal
+#
+# .onAttach <- function(lib, pkg) {
+#   msg <- glue::glue(
+#     "Thanks for using {{optimizeR}} {utils::packageVersion('optimizeR')}."
+#   )
+#   packageStartupMessage(msg)
+#   invisible()
+# }
 
 #' @noRd
 #' @importFrom cli cli_abort
