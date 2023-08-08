@@ -64,46 +64,46 @@ optimizer_optim() for the optim optimizer
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">define_optimizer</span><span class="op">(</span></span>
-<span>  <span class="va">optimizer</span>,</span>
-<span>  <span class="va">objective</span>,</span>
-<span>  <span class="va">initial</span>,</span>
-<span>  <span class="va">value</span>,</span>
-<span>  <span class="va">parameter</span>,</span>
-<span>  <span class="va">direction</span>,</span>
+<span>  <span class="va">.optimizer</span>,</span>
+<span>  <span class="va">.objective</span>,</span>
+<span>  <span class="va">.initial</span>,</span>
+<span>  <span class="va">.value</span>,</span>
+<span>  <span class="va">.parameter</span>,</span>
+<span>  <span class="va">.direction</span>,</span>
 <span>  <span class="va">...</span>,</span>
-<span>  output_ignore <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
-<span>  validate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  validation_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>objective_test <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>     <span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span></span>
-<span>     <span class="op">-</span><span class="fl">20</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span></span>
-<span>    <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="fl">20</span></span>
-<span> <span class="op">}</span>, objective_add <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>    initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>, check_seconds <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span>  .output_ignore <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>  .validate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  .validation_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>objective_test <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    </span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span></span>
+<span>     <span class="op">-</span><span class="fl">20</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span></span>
+<span>    <span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="fl">20</span></span>
+<span> <span class="op">}</span>,</span>
+<span>    objective_add <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>, check_seconds <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">optimizer_nlm</span><span class="op">(</span></span>
 <span>  <span class="va">...</span>,</span>
-<span>  output_ignore <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
-<span>  validate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  validation_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  .output_ignore <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>  .validate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  .validation_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">optimizer_optim</span><span class="op">(</span></span>
 <span>  <span class="va">...</span>,</span>
-<span>  direction <span class="op">=</span> <span class="st">"min"</span>,</span>
-<span>  output_ignore <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
-<span>  validate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  validation_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  .direction <span class="op">=</span> <span class="st">"min"</span>,</span>
+<span>  .output_ignore <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span>  .validate <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  .validation_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>optimizer</dt>
-<dd><p>A <code>function</code>, a numerical optimizer. Four conditions must be met:</p><ol><li><p>It must have an input named <code>"objective"</code> for a <code>function</code>, the
+    <dl><dt>.optimizer</dt>
+<dd><p>A <code>function</code>, a numerical optimizer. Four conditions must be met:</p><ol><li><p>It must have an input named <code>.objective</code> for a <code>function</code>, the
 objective function which is optimized over its first argument.</p></li>
-<li><p>It must have an input named <code>"initial"</code> for a <code>numerical</code>
+<li><p>It must have an input named <code>.initial</code> for a <code>numerical</code>
 vector, the initial parameter vector.</p></li>
 <li><p>It must have a <code>...</code> argument for additional parameters to
 the objective function.</p></li>
@@ -112,27 +112,27 @@ value and the optimal parameter vector.</p></li>
 </ol></dd>
 
 
-<dt>objective</dt>
+<dt>.objective</dt>
 <dd><p>A <code>character</code>, the name of the function input of <code>optimizer</code>.</p></dd>
 
 
-<dt>initial</dt>
+<dt>.initial</dt>
 <dd><p>A <code>character</code>, the name of the starting parameter values input of
 <code>optimizer</code>.</p></dd>
 
 
-<dt>value</dt>
+<dt>.value</dt>
 <dd><p>A <code>character</code>, the name of the optimal function value in the output list
 of <code>optimizer</code>.</p></dd>
 
 
-<dt>parameter</dt>
+<dt>.parameter</dt>
 <dd><p>A <code>character</code>, the name of the optimal parameter vector in the output
 list of <code>optimizer</code>.</p></dd>
 
 
-<dt>direction</dt>
-<dd><p>A <code>character</code>, indication whether the optimizer minimizes (<code>"min"</code>)
+<dt>.direction</dt>
+<dd><p>A <code>character</code>, indicates whether the optimizer minimizes (<code>"min"</code>)
 or maximizes (<code>"max"</code>).</p></dd>
 
 
@@ -141,21 +141,21 @@ or maximizes (<code>"max"</code>).</p></dd>
 specifications, the default values of the optimizer are used.</p></dd>
 
 
-<dt>output_ignore</dt>
-<dd><p>A <code>character</code> vector of element names in the output of <code>optimizer</code>
-that are not saved. The elements <code>value</code> and <code>parameter</code> are
-added automatically to <code>output_ignore</code>, because they are saved
+<dt>.output_ignore</dt>
+<dd><p>A <code>character</code> vector of element names in the output of <code>.optimizer</code>
+that are not saved. The elements <code>.value</code> and <code>.parameter</code> are
+added automatically to <code>.output_ignore</code>, because they are saved
 separately, see the output documentation of <code><a href="apply_optimizer.html">apply_optimizer</a></code>.</p></dd>
 
 
-<dt>validate</dt>
+<dt>.validate</dt>
 <dd><p>A <code>logical</code>, set to <code>TRUE</code> (<code>FALSE</code>) to (not) validate the
 <code>optimizer</code> object.
-By default, <code>validate = FALSE</code>.</p></dd>
+By default, <code>.validate = FALSE</code>.</p></dd>
 
 
-<dt>validation_settings</dt>
-<dd><p>Ignored if <code>valdiate = FALSE</code>.
+<dt>.validation_settings</dt>
+<dd><p>Ignored if <code>.valdiate = FALSE</code>.
 Otherwise, a <code>list</code> of validation settings:</p><dl><dt>objective_test</dt>
 <dd><p>A <code>function</code>, the test function to be optimized.
 By default, it is the
@@ -192,14 +192,13 @@ By default, <code>check_seconds = 10</code>.</p></dd>
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
     <p>An <code>optimizer</code> object is a <code>list</code> of six elements:</p><dl><dt>optimizer</dt>
-<dd><p>A <code>function</code>, the optimization function
-<code>optimizer</code>.</p></dd>
+<dd><p>A <code>function</code>, the optimization algorithm.</p></dd>
 
 <dt>optimizer_name</dt>
 <dd><p>A <code>character</code>, the name of
 <code>optimizer</code>.</p></dd>
 
-<dt>optimizer_add</dt>
+<dt>optimizer_arguments</dt>
 <dd><p>A named <code>list</code>, where each element
 is an additional function argument for <code>optimizer</code>.</p></dd>
 
@@ -207,7 +206,7 @@ is an additional function argument for <code>optimizer</code>.</p></dd>
 <dd><p>Either <code>"min"</code> if the optimizer minimizes
 or <code>"max"</code> if the optimizer maximizes.</p></dd>
 
-<dt>argument_names</dt>
+<dt>optimizer_labels</dt>
 <dd><p>A named <code>list</code> of four
 <code>character</code>:</p><dl><dt>objective</dt>
 <dd><p>the name of the function input of <code>optimizer</code></p></dd>
@@ -245,17 +244,17 @@ optimization.</p></div>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">define_optimizer</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  optimizer <span class="op">=</span> <span class="fu">pracma</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">nelder_mead</a></span>,</span></span>
-<span class="r-in"><span>  objective <span class="op">=</span> <span class="st">"fn"</span>,</span></span>
-<span class="r-in"><span>  initial <span class="op">=</span> <span class="st">"x0"</span>,</span></span>
-<span class="r-in"><span>  value <span class="op">=</span> <span class="st">"fmin"</span>,</span></span>
-<span class="r-in"><span>  parameter <span class="op">=</span> <span class="st">"xmin"</span>,</span></span>
-<span class="r-in"><span>  output_ignore <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"fcount"</span>, <span class="st">"restarts"</span>, <span class="st">"errmess"</span><span class="op">)</span>, <span class="co"># ignore some outputs</span></span></span>
-<span class="r-in"><span>  tol <span class="op">=</span> <span class="fl">1e-6</span>, <span class="co"># an additional argument for pracma::nelder_mead()</span></span></span>
-<span class="r-in"><span>  validate <span class="op">=</span> <span class="cn">TRUE</span> <span class="co"># validate the framework</span></span></span>
+<span class="r-in"><span>  .optimizer <span class="op">=</span> <span class="fu">pracma</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">nelder_mead</a></span>,           <span class="co"># optimization function</span></span></span>
+<span class="r-in"><span>  .objective <span class="op">=</span> <span class="st">"fn"</span>,                          <span class="co"># name of function input</span></span></span>
+<span class="r-in"><span>  .initial <span class="op">=</span> <span class="st">"x0"</span>,                            <span class="co"># name of initial input</span></span></span>
+<span class="r-in"><span>  .value <span class="op">=</span> <span class="st">"fmin"</span>,                            <span class="co"># name of value output</span></span></span>
+<span class="r-in"><span>  .parameter <span class="op">=</span> <span class="st">"xmin"</span>,                        <span class="co"># name of parameter output</span></span></span>
+<span class="r-in"><span>  .direction <span class="op">=</span> <span class="st">"min"</span>,                         <span class="co"># optimizer minimizes</span></span></span>
+<span class="r-in"><span>  .output_ignore <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"restarts"</span>, <span class="st">"errmess"</span><span class="op">)</span>,  <span class="co"># ignore some outputs</span></span></span>
+<span class="r-in"><span>  tol <span class="op">=</span> <span class="fl">1e-6</span>,                                 <span class="co"># additional optimizer argument</span></span></span>
+<span class="r-in"><span>  .validate <span class="op">=</span> <span class="cn">TRUE</span>                            <span class="co"># validate the object</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> <span style="color: #BB0000;">✖</span> Please specify argument `direction`.</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> It indicates wether the optimizer minimizes (<span style="color: #0000BB;">"min"</span>) or maximizes (<span style="color: #0000BB;">"max"</span>).</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;optimizer 'pracma::nelder_mead'&gt;</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

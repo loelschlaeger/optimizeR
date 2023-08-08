@@ -76,7 +76,7 @@
 </div>
 <!-- badges: start -->
 
-<p>If you’re looking for a way to standardize the inputs and outputs of numerical optimizers in R, you might find the {optimizeR} package useful. This package provides a unified framework for representing the inputs and outputs of different optimizers. It does not actually implement any optimizer functions itself.</p>
+<p>If you’re looking for a way to standardize the inputs and outputs of numerical optimizers in R, you might find the <a href="https://loelschlaeger.de/optimizeR">optimizeR</a> package useful. This package provides a unified framework for the inputs and outputs of any R optimizer. Note that it does not actually implement any optimizer functions itself.</p>
 <div class="section level2">
 <h2 id="what-is-the-problem">What is the problem?<a class="anchor" aria-label="anchor" href="#what-is-the-problem"></a>
 </h2>
@@ -93,7 +93,7 @@
 <span>  <span class="op">-</span><span class="fl">20</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="fl">20</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>… and compare the performance of three optimizers: <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">stats::nlm()</a></code>, <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim()</a></code>, and <code><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">pracma::nelder_mead()</a></code>. The first two are already pre-specified …</p>
+<p>… and compare the performance of three optimizers: <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">stats::nlm()</a></code>, <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim()</a></code>, and <code><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">pracma::nelder_mead()</a></code>. Wrappers for the first two are already available …</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/define_optimizer.html">optimizer_nlm</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;optimizer 'stats::nlm'&gt;</span></span>
@@ -102,12 +102,22 @@
 <p>… and for the latter (as for any other optimizer you like) we can use the general constructor:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">optimizer_nelder_mead</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/define_optimizer.html">define_optimizer</a></span><span class="op">(</span></span>
-<span>  optimizer <span class="op">=</span> <span class="fu">pracma</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">nelder_mead</a></span>,</span>
-<span>  objective <span class="op">=</span> <span class="st">"fn"</span>,</span>
-<span>  initial <span class="op">=</span> <span class="st">"x0"</span>,</span>
-<span>  value <span class="op">=</span> <span class="st">"fmin"</span>,</span>
-<span>  parameter <span class="op">=</span> <span class="st">"xmin"</span></span>
+<span>  .optimizer <span class="op">=</span> <span class="fu">pracma</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">nelder_mead</a></span>,</span>
+<span>  .objective <span class="op">=</span> <span class="st">"fn"</span>,</span>
+<span>  .initial <span class="op">=</span> <span class="st">"x0"</span>,</span>
+<span>  .value <span class="op">=</span> <span class="st">"fmin"</span>,</span>
+<span>  .parameter <span class="op">=</span> <span class="st">"xmin"</span>,</span>
+<span>  .direction <span class="op">=</span> <span class="st">"min"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+<p>Here,</p>
+<ul>
+<li><p><code>.optimizer</code> is the optimization algorithm,</p></li>
+<li><p><code>.objective</code> is the name of the function input,</p></li>
+<li><p><code>.initial</code> is the name of starting parameter values input,</p></li>
+<li><p><code>.value</code> is the name of the optimal function value in the output,</p></li>
+<li><p><code>.parameter</code> is the name of the optimal parameter vector in the output,</p></li>
+<li><p>and <code>.direction</code> indicates whether the optimizer minimizes or maximizes.</p></li>
+</ul>
 <p>Now we optimize (with initial parameter vector <code>initial = c(-1, 1)</code>):</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span></span>
@@ -124,7 +134,7 @@
 <span><span class="co">#&gt;  $ stats::nlm         :List of 7</span></span>
 <span><span class="co">#&gt;   ..$ value     : num 1.66e-06</span></span>
 <span><span class="co">#&gt;   ..$ parameter : num [1:2] -2.91e-07 5.08e-07</span></span>
-<span><span class="co">#&gt;   ..$ seconds   : num 0.0305</span></span>
+<span><span class="co">#&gt;   ..$ seconds   : num 0.0333</span></span>
 <span><span class="co">#&gt;   ..$ initial   : num [1:2] -1 1</span></span>
 <span><span class="co">#&gt;   ..$ gradient  : num [1:2] -0.00824 0.0144</span></span>
 <span><span class="co">#&gt;   ..$ code      : int 2</span></span>
@@ -132,7 +142,7 @@
 <span><span class="co">#&gt;  $ stats::optim       :List of 7</span></span>
 <span><span class="co">#&gt;   ..$ value      : num 3.57</span></span>
 <span><span class="co">#&gt;   ..$ parameter  : num [1:2] -0.969 0.969</span></span>
-<span><span class="co">#&gt;   ..$ seconds    : num 0.000356</span></span>
+<span><span class="co">#&gt;   ..$ seconds    : num 0.00053</span></span>
 <span><span class="co">#&gt;   ..$ initial    : num [1:2] -1 1</span></span>
 <span><span class="co">#&gt;   ..$ counts     : Named int [1:2] 45 NA</span></span>
 <span><span class="co">#&gt;   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"</span></span>
@@ -141,14 +151,14 @@
 <span><span class="co">#&gt;  $ pracma::nelder_mead:List of 7</span></span>
 <span><span class="co">#&gt;   ..$ value      : num 0</span></span>
 <span><span class="co">#&gt;   ..$ parameter  : num [1:2] 0 0</span></span>
-<span><span class="co">#&gt;   ..$ seconds    : num 0.00217</span></span>
+<span><span class="co">#&gt;   ..$ seconds    : num 0.00126</span></span>
 <span><span class="co">#&gt;   ..$ initial    : num [1:2] -1 1</span></span>
 <span><span class="co">#&gt;   ..$ count      : num 111</span></span>
 <span><span class="co">#&gt;   ..$ convergence: num 0</span></span>
 <span><span class="co">#&gt;   ..$ info       :List of 2</span></span>
 <span><span class="co">#&gt;   .. ..$ solver  : chr "Nelder-Mead"</span></span>
 <span><span class="co">#&gt;   .. ..$ restarts: num 0</span></span></code></pre></div>
-<p>By the way, are you surprised to see that <code>value</code> for <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim()</a></code> is different from the other optimizers? It seems that this optimizer has become trapped in a local minimum. If you are interested in exploring the initialization problem in numerical optimization, you may find the <a href="https://github.com/loelschlaeger/ino" class="external-link">{ino} R package</a> to be useful.</p>
+<p>By the way, are you surprised to see that <code>value</code> for <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim()</a></code> is different from the other two optimizers? Apparently, this optimizer has become trapped in a local minimum. If you are interested in exploring the initialization problem in numerical optimization, you may find the <a href="https://github.com/loelschlaeger/ino" class="external-link">{ino} R package</a> to be useful.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>

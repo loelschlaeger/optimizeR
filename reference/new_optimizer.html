@@ -53,16 +53,16 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">new_optimizer</span><span class="op">(</span></span>
 <span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  optimizer <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  .optimizer <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
 <span> <span class="op">}</span>,</span>
 <span>  optimizer_name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  optimizer_add <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  objective <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  parameter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>  output_ignore <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  optimizer_arguments <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  .objective <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  .initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  .value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  .parameter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  .direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  .output_ignore <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -72,10 +72,10 @@
 <dd><p>A <code>list</code>.</p></dd>
 
 
-<dt>optimizer</dt>
-<dd><p>A <code>function</code>, a numerical optimizer. Four conditions must be met:</p><ol><li><p>It must have an input named <code>"objective"</code> for a <code>function</code>, the
+<dt>.optimizer</dt>
+<dd><p>A <code>function</code>, a numerical optimizer. Four conditions must be met:</p><ol><li><p>It must have an input named <code>.objective</code> for a <code>function</code>, the
 objective function which is optimized over its first argument.</p></li>
-<li><p>It must have an input named <code>"initial"</code> for a <code>numerical</code>
+<li><p>It must have an input named <code>.initial</code> for a <code>numerical</code>
 vector, the initial parameter vector.</p></li>
 <li><p>It must have a <code>...</code> argument for additional parameters to
 the objective function.</p></li>
@@ -88,39 +88,39 @@ value and the optimal parameter vector.</p></li>
 <dd><p>A <code>character</code>, the name of <code>optimizer</code>.</p></dd>
 
 
-<dt>optimizer_add</dt>
+<dt>optimizer_arguments</dt>
 <dd><p>A <code>list</code> of additional and named arguments to be passed to
 <code>optimizer</code>.</p></dd>
 
 
-<dt>objective</dt>
+<dt>.objective</dt>
 <dd><p>A <code>character</code>, the name of the function input of <code>optimizer</code>.</p></dd>
 
 
-<dt>initial</dt>
+<dt>.initial</dt>
 <dd><p>A <code>character</code>, the name of the starting parameter values input of
 <code>optimizer</code>.</p></dd>
 
 
-<dt>value</dt>
+<dt>.value</dt>
 <dd><p>A <code>character</code>, the name of the optimal function value in the output list
 of <code>optimizer</code>.</p></dd>
 
 
-<dt>parameter</dt>
+<dt>.parameter</dt>
 <dd><p>A <code>character</code>, the name of the optimal parameter vector in the output
 list of <code>optimizer</code>.</p></dd>
 
 
-<dt>direction</dt>
-<dd><p>A <code>character</code>, indication whether the optimizer minimizes (<code>"min"</code>)
+<dt>.direction</dt>
+<dd><p>A <code>character</code>, indicates whether the optimizer minimizes (<code>"min"</code>)
 or maximizes (<code>"max"</code>).</p></dd>
 
 
-<dt>output_ignore</dt>
-<dd><p>A <code>character</code> vector of element names in the output of <code>optimizer</code>
-that are not saved. The elements <code>value</code> and <code>parameter</code> are
-added automatically to <code>output_ignore</code>, because they are saved
+<dt>.output_ignore</dt>
+<dd><p>A <code>character</code> vector of element names in the output of <code>.optimizer</code>
+that are not saved. The elements <code>.value</code> and <code>.parameter</code> are
+added automatically to <code>.output_ignore</code>, because they are saved
 separately, see the output documentation of <code><a href="apply_optimizer.html">apply_optimizer</a></code>.</p></dd>
 
 </dl></div>
@@ -133,14 +133,13 @@ separately, see the output documentation of <code><a href="apply_optimizer.html"
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
     <p>An <code>optimizer</code> object is a <code>list</code> of six elements:</p><dl><dt>optimizer</dt>
-<dd><p>A <code>function</code>, the optimization function
-<code>optimizer</code>.</p></dd>
+<dd><p>A <code>function</code>, the optimization algorithm.</p></dd>
 
 <dt>optimizer_name</dt>
 <dd><p>A <code>character</code>, the name of
 <code>optimizer</code>.</p></dd>
 
-<dt>optimizer_add</dt>
+<dt>optimizer_arguments</dt>
 <dd><p>A named <code>list</code>, where each element
 is an additional function argument for <code>optimizer</code>.</p></dd>
 
@@ -148,7 +147,7 @@ is an additional function argument for <code>optimizer</code>.</p></dd>
 <dd><p>Either <code>"min"</code> if the optimizer minimizes
 or <code>"max"</code> if the optimizer maximizes.</p></dd>
 
-<dt>argument_names</dt>
+<dt>optimizer_labels</dt>
 <dd><p>A named <code>list</code> of four
 <code>character</code>:</p><dl><dt>objective</dt>
 <dd><p>the name of the function input of <code>optimizer</code></p></dd>
