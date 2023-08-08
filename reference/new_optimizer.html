@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">optimizeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,6 +61,7 @@
 <span>  initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  parameter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  direction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  output_ignore <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -111,6 +112,11 @@ of <code>optimizer</code>.</p></dd>
 list of <code>optimizer</code>.</p></dd>
 
 
+<dt>direction</dt>
+<dd><p>A <code>character</code>, indication whether the optimizer minimizes (<code>"min"</code>)
+or maximizes (<code>"max"</code>).</p></dd>
+
+
 <dt>output_ignore</dt>
 <dd><p>A <code>character</code> vector of element names in the output of <code>optimizer</code>
 that are not saved. The elements <code>value</code> and <code>parameter</code> are
@@ -126,7 +132,7 @@ separately, see the output documentation of <code><a href="apply_optimizer.html"
     </div>
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
-    <p>An <code>optimizer</code> object is a <code>list</code> of five elements:</p><dl><dt>optimizer</dt>
+    <p>An <code>optimizer</code> object is a <code>list</code> of six elements:</p><dl><dt>optimizer</dt>
 <dd><p>A <code>function</code>, the optimization function
 <code>optimizer</code>.</p></dd>
 
@@ -137,6 +143,10 @@ separately, see the output documentation of <code><a href="apply_optimizer.html"
 <dt>optimizer_add</dt>
 <dd><p>A named <code>list</code>, where each element
 is an additional function argument for <code>optimizer</code>.</p></dd>
+
+<dt>optimizer_direction</dt>
+<dd><p>Either <code>"min"</code> if the optimizer minimizes
+or <code>"max"</code> if the optimizer maximizes.</p></dd>
 
 <dt>argument_names</dt>
 <dd><p>A named <code>list</code> of four
