@@ -426,13 +426,15 @@ apply_optimizer <- function(
     what = optimizer[["optimizer"]],
     args = c(
       structure(
-        list(objective), names = optimizer[["argument_names"]][["objective"]]
+        list(function(p) objective(p, ...)),
+        names = optimizer[["argument_names"]][["objective"]]
       ),
       structure(
         list(initial), names = optimizer[["argument_names"]][["initial"]]
       ),
-      optimizer[["optimizer_add"]], list(...)
-    )
+      optimizer[["optimizer_add"]]
+    ),
+    quote = TRUE
   )
   end <- Sys.time()
   c(

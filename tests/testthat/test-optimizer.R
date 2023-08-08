@@ -182,3 +182,27 @@ test_that("optimization works", {
   expect_type(out$value, "double")
   expect_type(out$parameter, "double")
 })
+
+test_that("clash of optimizer and function arguments is avoided", {
+  optimizer <- optimizer_optim()
+  objective <- function(x, control, shift) {
+    x <- x + shift
+    sum(x^2)
+  }
+  initial <- 1:3
+  expect_type(
+    apply_optimizer(
+      optimizer, objective, initial, control = list("something" = 1), shift = 1
+    ),
+    "list"
+  )
+  optimizer <- optimizer_optim(control = list("maxit" = 1))
+  initial <- 1:3
+  expect_type(
+    apply_optimizer(
+      optimizer, objective, initial, control = list("something" = 1), shift = 1
+    ),
+    "list"
+  )
+})
+

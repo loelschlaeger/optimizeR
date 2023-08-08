@@ -2,6 +2,8 @@
 
 * Removed package start-up message.
 
+* Solved clash between additional function and optimizer arguments. (#1)
+
 # 0.3.2
 
 * Just added package logo and created package website (https://loelschlaeger.de/optimizeR) with the [{pkgdown}](https://pkgdown.r-lib.org/) package. No code changes.
