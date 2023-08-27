@@ -81,7 +81,7 @@ test_that("optimizier validation works", {
       .direction = "min",
       .validate = TRUE
     ),
-    "The optimal function value is not a single"
+    "The optimal value is not a single"
   )
   expect_warning(
     define_optimizer(
@@ -122,7 +122,7 @@ test_that("optimizier validation works", {
       .direction = "min",
       .validate = TRUE
     ),
-    "is not contained in the optimizer output."
+    "is not part of the optimizer output."
   )
   expect_error(
     define_optimizer(
@@ -134,7 +134,7 @@ test_that("optimizier validation works", {
       .direction = "min",
       .validate = TRUE
     ),
-    "The optimal function value is not a single"
+    "The optimal value is not a single"
   )
   expect_error(
     define_optimizer(
@@ -146,7 +146,7 @@ test_that("optimizier validation works", {
       .direction = "min",
       .validate = TRUE
     ),
-    "is not contained in the optimizer output."
+    "is not part of the optimizer output."
   )
   expect_error(
     define_optimizer(
@@ -188,11 +188,8 @@ test_that("printing optimizer object works", {
   expect_snapshot(optimizer_optim())
 })
 
-test_that("pre-specified nlm optimizer works", {
+test_that("pre-specified optimizers work", {
   expect_s3_class(optimizer_nlm(), "optimizer")
-})
-
-test_that("pre-specified optim optimizer works", {
   expect_s3_class(optimizer_optim(), "optimizer")
 })
 

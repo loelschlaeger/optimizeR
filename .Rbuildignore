@@ -13,3 +13,4 @@ LICENSE
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^dev_pkgs\.R$

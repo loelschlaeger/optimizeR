@@ -1,4 +1,4 @@
-# 0.3.2.9000
+# 0.3.2.9000 (under development)
 
 * Removed package start-up message.
 
@@ -7,6 +7,10 @@
 * Added the `.direction` argument to `define_optimizer()` to specify whether the optimizer minimizes or maximizes.
 
 * Added a dot before the argument names for `define_optimizer()` to avoid clashes with the `...` argument.
+
+* Removed dependency on `{glue}`.
+
+* Using `TestFunctions::TF_ackley` instead of own implementation of Ackley function (for the validation).
 
 # 0.3.2
 
@@ -30,8 +34,7 @@
   * `out_ign` -> `output_ignore`
   * `test_par` -> `validation_settings`
   
-* Elements for input `validation_settings` have been simplified, please see
-the documentation of `define_optimizer()`.
+* Elements for input `validation_settings` have been simplified, please see the documentation of `define_optimizer()`.
 
 * Elements in the output of `apply_optimizer()` were renamed for clarity:
 
@@ -39,8 +42,7 @@ the documentation of `define_optimizer()`.
   * `z` -> `parameter`
   * `time` -> `seconds` (now just a `numeric`) 
   
-* Element `initial` (the starting parameter vector) was added to the output
-of `apply_optimizer()`.
+* Element `initial` (the starting parameter vector) was added to the output of `apply_optimizer()`.
 
 # 0.2.0
 
@@ -56,4 +58,4 @@ of `apply_optimizer()`.
 
 # 0.1.0
 
-* Initial version.
+* Initial CRAN release.

@@ -16,13 +16,8 @@ define_optimizer(
   ...,
   .output_ignore = character(0),
   .validate = FALSE,
-  .validation_settings = list(objective_test = function(x) {
-    
-    stopifnot(is.numeric(x), length(x) == 2)
-     -20 * exp(-0.2 * sqrt(0.5 * (x[1]^2 +
-    x[2]^2))) - exp(0.5 * (cos(2 * pi * x[1]) + cos(2 * pi * x[2]))) + exp(1) + 20
- },
-    objective_add = list(), initial = round(stats::rnorm(2), 2), check_seconds = 10)
+  .validation_settings = list(objective_test = TestFunctions::TF_ackley, objective_add =
+    list(), initial = round(stats::rnorm(2), 2), check_seconds = 10)
 )
 
 optimizer_nlm(
