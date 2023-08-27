@@ -10,13 +10,13 @@ apply_optimizer(optimizer = optimizer_nlm(), objective, initial, ...)
 \item{optimizer}{An object of class \code{optimizer}.}
 
 \item{objective}{A \code{function} to be optimized, returning a single \code{numeric}.
-Its first argument must be a \code{numeric} vector of the length of
+Its first argument must be a \code{numeric} vector of the same length as
 \code{initial}, followed by any other arguments specified by the \code{...}
 argument.}
 
 \item{initial}{A \code{numeric} vector with starting parameter values for the optimization.}
 
-\item{...}{Additional arguments to be passed to \code{objective}.}
+\item{...}{Additional arguments to be passed to \code{optimizer}.}
 }
 \value{
 A named \code{list}, containing at least these four elements:

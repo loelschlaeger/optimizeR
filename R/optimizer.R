@@ -409,13 +409,13 @@ print.optimizer <- function(x, ...) {
 #' An object of class \code{optimizer}.
 #' @param objective
 #' A \code{function} to be optimized, returning a single \code{numeric}.
-#' Its first argument must be a \code{numeric} vector of the length of
+#' Its first argument must be a \code{numeric} vector of the same length as
 #' \code{initial}, followed by any other arguments specified by the \code{...}
 #' argument.
 #' @param initial
 #' A \code{numeric} vector with starting parameter values for the optimization.
 #' @param ...
-#' Additional arguments to be passed to \code{objective}.
+#' Additional arguments to be passed to \code{optimizer}.
 #'
 #' @return
 #' A named \code{list}, containing at least these four elements:
@@ -447,13 +447,13 @@ apply_optimizer <- function(
     what = optimizer[["optimizer"]],
     args = c(
       structure(
-        list(function(p) objective(p, ...)),
+        list(objective),
         names = optimizer[["optimizer_labels"]][["objective"]]
       ),
       structure(
         list(initial), names = optimizer[["optimizer_labels"]][["initial"]]
       ),
-      optimizer[["optimizer_arguments"]]
+      optimizer[["optimizer_arguments"]], list(...)
     ),
     quote = TRUE
   )
