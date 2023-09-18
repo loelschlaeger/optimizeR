@@ -28,6 +28,8 @@ BugReports: https://github.com/loelschlaeger/optimizeR/issues
 Depends:
     R (>= 4.0.0)
 Imports: 
+    checkmate,
     cli,
+    R6,
     stats,
     TestFunctions
