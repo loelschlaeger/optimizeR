@@ -1,8 +1,6 @@
-# 0.3.2.9000 (under development)
+# 0.3.3
 
 * Removed package start-up message.
-
-* Solved clash between additional function and optimizer arguments. (#1)
 
 * Added the `.direction` argument to `define_optimizer()` to specify whether the optimizer minimizes or maximizes.
 
