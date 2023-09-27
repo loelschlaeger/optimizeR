@@ -26,7 +26,7 @@ library("optimizeR")
 
 If you're looking for a way to standardize the inputs and outputs of numerical optimizer functions implemented in R, you might find the `{optimizeR}` package useful. This package provides a unified framework for the inputs and outputs of any R optimizer. Note that it does not actually implement any optimizer functions itself.
 
-## What is the problem? 
+## What's the problem? 
 
 When working with optimizers such as [`stats::nlm()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/nlm.html) and [`stats::optim()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html), it can be challenging to compare their results due to inconsistencies in function arguments and output labels. For instance, `stats::nlm()` uses `f` as its function argument and `p` as the argument for initial values, while `stats::optim()` uses `fn` for its function argument and `par` for initial values. Additionally, the optimal parameters and function values are labeled differently, with `estimate` and `minimum` used in `stats::nlm()` and `par` and `value` in `stats::optim()`. And all is different again with, for example, [`pracma::nelder_mead()`](https://CRAN.R-project.org/package=pracma). This inconsistency is frustrating, especially if one wants to apply and compare different optimizers.
 
