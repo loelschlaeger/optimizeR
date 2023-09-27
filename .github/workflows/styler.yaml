@@ -25,9 +25,9 @@ jobs:
 
       - name: commit
         run: |
-          git config --local user.email "oelschlaeger.lennart@gmail.com"
-          git config --local user.name "Lennart Oelschläger"
+          git config --local user.name "$GITHUB_ACTOR"
+          git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
           git add .
-          git commit -m 'Styled package :pencil:' || echo "No changes to commit"
+          git commit -m 'formatted package' || echo "No changes to commit"
           git push origin || echo "No changes to commit"
 

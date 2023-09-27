@@ -24,7 +24,7 @@ library("optimizeR")
 [![Codecov test coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/loelschlaeger/optimizeR?branch=master)
 <!-- badges: end -->
 
-If you're looking for a way to standardize the inputs and outputs of numerical optimizer functions implemented in R, you might find the `{optimizeR}` package useful. This package provides a unified framework for the inputs and outputs of any R optimizer. Note that it does not actually implement any optimizer functions itself.
+If you're looking for a way to standardize the inputs and outputs of numerical optimizer functions implemented in R, you might find the `{optimizeR}` package useful. This package provides a unified framework for the inputs and outputs of any R optimizer. Note that it does not actually implement any optimizers itself.
 
 ## What's the problem? 
 

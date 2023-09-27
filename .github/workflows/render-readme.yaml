@@ -24,12 +24,14 @@ jobs:
       - uses: r-lib/actions/setup-renv@v2
 
       - name: Render README
-        run: rmarkdown::render("README.Rmd")
+        run: |
+          devtools::install()
+          rmarkdown::render("README.Rmd")
         shell: Rscript {0}
 
       - name: Commit and push changes
         run: |
           git config --local user.name "$GITHUB_ACTOR"
           git config --local user.email "$GITHUB_ACTOR@users.noreply.github.com"
-          git commit $README.md -m 'Rendered README' || echo "No changes to commit"
+          git commit $README.md -m 'rendered README' || echo "No changes to commit"
           git push origin || echo "No changes to commit"
