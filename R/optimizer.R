@@ -1,4 +1,4 @@
-#' Specify numerical optimizer
+#' Specify `optimizer` object
 #'
 #' @description
 #' This function specifies the framework for a numerical optimizer.

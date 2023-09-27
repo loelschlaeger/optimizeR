@@ -4,7 +4,7 @@
 \alias{define_optimizer}
 \alias{optimizer_nlm}
 \alias{optimizer_optim}
-\title{Specify numerical optimizer}
+\title{Specify \code{optimizer} object}
 \usage{
 define_optimizer(
   .optimizer,

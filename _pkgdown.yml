@@ -4,7 +4,7 @@ template:
 url: https://loelschlaeger.de/optimizeR/
 
 home:
-  title: Unified Framework for Numerical Optimizers
+  title: Unified Framework for Numerical Optimizers in R
 
 authors:
   Lennart Oelschläger:

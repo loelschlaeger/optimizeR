@@ -100,7 +100,7 @@ By the way, are you surprised to see that `value` for `stats::optim()` is differ
 
 ## Installation
 
-You can install the released version of {optimizeR} from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of `{optimizeR}` from [CRAN](https://CRAN.R-project.org) with:
 
 ```{r, install released version, eval = FALSE}
 install.packages("optimizeR")
