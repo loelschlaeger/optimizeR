@@ -1,4 +1,4 @@
-# 0.3.3
+# version 0.3.3
 
 * Removed package start-up message.
 
@@ -10,15 +10,15 @@
 
 * Using `TestFunctions::TF_ackley` instead of own implementation of Ackley function (for the validation).
 
-# 0.3.2
+# version 0.3.2
 
 * Just added package logo and created package website (https://loelschlaeger.de/optimizeR) with the [{pkgdown}](https://pkgdown.r-lib.org/) package. No code changes.
 
-# 0.3.1
+# version 0.3.1
 
 * In `define_optimizer()`, now `validate = FALSE` by default.
 
-# 0.3.0
+# version 0.3.0
 
 * Function `set_optimizer()` was renamed to `define_optimizer()`.
 
@@ -42,7 +42,7 @@
   
 * Element `initial` (the starting parameter vector) was added to the output of `apply_optimizer()`.
 
-# 0.2.0
+# version 0.2.0
 
 * Some functions were renamed:
 
@@ -54,6 +54,6 @@
 
 * Function `try_silent_timed()` was removed.
 
-# 0.1.0
+# version 0.1.0
 
 * Initial CRAN release.
