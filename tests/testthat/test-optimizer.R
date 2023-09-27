@@ -53,8 +53,10 @@ test_that("construct optimizer works", {
   expect_s3_class(optimizer, "optimizer")
   expect_named(
     optimizer,
-    c("optimizer", "optimizer_name", "optimizer_arguments",
-      "optimizer_direction", "optimizer_labels", "output_ignore")
+    c(
+      "optimizer", "optimizer_name", "optimizer_arguments",
+      "optimizer_direction", "optimizer_labels", "output_ignore"
+    )
   )
 })
 
