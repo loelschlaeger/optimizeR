@@ -2,10 +2,17 @@
 % Please edit documentation in R/debug.R
 \name{test_objective}
 \alias{test_objective}
-\title{test function}
+\title{TODO}
 \usage{
 test_objective(x, warning_prob = 0, error_prob = 0)
 }
+\arguments{
+\item{x}{TODO}
+
+\item{warning_prob}{TODO}
+
+\item{error_prob}{TODO}
+}
 \description{
-A short description...
+TODO
 }

@@ -2,45 +2,103 @@
 % Please edit documentation in R/constructor.R
 \name{Optimizer}
 \alias{Optimizer}
-\title{Specify numerical optimizer}
-\value{
-An \code{Optimizer} object.
-}
+\title{Specify numerical optimizer as R6 object}
 \description{
-This function specifies the framework for a numerical optimizer.
+A \code{Optimizer} R6 object defines a numerical optimizer based on an
+optimization function implemented in R.
+The main advantage of working with an \code{Optimizer} object instead of
+using the optimization function directly lies in the standardized inputs and
+outputs.
+Any R function that fulfills the following four constraints can be defined as
+an \code{Optimizer} object:
+\enumerate{
+\item It must have an input for a \code{function}, the objective function to be
+optimized.
+\item It must have an input for a \code{numeric} vector, the initial values from
+where the optimizer starts.
+\item It must have a \code{...} argument for additional parameters passed on to
+the objective function.
+\item The output must be a named \code{list}, including the optimal function
+value and the optimal parameter vector.
+}
 }
 \examples{
-### define optimizer
-optimizer_nelder_mead <- Optimizer$
-  new(
-    algorithm = pracma::nelder_mead  # optimization function
-    tol = 1e-6                       # additional optimizer argument
-  )$
-  labels(
-    objective = "fn",                # name of function input
-    initial = "x0",                  # name of initial input
-    value = "fmin",                  # name of value output
-    parameter = "xmin"               # name of parameter output
-  )
+### Apply 'stats::nlm' and 'pracma::nelder_mead' and compare their results:
 
-### define objective function
+# 1. define objective function and initial values
 objective <- TestFunctions::TF_ackley
+initial <- 1:2
 
-### optimize
-optimizer_nelder_mead$apply(objective, initial = 1:2)
+# 2. get overview of optimizers in dictionary
+optimizer_dictionary$keys
 
-### compare to another optimizer
-optimizer_nlm$apply(objective, initial = 1:2)
+# 3. define 'nlm' optimizer
+optimizer_nlm <- Optimizer$new(which = "stats::nlm")
+
+# get a summary of the optimizer
+summary(optimizer_nlm)
+
+# 4. define a custom optimizer (not contained in the dictionary)
+optimizer_nelder_mead <- Optimizer$new(which = "custom")
+optimizer_nelder_mead$definition(
+  algorithm = pracma::nelder_mead,  # the optimization function
+  arg_objective = "fn",             # the argument name for the objective function
+  arg_initial = "x0",               # the argument name for the initial values
+  out_value = "fmin",               # the element for the optimal function value in the output
+  out_parameter = "xmin",           # the element for the optimal parameters in the output
+  direction = "min"                 # the direction of the optimizer (here minimization)
+)
+
+# 5. compare the optimization results
+optimizer_nlm$apply(objective, initial)
+optimizer_nelder_mead$apply(objective, initial)
+
+
+## ------------------------------------------------
+## Method `Optimizer$apply`
+## ------------------------------------------------
+
+Optimizer$new("stats::nlm")$apply(function(x) x^4 + 3*x - 5, 2)
 }
-\seealso{
-Wrappers for popular optimization algorithms in R are already available,
-see for example \code{\link[=optimizer_nlm]{optimizer_nlm()}} for the \code{\link[stats]{nlm}} optimizer.
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{label}}{A \code{character}, the label for the optimizer.}
+
+\item{\code{algorithm}}{A \code{function}, the optimization algorithm.}
+
+\item{\code{arg_objective}}{A \code{character}, the argument name for the objective function in
+\code{algorithm}.}
+
+\item{\code{arg_initial}}{A \code{character}, the argument name for the initial values in
+\code{algorithm}.}
+
+\item{\code{out_value}}{A \code{character}, the element name for the optimal function value in
+the output \code{list} of \code{algorithm}.}
+
+\item{\code{out_parameter}}{A \code{character}, the element name for the optimal parameters in the
+output \code{list} of \code{algorithm}.}
+
+\item{\code{direction}}{Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
+(if the optimizer maximizes).}
+
+\item{\code{arguments}}{A named \code{list} of arguments for \code{algorithm}. By default, the
+default arguments are used.}
+
+\item{\code{output_elements}}{A \code{character} of element names to be included in the output.
+Can also be \code{NULL}, in which case all elements are included.}
+
+\item{\code{seconds}}{A \code{numeric}, the number of seconds after which the optimization
+is interrupted. Can also be \code{NULL} for no time limit.}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-Optimizer-new}{\code{Optimizer$new()}}
-\item \href{#method-Optimizer-labels}{\code{Optimizer$labels()}}
+\item \href{#method-Optimizer-definition}{\code{Optimizer$definition()}}
+\item \href{#method-Optimizer-set_arguments}{\code{Optimizer$set_arguments()}}
 \item \href{#method-Optimizer-validate}{\code{Optimizer$validate()}}
 \item \href{#method-Optimizer-apply}{\code{Optimizer$apply()}}
 \item \href{#method-Optimizer-print}{\code{Optimizer$print()}}
@@ -52,54 +110,192 @@ see for example \code{\link[=optimizer_nlm]{optimizer_nlm()}} for the \code{\lin
 \if{html}{\out{<a id="method-Optimizer-new"></a>}}
 \if{latex}{\out{\hypertarget{method-Optimizer-new}{}}}
 \subsection{Method \code{new()}}{
+Initializes a new \code{Optimizer} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Optimizer$new(algorithm, name = NULL, direction = "min", ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Optimizer$new(which, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{algorithm}}{}
+\item{\code{which}}{A \code{character}, either one of \code{optimizer_dictionary$keys} or
+\code{"custom"} (in which case \code{$definition()} must be used to
+define the optimizer details).}
 
-\item{\code{name}}{}
-
-\item{\code{direction}}{}
-
-\item{\code{...}}{Additional arguments to be passed to the algorithm. Without
-specifications, the default values are used.}
+\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
+Without specifications, default values are used.}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+A new \code{Optimizer} object.
+}
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Optimizer-labels"></a>}}
-\if{latex}{\out{\hypertarget{method-Optimizer-labels}{}}}
-\subsection{Method \code{labels()}}{
+\if{html}{\out{<a id="method-Optimizer-definition"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimizer-definition}{}}}
+\subsection{Method \code{definition()}}{
+Defines an optimizer.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Optimizer$labels(objective, initial, value, parameter)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Optimizer$definition(
+  algorithm,
+  arg_objective,
+  arg_initial,
+  out_value,
+  out_parameter,
+  direction,
+  arguments = formals(algorithm),
+  output_elements = NULL
+)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{algorithm}}{A \code{function}, the optimization algorithm.}
+
+\item{\code{arg_objective}}{A \code{character}, the argument name for the objective function in
+\code{algorithm}.}
+
+\item{\code{arg_initial}}{A \code{character}, the argument name for the initial values in
+\code{algorithm}.}
+
+\item{\code{out_value}}{A \code{character}, the element name for the optimal function value in
+the output \code{list} of \code{algorithm}.}
+
+\item{\code{out_parameter}}{A \code{character}, the element name for the optimal parameters in the
+output \code{list} of \code{algorithm}.}
+
+\item{\code{direction}}{Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
+(if the optimizer maximizes).}
+
+\item{\code{arguments}}{A named \code{list} of arguments for \code{algorithm}. By default, the
+default arguments are used.}
+
+\item{\code{output_elements}}{A \code{character} of element names to be included in the output.
+Can also be \code{NULL}, in which case all elements are included.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The \code{Optimizer} object.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Optimizer-set_arguments"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimizer-set_arguments}{}}}
+\subsection{Method \code{set_arguments()}}{
+Sets optimizer arguments.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Optimizer$set_arguments(...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
+Without specifications, default values are used.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The \code{Optimizer} object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Optimizer-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-Optimizer-validate}{}}}
 \subsection{Method \code{validate()}}{
+Validates the \code{Optimizer} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimizer$validate(
-  objective = test_objective,
-  initial = 1:2,
+  objective = optimizeR::test_objective,
+  initial = round(stats::rnorm(2)),
   ...,
-  seconds = 10
+  direction = "min",
+  seconds = 3
 )}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{objective}}{A \code{function} to be optimized, returning a single \code{numeric}.
+Its first argument must be a \code{numeric} vector of the same length as
+\code{initial}, followed by any other arguments specified by the \code{...}
+argument.}
+
+\item{\code{initial}}{A \code{numeric} vector with starting parameter values for the optimization.}
+
+\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
+Without specifications, default values are used.}
+
+\item{\code{direction}}{Either \code{"min"} for minimization or \code{"max"} for maximization.}
+
+\item{\code{seconds}}{A \code{numeric}, the number of seconds after which the optimization
+is interrupted. Can also be \code{NULL} for no time limit.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The \code{Optimizer} object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Optimizer-apply"></a>}}
 \if{latex}{\out{\hypertarget{method-Optimizer-apply}{}}}
 \subsection{Method \code{apply()}}{
+Applies an optimizer.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Optimizer$apply(objective, initial, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Optimizer$apply(
+  objective,
+  initial,
+  ...,
+  direction = "min",
+  seconds = self$seconds
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{objective}}{A \code{function} to be optimized, returning a single \code{numeric}.
+Its first argument must be a \code{numeric} vector of the same length as
+\code{initial}, followed by any other arguments specified by the \code{...}
+argument.}
+
+\item{\code{initial}}{A \code{numeric} vector with starting parameter values for the optimization.}
+
+\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
+Without specifications, default values are used.}
+
+\item{\code{direction}}{Either \code{"min"} for minimization or \code{"max"} for maximization.}
+
+\item{\code{seconds}}{A \code{numeric}, the number of seconds after which the optimization
+is interrupted. Can also be \code{NULL} for no time limit.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A named \code{list}, containing at least these four elements:
+\describe{
+\item{\code{value}}{A \code{numeric}, the value of the estimated
+optimum of \code{objective}.}
+\item{\code{parameter}}{A \code{numeric} vector, the parameter vector
+where the optimum of \code{objective} is obtained.}
+\item{\code{seconds}}{A \code{numeric}, the total optimization time in
+seconds.}
+\item{\code{initial}}{A \code{numeric}, the initial parameter values.}
+}
+Appended are additional output elements of the optimizer (if not excluded
+by the \code{$output_elements} field).
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{Optimizer$new("stats::nlm")$apply(function(x) x^4 + 3*x - 5, 2)
+}
+\if{html}{\out{</div>}}
+
 }
 
 }
@@ -107,19 +303,43 @@ specifications, the default values are used.}
 \if{html}{\out{<a id="method-Optimizer-print"></a>}}
 \if{latex}{\out{\hypertarget{method-Optimizer-print}{}}}
 \subsection{Method \code{print()}}{
+Prints the optimizer label.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimizer$print(...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
+Without specifications, default values are used.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Invisibly the \code{Optimizer} object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Optimizer-summary"></a>}}
 \if{latex}{\out{\hypertarget{method-Optimizer-summary}{}}}
 \subsection{Method \code{summary()}}{
+Returns a summary of the optimizer
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimizer$summary(...)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
+Without specifications, default values are used.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+Invisibly the \code{Optimizer} object.
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Optimizer-clone"></a>}}

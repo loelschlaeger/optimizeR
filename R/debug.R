@@ -1,13 +1,32 @@
 
-#' @format NULL
+#' @format
+#' TODO
 #' @export
 
-optimizer_debug <- Optimizer$
-  new(algorithm = test_optimizer)
+NULL
 
-#' test optimizer
+# optimizer_debug <- Optimizer$new(which = "custom")
+
+#' TODO
 #' @description
-#' A short description...
+#' TODO
+#' @param f
+#' TODO
+#' @param p
+#' TODO
+#' @param ...
+#' TODO
+#' @param parameter
+#' TODO
+#' @param value
+#' TODO
+#' @param seconds
+#' TODO
+#' @param warning_prob
+#' TODO
+#' @param error_prob
+#' TODO
+#' @export
 
 test_optimizer <- function(
     f, p, ..., parameter = p, value = f(parameter), seconds = 0,
@@ -16,9 +35,16 @@ test_optimizer <- function(
 
 }
 
-#' test function
+#' TODO
 #' @description
-#' A short description...
+#' TODO
+#' @param x
+#' TODO
+#' @param warning_prob
+#' TODO
+#' @param error_prob
+#' TODO
+#' @export
 
 test_objective <- function(x, warning_prob = 0, error_prob = 0) {
 

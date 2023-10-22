@@ -2,7 +2,7 @@
 % Please edit documentation in R/debug.R
 \name{test_optimizer}
 \alias{test_optimizer}
-\title{test optimizer}
+\title{TODO}
 \usage{
 test_optimizer(
   f,
@@ -15,6 +15,23 @@ test_optimizer(
   error_prob = 0
 )
 }
+\arguments{
+\item{f}{TODO}
+
+\item{p}{TODO}
+
+\item{...}{TODO}
+
+\item{parameter}{TODO}
+
+\item{value}{TODO}
+
+\item{seconds}{TODO}
+
+\item{warning_prob}{TODO}
+
+\item{error_prob}{TODO}
+}
 \description{
-A short description...
+TODO
 }
