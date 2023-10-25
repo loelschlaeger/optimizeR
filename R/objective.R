@@ -5,8 +5,9 @@
 #' for numerical optimization.
 #'
 #' @param objective
-#' A \code{function} that has at least one argument that receives a
-#' \code{numeric} \code{vector} and returns a single \code{numeric} value.
+#' A \code{function} to be optimized that
+#' 1. has at least one argument that receives a \code{numeric} \code{vector}
+#' 2. and returns a single \code{numeric} value.
 #' @param target
 #' A \code{character}, the argument names of \code{objective} that get
 #' optimized. These arguments must receive a \code{numeric} \code{vector}.
@@ -71,7 +72,10 @@ Objective <- R6::R6Class(
         npar, lower = 1, any.missing = FALSE, len = length(target)
       )
       arguments <- list(...)
-      arguments <- c(arguments, oeli::function_defaults(objective, names(arguments)))
+      arguments <- c(
+        arguments,
+        oeli::function_defaults(objective, names(arguments))
+      )
       do.call(self$set_argument, c(arguments, list(verbose = FALSE)))
       self$objective_name <- oeli::variable_name(objective)
       private$.objective <- objective

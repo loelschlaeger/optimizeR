@@ -232,7 +232,7 @@
     },
     "checkmate": {
       "Package": "checkmate",
-      "Version": "2.2.0",
+      "Version": "2.3.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -240,7 +240,7 @@
         "backports",
         "utils"
       ],
-      "Hash": "ca9c113196136f4a9ca9ce6079c2c99e"
+      "Hash": "ed4275b13c6ab74b89a31def0b6bf835"
     },
     "cli": {
       "Package": "cli",
@@ -991,14 +991,14 @@
     },
     "oeli": {
       "Package": "oeli",
-      "Version": "0.1.0.9005",
+      "Version": "0.1.0.9008",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "oeli",
       "RemoteUsername": "loelschlaeger",
       "RemoteRef": "HEAD",
-      "RemoteSha": "abd286645dee37d3bb76ae8ef10d444fa80d0ac7",
+      "RemoteSha": "a40dc4d907b0f57b29ffa39522fcaedb7da2ced0",
       "Requirements": [
         "Rcpp",
         "RcppArmadillo",
@@ -1012,7 +1012,7 @@
         "testthat",
         "usethis"
       ],
-      "Hash": "192bde616344890cbfed518178d86f28"
+      "Hash": "1126fa65442dea01b5b1a94b027f2c50"
     },
     "openssl": {
       "Package": "openssl",
@@ -1239,13 +1239,13 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.0.2",
+      "Version": "1.0.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "utils"
       ],
-      "Hash": "4b22ac016fe54028b88d0c68badbd061"
+      "Hash": "41b847654f567341725473431dd0d5ab"
     },
     "rex": {
       "Package": "rex",

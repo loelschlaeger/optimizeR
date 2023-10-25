@@ -72,8 +72,11 @@ Creates a new \code{Objective} object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{objective}}{A \code{function} that has at least one argument that receives a
-\code{numeric} \code{vector} and returns a single \code{numeric} value.}
+\item{\code{objective}}{A \code{function} to be optimized that
+\enumerate{
+\item has at least one argument that receives a \code{numeric} \code{vector}
+\item and returns a single \code{numeric} value.
+}}
 
 \item{\code{target}}{A \code{character}, the argument names of \code{objective} that get
 optimized. These arguments must receive a \code{numeric} \code{vector}.}

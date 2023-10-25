@@ -18,10 +18,9 @@
 #'    value and the optimal parameter vector.
 #'
 #' @param objective
-#' A \code{function} to be optimized, returning a single \code{numeric}.
-#' Its first argument must be a \code{numeric} vector of the same length as
-#' \code{initial}, followed by any other arguments specified by the \code{...}
-#' argument.
+#' A \code{function} to be optimized that
+#' 1. has at least one argument that receives a \code{numeric} \code{vector}
+#' 2. and returns a single \code{numeric} value.
 #' @param initial
 #' A \code{numeric} vector with starting parameter values for the optimization.
 #' @param ...
@@ -34,7 +33,7 @@
 #' is interrupted. Can also be \code{NULL} for no time limit.
 #'
 #' @examples
-#' ### Apply 'stats::nlm' and 'pracma::nelder_mead' and compare their results:
+#' ### Task: compare 'stats::nlm' and 'pracma::nelder_mead' optimizer
 #'
 #' # 1. define objective function and initial values
 #' objective <- TestFunctions::TF_ackley
@@ -45,11 +44,9 @@
 #'
 #' # 3. define 'nlm' optimizer
 #' optimizer_nlm <- Optimizer$new(which = "stats::nlm")
-#'
-#' # get a summary of the optimizer
 #' summary(optimizer_nlm)
 #'
-#' # 4. define a custom optimizer (not contained in the dictionary)
+#' # 4. define the 'pracma::nelder_mead' optimizer (not contained in the dictionary)
 #' optimizer_nelder_mead <- Optimizer$new(which = "custom")
 #' optimizer_nelder_mead$definition(
 #'   algorithm = pracma::nelder_mead,  # the optimization function
@@ -61,8 +58,10 @@
 #' )
 #'
 #' # 5. compare the optimization results
-#' optimizer_nlm$apply(objective, initial)
-#' optimizer_nelder_mead$apply(objective, initial)
+#' lapply(
+#'   list(optimizer_nlm, optimizer_nelder_mead),
+#'   function(optimizer) optimizer$apply(objective, initial)
+#' )
 #'
 #' @export
 
@@ -82,19 +81,26 @@ Optimizer <- R6::R6Class(
     #' A new \code{Optimizer} object.
 
     initialize = function(which, ...) {
-      checkmate::assert_choice(
-        which, choices = c(optimizer_dictionary$keys, "custom")
-      )
-      if (which %in% optimizer_dictionary$keys) {
-        for (value in c(
-          "label", "algorithm", "arg_objective", "arg_initial", "out_value",
-          "out_parameter", "direction", "arguments", "output_elements"
+      if (identical(which, "custom")) {
+        cli::cli_inform(
+          "Please use method {.fun $definition} next to define a custom optimizer."
         )
-        ) {
-          self[value] <- optimizer_dictionary$get(key = which, value = value)
+      } else {
+        checkmate::assert_choice(which, choices = optimizer_dictionary$keys)
+        if (which %in% optimizer_dictionary$keys) {
+          self$definition(
+            algorithm = optimizer_dictionary$get(key = which, value = "algorithm"),
+            arg_objective = optimizer_dictionary$get(key = which, value = "arg_objective"),
+            arg_initial = optimizer_dictionary$get(key = which, value = "arg_initial"),
+            out_value = optimizer_dictionary$get(key = which, value = "out_value"),
+            out_parameter = optimizer_dictionary$get(key = which, value = "out_parameter"),
+            direction = optimizer_dictionary$get(key = which, value = "direction"),
+            arguments = optimizer_dictionary$get(key = which, value = "arguments"),
+            out_elements = optimizer_dictionary$get(key = which, value = "out_elements")
+          )
         }
+        self$set_arguments(...)
       }
-      self$set_arguments(...)
     },
 
     #' @description
@@ -119,7 +125,7 @@ Optimizer <- R6::R6Class(
     #' @param arguments
     #' A named \code{list} of arguments for \code{algorithm}. By default, the
     #' default arguments are used.
-    #' @param output_elements
+    #' @param out_elements
     #' A \code{character} of element names to be included in the output.
     #' Can also be \code{NULL}, in which case all elements are included.
     #' @return
@@ -127,9 +133,9 @@ Optimizer <- R6::R6Class(
 
     definition = function(
       algorithm, arg_objective, arg_initial, out_value, out_parameter,
-      direction, arguments = formals(algorithm), output_elements = NULL
+      direction, arguments = formals(algorithm), out_elements = NULL
     ) {
-      if (missing(.optimizer)) {
+      if (missing(algorithm)) {
         cli::cli_abort(c(
           "x" = "Please specify argument {.var algorithm}.",
           "*" = "It should be a {.cls function} that performs numerical
@@ -179,7 +185,7 @@ Optimizer <- R6::R6Class(
       }
       self$direction <- direction
       self$arguments <- arguments
-      self$output_elements <- output_elements
+      self$out_elements <- out_elements
     },
 
     #' @description
@@ -299,29 +305,39 @@ Optimizer <- R6::R6Class(
     #'   \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
     #' }
     #' Appended are additional output elements of the optimizer (if not excluded
-    #' by the \code{$output_elements} field).
+    #' by the \code{$out_elements} field).
     #' @examples
-    #' Optimizer$new("stats::nlm")$apply(function(x) x^4 + 3*x - 5, 2)
+    #' objective <- function(x) x^4 + 3*x - 5
+    #' Optimizer$new("stats::nlm")$
+    #'   apply(objective, target = "x", npar = 1, initial = 2)
 
     apply = function(
-      objective, initial, ..., direction = "min", seconds = self$seconds
+      objective, target, npar, initial, ..., direction = "min",
+      seconds = self$seconds
     ) {
+
+      # direction and seconds as global variables
+
+      obj <- Objective$new(objective = objective, target = target, npar = npar)
+      private$.arguments[[private$.arg_objective]] <- obj$evaluate
+      private$.arguments[[private$.arg_initial]] <- initial
+
       start <- Sys.time()
       res <- do.call(
-        what = optimizer[["optimizer"]],
+        what = private$.algorithm,
         args = c(
           structure(
-            list(objective),
-            names = optimizer[["optimizer_labels"]][["objective"]]
+            list(obj$evaluate, initial),
+            names = c(private$.arg_objective, private$.arg_initial)
           ),
-          structure(
-            list(initial), names = optimizer[["optimizer_labels"]][["initial"]]
-          ),
-          optimizer[["optimizer_arguments"]], list(...)
-        ),
-        quote = TRUE
+          list("negate" = !identical(private$.direction, direction))
+          #list(...)
+        )
       )
       end <- Sys.time()
+
+
+
       c(
         structure(
           list(res[[optimizer[["optimizer_labels"]][["value"]]]],
@@ -332,6 +348,9 @@ Optimizer <- R6::R6Class(
         ),
         res[!names(res) %in% optimizer[["output_ignore"]]]
       )
+
+
+
     },
 
     #' @description
@@ -365,12 +384,8 @@ Optimizer <- R6::R6Class(
     .out_parameter = NULL,
     .direction = NULL,
     .arguments = NULL,
-    .output_elements = NULL,
-    .seconds = NULL,
-
-    .check_arguments_complete = function() {
-
-    }
+    .out_elements = NULL,
+    .seconds = NULL
 
   ),
 
@@ -465,20 +480,20 @@ Optimizer <- R6::R6Class(
       if (missing(value)) {
         private$.arguments
       } else {
-        checkmate::assert_list(value, names = "strict")
+        checkmate::assert_list(value, names = "unique")
         private$.arguments <- value
       }
     },
 
-    #' @field output_elements
+    #' @field out_elements
     #' A \code{character} of element names to be included in the output.
     #' Can also be \code{NULL}, in which case all elements are included.
-    output_elements = function(value) {
+    out_elements = function(value) {
       if (missing(value)) {
-        private$.output_elements
+        private$.out_elements
       } else {
         checkmate::assert_character(value, null.ok = TRUE)
-        private$.output_elements <- value
+        private$.out_elements <- value
       }
     },
 

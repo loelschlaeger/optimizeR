@@ -23,7 +23,7 @@ value and the optimal parameter vector.
 }
 }
 \examples{
-### Apply 'stats::nlm' and 'pracma::nelder_mead' and compare their results:
+### Task: compare 'stats::nlm' and 'pracma::nelder_mead' optimizer
 
 # 1. define objective function and initial values
 objective <- TestFunctions::TF_ackley
@@ -34,11 +34,9 @@ optimizer_dictionary$keys
 
 # 3. define 'nlm' optimizer
 optimizer_nlm <- Optimizer$new(which = "stats::nlm")
-
-# get a summary of the optimizer
 summary(optimizer_nlm)
 
-# 4. define a custom optimizer (not contained in the dictionary)
+# 4. define the 'pracma::nelder_mead' optimizer (not contained in the dictionary)
 optimizer_nelder_mead <- Optimizer$new(which = "custom")
 optimizer_nelder_mead$definition(
   algorithm = pracma::nelder_mead,  # the optimization function
@@ -50,15 +48,19 @@ optimizer_nelder_mead$definition(
 )
 
 # 5. compare the optimization results
-optimizer_nlm$apply(objective, initial)
-optimizer_nelder_mead$apply(objective, initial)
+lapply(
+  list(optimizer_nlm, optimizer_nelder_mead),
+  function(optimizer) optimizer$apply(objective, initial)
+)
 
 
 ## ------------------------------------------------
 ## Method `Optimizer$apply`
 ## ------------------------------------------------
 
-Optimizer$new("stats::nlm")$apply(function(x) x^4 + 3*x - 5, 2)
+objective <- function(x) x^4 + 3*x - 5
+Optimizer$new("stats::nlm")$
+  apply(objective, target = "x", npar = 1, initial = 2)
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -85,7 +87,7 @@ output \code{list} of \code{algorithm}.}
 \item{\code{arguments}}{A named \code{list} of arguments for \code{algorithm}. By default, the
 default arguments are used.}
 
-\item{\code{output_elements}}{A \code{character} of element names to be included in the output.
+\item{\code{out_elements}}{A \code{character} of element names to be included in the output.
 Can also be \code{NULL}, in which case all elements are included.}
 
 \item{\code{seconds}}{A \code{numeric}, the number of seconds after which the optimization
@@ -145,7 +147,7 @@ Defines an optimizer.
   out_parameter,
   direction,
   arguments = formals(algorithm),
-  output_elements = NULL
+  out_elements = NULL
 )}\if{html}{\out{</div>}}
 }
 
@@ -172,7 +174,7 @@ output \code{list} of \code{algorithm}.}
 \item{\code{arguments}}{A named \code{list} of arguments for \code{algorithm}. By default, the
 default arguments are used.}
 
-\item{\code{output_elements}}{A \code{character} of element names to be included in the output.
+\item{\code{out_elements}}{A \code{character} of element names to be included in the output.
 Can also be \code{NULL}, in which case all elements are included.}
 }
 \if{html}{\out{</div>}}
@@ -220,10 +222,11 @@ Validates the \code{Optimizer} object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{objective}}{A \code{function} to be optimized, returning a single \code{numeric}.
-Its first argument must be a \code{numeric} vector of the same length as
-\code{initial}, followed by any other arguments specified by the \code{...}
-argument.}
+\item{\code{objective}}{A \code{function} to be optimized that
+\enumerate{
+\item has at least one argument that receives a \code{numeric} \code{vector}
+\item and returns a single \code{numeric} value.
+}}
 
 \item{\code{initial}}{A \code{numeric} vector with starting parameter values for the optimization.}
 
@@ -249,6 +252,8 @@ Applies an optimizer.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimizer$apply(
   objective,
+  target,
+  npar,
   initial,
   ...,
   direction = "min",
@@ -259,10 +264,11 @@ Applies an optimizer.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{objective}}{A \code{function} to be optimized, returning a single \code{numeric}.
-Its first argument must be a \code{numeric} vector of the same length as
-\code{initial}, followed by any other arguments specified by the \code{...}
-argument.}
+\item{\code{objective}}{A \code{function} to be optimized that
+\enumerate{
+\item has at least one argument that receives a \code{numeric} \code{vector}
+\item and returns a single \code{numeric} value.
+}}
 
 \item{\code{initial}}{A \code{numeric} vector with starting parameter values for the optimization.}
 
@@ -288,11 +294,13 @@ seconds.}
 \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
 }
 Appended are additional output elements of the optimizer (if not excluded
-by the \code{$output_elements} field).
+by the \code{$out_elements} field).
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{Optimizer$new("stats::nlm")$apply(function(x) x^4 + 3*x - 5, 2)
+\preformatted{objective <- function(x) x^4 + 3*x - 5
+Optimizer$new("stats::nlm")$
+  apply(objective, target = "x", npar = 1, initial = 2)
 }
 \if{html}{\out{</div>}}
 

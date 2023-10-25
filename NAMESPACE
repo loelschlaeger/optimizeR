@@ -3,6 +3,7 @@
 export()
 export(Objective)
 export(Optimizer)
+export(optimizer_dictionary)
 export(test_objective)
 export(test_optimizer)
 importFrom(TestFunctions,TF_ackley)
