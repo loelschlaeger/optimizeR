@@ -35,7 +35,7 @@ test_that("objective with one target argument can be evalauted", {
     print(objective)
   )
   expect_silent(
-    objective$validate(at = 1)
+    objective$validate(.at = 1)
   )
 })
 
@@ -65,7 +65,7 @@ test_that("objective with more than one target argument can be evalauted", {
     llk(mu = 1:2, sd = 3:4, lambda = 5, data = faithful$eruptions)
   )
   expect_equal(
-    objective$evaluate(1:5, negate = TRUE),
+    objective$evaluate(1:5, .negate = TRUE),
     -llk(mu = 1:2, sd = 3:4, lambda = 5, data = faithful$eruptions)
   )
 })

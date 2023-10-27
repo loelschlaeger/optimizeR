@@ -17,9 +17,7 @@ optimizer_dictionary <- oeli::Dictionary$new(
     "arg_initial",
     "out_value",
     "out_parameter",
-    "direction",
-    "arguments",
-    "out_elements"
+    "direction"
   ),
   value_assert = alist(
     "algorithm" = checkmate::assert_function(),
@@ -27,12 +25,11 @@ optimizer_dictionary <- oeli::Dictionary$new(
     "arg_initial" = checkmate::assert_string(),
     "out_value" = checkmate::assert_string(),
     "out_parameter" = checkmate::assert_string(),
-    "direction" = checkmate::assert_choice(choices = c("min", "max")),
-    "arguments" = checkmate::assert_list(names = "unique"),
-    "out_elements" = checkmate::assert_character(any.missing = FALSE, unique = TRUE)
+    "direction" = checkmate::assert_choice(choices = c("min", "max"))
   ),
   allow_overwrite = FALSE,
   keys_reserved = c("custom"),
+  dictionary_name = c("optimizer algorithms"),
   alias_choices = c("constrained", "unconstrained")
 )$add(
   "label" = "stats::nlm",
@@ -41,10 +38,8 @@ optimizer_dictionary <- oeli::Dictionary$new(
   "arg_objective" = "f",
   "arg_initial" = "p",
   "out_value" = "minimum",
-  "out_parameter" = "min",
-  "direction" = "min",
-  "arguments" = as.list(formals(stats::nlm)),
-  "out_elements" = c("minimum", "estimate", "gradient", "hessian", "code", "iterations")
+  "out_parameter" = "estimate",
+  "direction" = "min"
 )$add(
   "label" = "stats::optim",
   "algorithm" = stats::optim,
@@ -52,9 +47,7 @@ optimizer_dictionary <- oeli::Dictionary$new(
   "arg_initial" = "par",
   "out_value" = "minimum",
   "out_parameter" = "min",
-  "direction" = "min",
-  "arguments" = as.list(formals(stats::optim)),
-  "out_elements" = c("par", "value", "counts", "convergence", "message", "hessian")
+  "direction" = "min"
 )
 
 

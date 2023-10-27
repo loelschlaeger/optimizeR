@@ -1,16 +1,48 @@
-# TODO: add tests
+test_that("simple minimization works", {
+  objective <- function(x) x^2
+  out <- Optimizer$new("stats::nlm")$
+    minimize(objective, initial = 2)
+  expect_type(
+    out,
+    "list"
+  )
+  expect_named(
+    out,
+    c("value", "parameter", "seconds", "initial", "gradient", "code", "iterations")
+  )
+})
 
-objective <- function(x) x^4 + 3*x - 5
+test_that("simple maximization works", {
+  objective <- function(x) -x^2
+  out <- Optimizer$new("stats::nlm")$
+    maximize(objective, initial = 2)
+  expect_type(
+    out,
+    "list"
+  )
+  expect_named(
+    out,
+    c("value", "parameter", "seconds", "initial", "gradient", "code", "iterations")
+  )
+})
 
-target = "x"
-npar = 1
-initial = 2
-direction = "min"
-seconds = Inf
+test_that("minimization with additional arguments works", {
+  objective <- function(x, a = 1) x^2 + a
+  out <- Optimizer$new("stats::nlm")$
+    minimize(objective, initial = 2, "a" = 10)
+  expect_type(
+    out,
+    "list"
+  )
+  expect_named(
+    out,
+    c("value", "parameter", "seconds", "initial", "gradient", "code", "iterations")
+  )
+})
 
-optimizer_nlm <- Optimizer$new("stats::nlm")
 
-self <- optimizer_nlm
-private <- self$.__enclos_env__$private
 
-optimizer_nlm$apply(objective, target = target, npar = npar, initial = inital)
+
+
+
+

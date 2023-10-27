@@ -27,7 +27,7 @@ objective <- Objective$new(
 
 ### evaluate the objective function at 1:5 (1:2 is passed to mu, 3:4 to sd,
 ### and 5 to lambda)
-objective$evaluate(at = 1:5)
+objective$evaluate(1:5)
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -44,6 +44,8 @@ or \code{FALSE} (default) if not.}
 
 \item{\code{verbose}}{Either \code{TRUE} (default) to print status messages, or \code{FALSE}
 to hide those.}
+
+\item{\code{npar}}{An \code{integer} vector, defining the length of each target argument.}
 }
 \if{html}{\out{</div>}}
 }
@@ -165,13 +167,13 @@ Invisibly the \code{Objective} object.
 \subsection{Method \code{validate()}}{
 Validate an \code{Objective} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$validate(at)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Objective$validate(.at)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{at}}{A \code{numeric} of length \code{sum(npar)}, the values for the target
+\item{\code{.at}}{A \code{numeric} of length \code{sum(self$npar)}, the values for the target
 arguments written in a single vector.}
 }
 \if{html}{\out{</div>}}
@@ -186,17 +188,20 @@ Invisibly the \code{Objective} object.
 \subsection{Method \code{evaluate()}}{
 Evaluate the objective function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$evaluate(at, negate = FALSE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Objective$evaluate(.at, .negate = FALSE, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{at}}{A \code{numeric} of length \code{sum(npar)}, the values for the target
+\item{\code{.at}}{A \code{numeric} of length \code{sum(self$npar)}, the values for the target
 arguments written in a single vector.}
 
-\item{\code{negate}}{Either \code{TRUE} to negate the \code{numeric} return value of
+\item{\code{.negate}}{Either \code{TRUE} to negate the \code{numeric} return value of
 \code{objective}, or \code{FALSE} (default) else.}
+
+\item{\code{...}}{Optionally additional arguments to \code{objective} that are fixed during
+the optimization.}
 }
 \if{html}{\out{</div>}}
 }

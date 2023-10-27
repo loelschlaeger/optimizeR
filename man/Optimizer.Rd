@@ -6,9 +6,11 @@
 \description{
 A \code{Optimizer} R6 object defines a numerical optimizer based on an
 optimization function implemented in R.
+
 The main advantage of working with an \code{Optimizer} object instead of
 using the optimization function directly lies in the standardized inputs and
 outputs.
+
 Any R function that fulfills the following four constraints can be defined as
 an \code{Optimizer} object:
 \enumerate{
@@ -23,7 +25,7 @@ value and the optimal parameter vector.
 }
 }
 \examples{
-### Task: compare 'stats::nlm' and 'pracma::nelder_mead' optimizer
+### Task: compare minimization with 'stats::nlm' and 'pracma::nelder_mead'
 
 # 1. define objective function and initial values
 objective <- TestFunctions::TF_ackley
@@ -33,34 +35,40 @@ initial <- 1:2
 optimizer_dictionary$keys
 
 # 3. define 'nlm' optimizer
-optimizer_nlm <- Optimizer$new(which = "stats::nlm")
-summary(optimizer_nlm)
+nlm <- Optimizer$new(which = "stats::nlm")
+summary(nlm)
 
 # 4. define the 'pracma::nelder_mead' optimizer (not contained in the dictionary)
-optimizer_nelder_mead <- Optimizer$new(which = "custom")
-optimizer_nelder_mead$definition(
-  algorithm = pracma::nelder_mead,  # the optimization function
-  arg_objective = "fn",             # the argument name for the objective function
-  arg_initial = "x0",               # the argument name for the initial values
-  out_value = "fmin",               # the element for the optimal function value in the output
-  out_parameter = "xmin",           # the element for the optimal parameters in the output
-  direction = "min"                 # the direction of the optimizer (here minimization)
+nelder_mead <- Optimizer$new(which = "custom")
+nelder_mead$definition(
+  algorithm = pracma::nelder_mead, # the optimization function
+  arg_objective = "fn",            # the argument name for the objective function
+  arg_initial = "x0",              # the argument name for the initial values
+  out_value = "fmin",              # the element for the optimal function value in the output
+  out_parameter = "xmin",          # the element for the optimal parameters in the output
+  direction = "min"                # the optimizer minimizes
 )
 
-# 5. compare the optimization results
+# 5. compare the minimization results
 lapply(
-  list(optimizer_nlm, optimizer_nelder_mead),
-  function(optimizer) optimizer$apply(objective, initial)
+  list(nlm, nelder_mead),
+  function(optimizer) optimizer$minimize(objective, initial)
 )
 
 
 ## ------------------------------------------------
-## Method `Optimizer$apply`
+## Method `Optimizer$minimize`
 ## ------------------------------------------------
 
-objective <- function(x) x^4 + 3*x - 5
 Optimizer$new("stats::nlm")$
-  apply(objective, target = "x", npar = 1, initial = 2)
+  minimize(objective = function(x) x^4 + 3*x - 5, initial = 2)
+
+## ------------------------------------------------
+## Method `Optimizer$maximize`
+## ------------------------------------------------
+
+Optimizer$new("stats::nlm")$
+  maximize(objective = function(x) -x^4 + 3*x - 5, initial = 2)
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -84,14 +92,14 @@ output \code{list} of \code{algorithm}.}
 \item{\code{direction}}{Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
 (if the optimizer maximizes).}
 
-\item{\code{arguments}}{A named \code{list} of arguments for \code{algorithm}. By default, the
-default arguments are used.}
-
-\item{\code{out_elements}}{A \code{character} of element names to be included in the output.
-Can also be \code{NULL}, in which case all elements are included.}
+\item{\code{arguments}}{A named \code{list} of custom arguments for \code{algorithm}. Defaults
+are used for arguments that are not specified.}
 
 \item{\code{seconds}}{A \code{numeric}, the number of seconds after which the optimization
 is interrupted. Can also be \code{NULL} for no time limit.}
+
+\item{\code{hide_warnings}}{Either \code{TRUE} to hide warnings during optimization, or \code{FALSE}
+(default) else.}
 }
 \if{html}{\out{</div>}}
 }
@@ -102,7 +110,8 @@ is interrupted. Can also be \code{NULL} for no time limit.}
 \item \href{#method-Optimizer-definition}{\code{Optimizer$definition()}}
 \item \href{#method-Optimizer-set_arguments}{\code{Optimizer$set_arguments()}}
 \item \href{#method-Optimizer-validate}{\code{Optimizer$validate()}}
-\item \href{#method-Optimizer-apply}{\code{Optimizer$apply()}}
+\item \href{#method-Optimizer-minimize}{\code{Optimizer$minimize()}}
+\item \href{#method-Optimizer-maximize}{\code{Optimizer$maximize()}}
 \item \href{#method-Optimizer-print}{\code{Optimizer$print()}}
 \item \href{#method-Optimizer-summary}{\code{Optimizer$summary()}}
 \item \href{#method-Optimizer-clone}{\code{Optimizer$clone()}}
@@ -145,9 +154,7 @@ Defines an optimizer.
   arg_initial,
   out_value,
   out_parameter,
-  direction,
-  arguments = formals(algorithm),
-  out_elements = NULL
+  direction
 )}\if{html}{\out{</div>}}
 }
 
@@ -170,12 +177,6 @@ output \code{list} of \code{algorithm}.}
 
 \item{\code{direction}}{Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
 (if the optimizer maximizes).}
-
-\item{\code{arguments}}{A named \code{list} of arguments for \code{algorithm}. By default, the
-default arguments are used.}
-
-\item{\code{out_elements}}{A \code{character} of element names to be included in the output.
-Can also be \code{NULL}, in which case all elements are included.}
 }
 \if{html}{\out{</div>}}
 }
@@ -245,20 +246,12 @@ The \code{Optimizer} object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Optimizer-apply"></a>}}
-\if{latex}{\out{\hypertarget{method-Optimizer-apply}{}}}
-\subsection{Method \code{apply()}}{
-Applies an optimizer.
+\if{html}{\out{<a id="method-Optimizer-minimize"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimizer-minimize}{}}}
+\subsection{Method \code{minimize()}}{
+Performing minimization.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Optimizer$apply(
-  objective,
-  target,
-  npar,
-  initial,
-  ...,
-  direction = "min",
-  seconds = self$seconds
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Optimizer$minimize(objective, initial, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -274,33 +267,72 @@ Applies an optimizer.
 
 \item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
 Without specifications, default values are used.}
-
-\item{\code{direction}}{Either \code{"min"} for minimization or \code{"max"} for maximization.}
-
-\item{\code{seconds}}{A \code{numeric}, the number of seconds after which the optimization
-is interrupted. Can also be \code{NULL} for no time limit.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 A named \code{list}, containing at least these four elements:
 \describe{
-\item{\code{value}}{A \code{numeric}, the value of the estimated
-optimum of \code{objective}.}
+\item{\code{value}}{A \code{numeric}, the minimum function value.}
 \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
-where the optimum of \code{objective} is obtained.}
-\item{\code{seconds}}{A \code{numeric}, the total optimization time in
-seconds.}
+where the minimum is obtained.}
+\item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
 \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
 }
-Appended are additional output elements of the optimizer (if not excluded
-by the \code{$out_elements} field).
+Appended are additional output elements of the optimizer. If an error
+occurred, then the error message is also appended as element \code{.error}.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{objective <- function(x) x^4 + 3*x - 5
-Optimizer$new("stats::nlm")$
-  apply(objective, target = "x", npar = 1, initial = 2)
+\preformatted{Optimizer$new("stats::nlm")$
+  minimize(objective = function(x) x^4 + 3*x - 5, initial = 2)
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Optimizer-maximize"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimizer-maximize}{}}}
+\subsection{Method \code{maximize()}}{
+Performing maximization.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Optimizer$maximize(objective, initial, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{objective}}{A \code{function} to be optimized that
+\enumerate{
+\item has at least one argument that receives a \code{numeric} \code{vector}
+\item and returns a single \code{numeric} value.
+}}
+
+\item{\code{initial}}{A \code{numeric} vector with starting parameter values for the optimization.}
+
+\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
+Without specifications, default values are used.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A named \code{list}, containing at least these four elements:
+\describe{
+\item{\code{value}}{A \code{numeric}, the maximum function value.}
+\item{\code{parameter}}{A \code{numeric} vector, the parameter vector
+where the maximum is obtained.}
+\item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
+\item{\code{initial}}{A \code{numeric}, the initial parameter values.}
+}
+Appended are additional output elements of the optimizer. If an error
+occurred, then the error message is also appended as element \code{.error}.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{Optimizer$new("stats::nlm")$
+  maximize(objective = function(x) -x^4 + 3*x - 5, initial = 2)
 }
 \if{html}{\out{</div>}}
 

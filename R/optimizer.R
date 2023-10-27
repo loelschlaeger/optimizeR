@@ -3,9 +3,11 @@
 #' @description
 #' A \code{Optimizer} R6 object defines a numerical optimizer based on an
 #' optimization function implemented in R.
+#'
 #' The main advantage of working with an \code{Optimizer} object instead of
 #' using the optimization function directly lies in the standardized inputs and
 #' outputs.
+#'
 #' Any R function that fulfills the following four constraints can be defined as
 #' an \code{Optimizer} object:
 #' 1. It must have an input for a \code{function}, the objective function to be
@@ -33,7 +35,7 @@
 #' is interrupted. Can also be \code{NULL} for no time limit.
 #'
 #' @examples
-#' ### Task: compare 'stats::nlm' and 'pracma::nelder_mead' optimizer
+#' ### Task: compare minimization with 'stats::nlm' and 'pracma::nelder_mead'
 #'
 #' # 1. define objective function and initial values
 #' objective <- TestFunctions::TF_ackley
@@ -43,24 +45,24 @@
 #' optimizer_dictionary$keys
 #'
 #' # 3. define 'nlm' optimizer
-#' optimizer_nlm <- Optimizer$new(which = "stats::nlm")
-#' summary(optimizer_nlm)
+#' nlm <- Optimizer$new(which = "stats::nlm")
+#' summary(nlm)
 #'
 #' # 4. define the 'pracma::nelder_mead' optimizer (not contained in the dictionary)
-#' optimizer_nelder_mead <- Optimizer$new(which = "custom")
-#' optimizer_nelder_mead$definition(
-#'   algorithm = pracma::nelder_mead,  # the optimization function
-#'   arg_objective = "fn",             # the argument name for the objective function
-#'   arg_initial = "x0",               # the argument name for the initial values
-#'   out_value = "fmin",               # the element for the optimal function value in the output
-#'   out_parameter = "xmin",           # the element for the optimal parameters in the output
-#'   direction = "min"                 # the direction of the optimizer (here minimization)
+#' nelder_mead <- Optimizer$new(which = "custom")
+#' nelder_mead$definition(
+#'   algorithm = pracma::nelder_mead, # the optimization function
+#'   arg_objective = "fn",            # the argument name for the objective function
+#'   arg_initial = "x0",              # the argument name for the initial values
+#'   out_value = "fmin",              # the element for the optimal function value in the output
+#'   out_parameter = "xmin",          # the element for the optimal parameters in the output
+#'   direction = "min"                # the optimizer minimizes
 #' )
 #'
-#' # 5. compare the optimization results
+#' # 5. compare the minimization results
 #' lapply(
-#'   list(optimizer_nlm, optimizer_nelder_mead),
-#'   function(optimizer) optimizer$apply(objective, initial)
+#'   list(nlm, nelder_mead),
+#'   function(optimizer) optimizer$minimize(objective, initial)
 #' )
 #'
 #' @export
@@ -94,10 +96,9 @@ Optimizer <- R6::R6Class(
             arg_initial = optimizer_dictionary$get(key = which, value = "arg_initial"),
             out_value = optimizer_dictionary$get(key = which, value = "out_value"),
             out_parameter = optimizer_dictionary$get(key = which, value = "out_parameter"),
-            direction = optimizer_dictionary$get(key = which, value = "direction"),
-            arguments = optimizer_dictionary$get(key = which, value = "arguments"),
-            out_elements = optimizer_dictionary$get(key = which, value = "out_elements")
+            direction = optimizer_dictionary$get(key = which, value = "direction")
           )
+          self$label <- which
         }
         self$set_arguments(...)
       }
@@ -122,23 +123,16 @@ Optimizer <- R6::R6Class(
     #' @param direction
     #' Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
     #' (if the optimizer maximizes).
-    #' @param arguments
-    #' A named \code{list} of arguments for \code{algorithm}. By default, the
-    #' default arguments are used.
-    #' @param out_elements
-    #' A \code{character} of element names to be included in the output.
-    #' Can also be \code{NULL}, in which case all elements are included.
     #' @return
     #' The \code{Optimizer} object.
 
     definition = function(
-      algorithm, arg_objective, arg_initial, out_value, out_parameter,
-      direction, arguments = formals(algorithm), out_elements = NULL
+      algorithm, arg_objective, arg_initial, out_value, out_parameter, direction
     ) {
       if (missing(algorithm)) {
         cli::cli_abort(c(
           "x" = "Please specify argument {.var algorithm}.",
-          "*" = "It should be a {.cls function} that performs numerical
+          "*" = "It should be a {.cls function} that can perform numerical
                  optimization."
         ), call = NULL)
       }
@@ -184,8 +178,6 @@ Optimizer <- R6::R6Class(
         ), call = NULL)
       }
       self$direction <- direction
-      self$arguments <- arguments
-      self$out_elements <- out_elements
     },
 
     #' @description
@@ -211,146 +203,54 @@ Optimizer <- R6::R6Class(
         objective = objective, initial = initial, ..., direction = direction,
         seconds = seconds
       )
-      if (!exists("objective_test", where = .validation_settings)) {
-        .validation_settings[["objective_test"]] <- TestFunctions::TF_ackley
-      }
-      if (!exists("objective_add", where = .validation_settings)) {
-        .validation_settings[["objective_add"]] <- list()
-      }
-      if (!exists("initial", where = .validation_settings)) {
-        .validation_settings[["initial"]] <- round(stats::rnorm(2), 2)
-      }
-      if (!exists("check_seconds", where = .validation_settings)) {
-        .validation_settings[["check_seconds"]] <- 10
-      }
-      initial <- .validation_settings[["initial"]]
-      opt_out <- try_silent(
-        expr = timed(
-          do.call(
-            what = x[["optimizer"]],
-            args = c(
-              structure(
-                list(.validation_settings[["objective_test"]], initial),
-                names = x[["optimizer_labels"]][c("objective", "initial")]
-              ),
-              x[["optimizer_arguments"]], .validation_settings[["objective_add"]]
-            )
-          ),
-          secs = .validation_settings[["check_seconds"]]
-        )
-      )
-      if (is.null(opt_out)) {
-        cli::cli_warn(c(
-          "!" = "Optimizer test run cannot be validated.",
-          "*" = "The test run returned {.val NULL}, the optimization most likely
-               reached the time limit.",
-          "*" = "Try to increase {.var check_seconds}."
-        ))
-      } else if (inherits(opt_out, "fail")) {
-        cli::cli_abort(c(
-          "x" = "Optimizer test run failed.",
-          "*" = "Message: {opt_out[1]}"
-        ), call = NULL
-        )
-      } else {
-        if (!is.list(opt_out)) {
-          cli::cli_abort(
-            c("x" = "Optimizer output is not a {.cls list}."),
-            call = NULL
-          )
-        }
-        if (!x[["optimizer_labels"]][["value"]] %in% names(opt_out)) {
-          cli::cli_abort(
-            c("x" = "Element {.var value} is not part of the optimizer output."),
-            call = NULL
-          )
-        } else {
-          value <- opt_out[[x[["optimizer_labels"]][["value"]]]]
-          if (!(is.numeric(value) && length(value) == 1)) {
-            cli::cli_abort(
-              c("x" = "The optimal value is not a single {.cls numeric}."),
-              call = NULL
-            )
-          }
-        }
-        if (!x[["optimizer_labels"]][["parameter"]] %in% names(opt_out)) {
-          cli::cli_abort(
-            c("x" = "Element {.var parameter} is not part of the optimizer
-                   output."),
-            call = NULL
-          )
-        } else {
-          optimum <- opt_out[[x[["optimizer_labels"]][["parameter"]]]]
-          if (!is.numeric(optimum)) {
-            cli::cli_abort(
-              c("x" = "The optimum is not a {.cls numeric}."),
-              call = NULL
-            )
-          }
-        }
-      }
     },
 
     #' @description
-    #' Applies an optimizer.
+    #' Performing minimization.
     #' @return
     #' A named \code{list}, containing at least these four elements:
     #' \describe{
-    #'   \item{\code{value}}{A \code{numeric}, the value of the estimated
-    #'   optimum of \code{objective}.}
+    #'   \item{\code{value}}{A \code{numeric}, the minimum function value.}
     #'   \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
-    #'   where the optimum of \code{objective} is obtained.}
-    #'   \item{\code{seconds}}{A \code{numeric}, the total optimization time in
-    #'   seconds.}
+    #'   where the minimum is obtained.}
+    #'   \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
     #'   \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
     #' }
-    #' Appended are additional output elements of the optimizer (if not excluded
-    #' by the \code{$out_elements} field).
+    #' Appended are additional output elements of the optimizer. If an error
+    #' occurred, then the error message is also appended as element \code{.error}.
     #' @examples
-    #' objective <- function(x) x^4 + 3*x - 5
     #' Optimizer$new("stats::nlm")$
-    #'   apply(objective, target = "x", npar = 1, initial = 2)
+    #'   minimize(objective = function(x) x^4 + 3*x - 5, initial = 2)
 
-    apply = function(
-      objective, target, npar, initial, ..., direction = "min",
-      seconds = self$seconds
-    ) {
-
-      # direction and seconds as global variables
-
-      obj <- Objective$new(objective = objective, target = target, npar = npar)
-      private$.arguments[[private$.arg_objective]] <- obj$evaluate
-      private$.arguments[[private$.arg_initial]] <- initial
-
-      start <- Sys.time()
-      res <- do.call(
-        what = private$.algorithm,
-        args = c(
-          structure(
-            list(obj$evaluate, initial),
-            names = c(private$.arg_objective, private$.arg_initial)
-          ),
-          list("negate" = !identical(private$.direction, direction))
-          #list(...)
-        )
+    minimize = function(objective, initial, ...) {
+      private$.optimize(
+        objective = objective, initial = initial,
+        additional_arguments = list(...), direction = "min"
       )
-      end <- Sys.time()
+    },
 
+    #' @description
+    #' Performing maximization.
+    #' @return
+    #' A named \code{list}, containing at least these four elements:
+    #' \describe{
+    #'   \item{\code{value}}{A \code{numeric}, the maximum function value.}
+    #'   \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
+    #'   where the maximum is obtained.}
+    #'   \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
+    #'   \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
+    #' }
+    #' Appended are additional output elements of the optimizer. If an error
+    #' occurred, then the error message is also appended as element \code{.error}.
+    #' @examples
+    #' Optimizer$new("stats::nlm")$
+    #'   maximize(objective = function(x) -x^4 + 3*x - 5, initial = 2)
 
-
-      c(
-        structure(
-          list(res[[optimizer[["optimizer_labels"]][["value"]]]],
-               res[[optimizer[["optimizer_labels"]][["parameter"]]]],
-               as.numeric(difftime(end, start, units = "secs")),
-               initial),
-          names = c("value", "parameter", "seconds", "initial")
-        ),
-        res[!names(res) %in% optimizer[["output_ignore"]]]
+    maximize = function(objective, initial, ...) {
+      private$.optimize(
+        objective = objective, initial = initial,
+        additional_arguments = list(...), direction = "max"
       )
-
-
-
     },
 
     #' @description
@@ -383,9 +283,95 @@ Optimizer <- R6::R6Class(
     .out_value = NULL,
     .out_parameter = NULL,
     .direction = NULL,
-    .arguments = NULL,
-    .out_elements = NULL,
-    .seconds = NULL
+    .arguments = list(),
+    .seconds = Inf,
+    .hide_warnings = FALSE,
+
+    .prepare_result = function(result, initial, invert_objective) {
+      out <- list()
+      if (private$.out_value %in% names(result$result)) {
+        if (invert_objective) {
+          out[["value"]] <- -result$result[[private$.out_value]]
+        } else {
+          out[["value"]] <- result$result[[private$.out_value]]
+        }
+      } else {
+        out[["value"]] <- NA_real_
+      }
+      if (private$.out_parameter %in% names(result$result)) {
+        out[["parameter"]] <- result$result[[private$.out_parameter]]
+      } else {
+        out[["parameter"]] <- rep(NA_real_, length(initial))
+      }
+      if ("time" %in% names(result)) {
+        out[["seconds"]] <- as.numeric(result$time)
+      } else {
+        out[["seconds"]] <- NA_real_
+      }
+      out[["initial"]] <- initial
+      oeli::merge_lists(
+        out,
+        result$result[!names(result$result) %in% c(private$.out_value, private$.out_parameter)]
+      )
+    },
+
+    .optimize = function(objective, initial, additional_arguments, direction) {
+      checkmate::assert_choice(direction, c("min", "max"))
+      checkmate::assert_list(additional_arguments)
+      checkmate::assert_atomic_vector(initial, any.missing = FALSE)
+      checkmate::assert_numeric(initial)
+      if (!checkmate::test_r6(objective, "Objective")) {
+        objective <- Objective$new(
+          objective = objective,
+          target = names(formals(objective))[1],
+          npar = length(initial)
+        )
+      } else {
+        checkmate::assert_numeric(initial, len = sum(objective$npar))
+      }
+      invert_objective <- !identical(private$.direction, direction)
+      args <- c(
+        ### defines objective and initial argument for optimizer
+        structure(
+          list(objective$evaluate, initial),
+          names = c(private$.arg_objective, private$.arg_initial)
+        ),
+        ### ensures that optimizer minimizes
+        list(".negate" = invert_objective),
+        ### arguments via ... have priority over previously specified arguments
+        oeli::merge_lists(additional_arguments, private$.arguments)
+      )
+      checkmate::assert_list(args, any.missing = FALSE, names = "unique")
+      result <- tryCatch(
+        {
+          suppressWarnings(
+            oeli::timed(
+              oeli::do.call_timed(
+                what = private$.algorithm,
+                args = args,
+                units = "secs"
+              ),
+              seconds = private$.seconds
+            ),
+            classes = if (private$.hide_warnings) "warning" else ""
+          )
+        },
+        error = function(e) {
+          error_message <- e$message
+          time_limit_reached <- grepl(
+            "reached elapsed time limit|reached CPU time limit", error_message
+          )
+          if (time_limit_reached) {
+            error_message <- paste("time limit of", private$.seconds, "seconds reached")
+          }
+          list(
+            "result" = list("error_message" = error_message),
+            "time" = NA_real_
+          )
+        }
+      )
+      private$.prepare_result(result, initial, invert_objective)
+    }
 
   ),
 
@@ -474,26 +460,14 @@ Optimizer <- R6::R6Class(
     },
 
     #' @field arguments
-    #' A named \code{list} of arguments for \code{algorithm}. By default, the
-    #' default arguments are used.
+    #' A named \code{list} of custom arguments for \code{algorithm}. Defaults
+    #' are used for arguments that are not specified.
     arguments = function(value) {
       if (missing(value)) {
         private$.arguments
       } else {
         checkmate::assert_list(value, names = "unique")
         private$.arguments <- value
-      }
-    },
-
-    #' @field out_elements
-    #' A \code{character} of element names to be included in the output.
-    #' Can also be \code{NULL}, in which case all elements are included.
-    out_elements = function(value) {
-      if (missing(value)) {
-        private$.out_elements
-      } else {
-        checkmate::assert_character(value, null.ok = TRUE)
-        private$.out_elements <- value
       }
     },
 
@@ -506,6 +480,18 @@ Optimizer <- R6::R6Class(
       } else {
         checkmate::assert_number(value, lower = 0)
         private$.seconds <- value
+      }
+    },
+
+    #' @field hide_warnings
+    #' Either \code{TRUE} to hide warnings during optimization, or \code{FALSE}
+    #' (default) else.
+    hide_warnings = function(value) {
+      if (missing(value)) {
+        private$.hide_warnings
+      } else {
+        checkmate::assert_flag(value)
+        private$.hide_warnings <- value
       }
     }
 

@@ -24,10 +24,10 @@
 #' to hide those.
 #' @param argument_name
 #' A \code{character}, a name of an argument for \code{objective}.
-#' @param at
-#' A \code{numeric} of length \code{sum(npar)}, the values for the target
+#' @param .at
+#' A \code{numeric} of length \code{sum(self$npar)}, the values for the target
 #' arguments written in a single vector.
-#' @param negate
+#' @param .negate
 #' Either \code{TRUE} to negate the \code{numeric} return value of
 #' \code{objective}, or \code{FALSE} (default) else.
 #'
@@ -53,7 +53,7 @@
 #'
 #' ### evaluate the objective function at 1:5 (1:2 is passed to mu, 3:4 to sd,
 #' ### and 5 to lambda)
-#' objective$evaluate(at = 1:5)
+#' objective$evaluate(1:5)
 
 Objective <- R6::R6Class(
 
@@ -144,15 +144,15 @@ Objective <- R6::R6Class(
     #' Validate an \code{Objective} object.
     #' @return
     #' Invisibly the \code{Objective} object.
-    validate = function(at) {
+    validate = function(.at) {
       private$.check_arguments_complete()
-      private$.check_target(at)
+      private$.check_target(.at)
       if (self$verbose) {
         cli::cli_alert(
-          "Trying to evaluate {private$.objective_name}({cli::cli_vec(at, list('vec-trunc' = 3, 'vec-sep' = ',', 'vec-last' = ','))})."
+          "Trying to evaluate {private$.objective_name}({cli::cli_vec(.at, list('vec-trunc' = 3, 'vec-sep' = ',', 'vec-last' = ','))})."
         )
       }
-      out <- self$evaluate(at = at)
+      out <- self$evaluate(.at = .at)
       if (checkmate::test_number(out)) {
         if (self$verbose) {
           cli::cli_alert_success("The function value is a single number, great!")
@@ -173,27 +173,25 @@ Objective <- R6::R6Class(
     #' Evaluate the objective function.
     #' @return
     #' The objective value.
-    evaluate = function(at, negate = FALSE) {
-      checkmate::assert_flag(negate)
+    evaluate = function(.at, .negate = FALSE, ...) {
+      checkmate::assert_flag(.negate)
       splits <- c(0, cumsum(private$.npar))
-      at <- structure(
-        lapply(seq_along(splits)[-1], function(i) at[(splits[i - 1] + 1):(splits[i])]),
+      .at <- structure(
+        lapply(seq_along(splits)[-1], function(i) .at[(splits[i - 1] + 1):(splits[i])]),
         names = private$.target
       )
       setTimeLimit(cpu = self$seconds, elapsed = self$seconds, transient = TRUE)
       on.exit({
         setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE)
       })
+      args <- c(.at, oeli::merge_lists(list(...), private$.arguments))
       tryCatch(
         {
           suppressWarnings(
-            value <- do.call(
-              what = private$.objective,
-              args = c(at, private$.arguments)
-            ),
+            value <- do.call(what = private$.objective, args = args),
             classes = if (self$hide_warnings) "warning" else ""
           )
-          if (negate) -value else value
+          if (.negate) -value else value
         },
         error = function(e) {
           msg <- e$message
@@ -274,6 +272,19 @@ Objective <- R6::R6Class(
         checkmate::assert_flag(value)
         private$.verbose <- value
       }
+    },
+
+    #' @field npar
+    #' An \code{integer} vector, defining the length of each target argument.
+    npar = function(value) {
+      if (missing(value)) {
+        structure(private$.npar, names = private$.target)
+      } else {
+        cli::cli_abort(
+          "Field {.var npar} is read-only.",
+          call = NULL
+        )
+      }
     }
 
   ),
@@ -289,16 +300,16 @@ Objective <- R6::R6Class(
     .hide_warnings = FALSE,
     .verbose = TRUE,
 
-    .check_target = function(at) {
-      if (!checkmate::test_numeric(at, any.missing = FALSE, len = sum(private$.npar))) {
+    .check_target = function(.at) {
+      if (!checkmate::test_numeric(.at, any.missing = FALSE, len = sum(private$.npar))) {
         cli::cli_abort(
-          "Input {.var at} must be a {.cls numeric} of length {sum(private$.npar)}.",
+          "Input {.var .at} must be a {.cls numeric} of length {sum(private$.npar)}.",
           call = NULL
         )
       }
       if (self$verbose) {
         cli::cli_alert_success(
-          "The value {.var at} for the target argument(s) is correctly specified."
+          "The value {.var .at} for the target argument(s) is correctly specified."
         )
       }
     },
