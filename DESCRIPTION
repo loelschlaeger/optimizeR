@@ -33,3 +33,4 @@ Imports:
     R6,
     stats,
     TestFunctions
+VignetteBuilder: knitr

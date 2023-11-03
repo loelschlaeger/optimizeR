@@ -2,36 +2,50 @@
 % Please edit documentation in R/debug.R
 \name{test_optimizer}
 \alias{test_optimizer}
-\title{TODO}
+\title{Test optimization function}
 \usage{
 test_optimizer(
-  f,
-  p,
+  f = test_objective,
+  p = 1,
   ...,
   parameter = p,
   value = f(parameter),
   seconds = 0,
   warning_prob = 0,
-  error_prob = 0
+  error_prob = 0,
+  warning_msg = "warning",
+  error_msg = "error",
+  call. = TRUE
 )
 }
 \arguments{
-\item{f}{TODO}
+\item{f}{An objective \code{function}.}
 
-\item{p}{TODO}
+\item{p}{The initial parameter vector.}
 
-\item{...}{TODO}
+\item{...}{Optionally additional arguments to be passed to \code{f}.}
 
-\item{parameter}{TODO}
+\item{parameter}{Defines the output \code{parameter}.}
 
-\item{value}{TODO}
+\item{value}{Defines the output \code{value}.}
 
-\item{seconds}{TODO}
+\item{seconds}{A delay in number of seconds.}
 
-\item{warning_prob}{TODO}
+\item{warning_prob}{The probability for throwing a warning.}
 
-\item{error_prob}{TODO}
+\item{error_prob}{The probability for throwing an error.}
+
+\item{warning_msg}{The warning message.}
+
+\item{error_msg}{The error message.}
+
+\item{call.}{Passed to \code{\link[base]{warning}} or \code{\link[base]{stop}},
+respectively.}
+}
+\value{
+A \code{list} with elements \code{parameter} and \code{value}.
 }
 \description{
-TODO
+This function is useful for testing or debugging the behavior of optimization
+functions. It can throw a warning and / or an error on purpose.
 }

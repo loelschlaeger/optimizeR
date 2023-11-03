@@ -14,165 +14,184 @@ downloads](https://cranlogs.r-pkg.org/badges/last-month/optimizeR)](https://cran
 coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/loelschlaeger/optimizeR?branch=master)
 <!-- badges: end -->
 
-If you’re looking for a way to standardize the inputs and outputs of
-numerical optimizers in R, you might find the `{optimizeR}` package
-useful. This package provides a unified framework for the inputs and
-outputs of any R optimizer. Note that it does not actually implement any
-optimizer functions itself.
+The `{optimizeR}` package provides an object-oriented framework for
+optimizer functions and offers some convenience when minimizing or
+maximizing in R.
 
-## What is the problem?
+**You won’t need the package if you…**
 
-When working with popular R optimizers such as
-[`stats::nlm()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/nlm.html)
-and
-[`stats::optim()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html),
-it can be challenging to compare their results due to inconsistencies in
-function arguments and output labels. For instance, `stats::nlm()` uses
-`f` as its function argument and `p` as the argument for initial values,
-while `stats::optim()` uses `fn` for its function argument and `par` for
-initial values. Additionally, the optimal parameters and function values
-are labeled differently, with `estimate` and `minimum` used in
-`stats::nlm()` and `par` and `value` in `stats::optim()`. And all is
-different again with, for example,
-[`pracma::nelder_mead()`](https://CRAN.R-project.org/package=pracma).
-This inconsistency is frustrating, especially if one wants to apply and
-compare different optimizers.
+- already know which optimizer you want to use and if you are happy with
+  its constraints,
+- want to compare optimizers that are covered by
+  [`{optimx}`](https://CRAN.R-project.org/package=optimx),
+- or search for optimization algorithms (because the package does not
+  implement any optimizer functions itself).
 
-## Our solution
+**But you might find the package useful if you want to…**
 
-To standardize the inputs and outputs of different R optimizers and make
-them easier to apply and compare, you can define them using the
-`define_optimizer()` function and then apply them using
-`apply_optimizer()`. This way, the inputs and outputs will always be in
-a consistent format across different optimizers.
+- compare any optimizer function (already implemented in R or
+  implemented by yourself),
+- have consistently named inputs and outputs across different
+  optimizers,
+- view optimizers as objects (which can be helpful when implementing
+  packages that depend on optimization),
+- use optimizers for both minimization and maximization,
+- optimize over more than one function argument,
+- measure computation time or set a time limit for long optimization
+  tasks.
 
-For demonstration, say we want to minimize the [Ackley
-function](https://en.wikipedia.org/wiki/Ackley_function) …
+The [package
+vignette](https://loelschlaeger.de/optimizeR/articles/optimizeR.html)
+has more details on these benefits and how we implemented them.
+
+## Usage
+
+This demonstration is a bit artificial but showcases the package
+purpose. Assume you want to
+
+- maximize a function,
+- over two of its arguments,
+- interrupt optimization if it exceeds 10 seconds,
+- and compare the performance between `stats::nlm` and
+  `pracma::nelder_mead`.
+
+This task can very easily be achieved with `{optimizeR}`:
+
+**1. Define the objective function**
 
 ``` r
-f_ackley <- function(x) {
-  stopifnot(is.numeric(x), length(x) == 2)
-  -20 * exp(-0.2 * sqrt(0.5 * (x[1]^2 + x[2]^2))) -
-    exp(0.5 * (cos(2 * pi * x[1]) + cos(2 * pi * x[2]))) + exp(1) + 20
+f <- function(a, b, x, y) {
+  a * exp(-0.2 * sqrt(0.5 * (x^2 + y^2))) +
+    exp(0.5 * (cos(2 * pi * x) + cos(2 * pi * y))) - exp(1) - b
 }
 ```
 
-… and compare the performance of three optimizers: `stats::nlm()`,
-`stats::optim()`, and `pracma::nelder_mead()`. Wrappers for the first
-two are already available …
+For `a = b = 20`, this is the inverted [Ackley
+function](https://en.wikipedia.org/wiki/Ackley_function). We want to
+keep `a` and `b` fixed and optimize over `x` and `y`, which are both
+single numeric values.
 
 ``` r
-optimizer_nlm()
-#> <optimizer 'stats::nlm'>
-optimizer_optim()
-#> <optimizer 'stats::optim'>
-```
-
-… and for the latter (as for any other optimizer you like) we can use
-the general constructor:
-
-``` r
-optimizer_nelder_mead <- define_optimizer(
-  .optimizer = pracma::nelder_mead,
-  .objective = "fn",
-  .initial = "x0",
-  .value = "fmin",
-  .parameter = "xmin",
-  .direction = "min"
+objective <- Objective$new(
+  objective = f, 
+  target = c("x", "y"), 
+  npar = c(1, 1), 
+  "a" = 20, 
+  "b" = 20
 )
 ```
 
-Here,
-
-- `.optimizer` is the optimization algorithm,
-
-- `.objective` is the name of the function input,
-
-- `.initial` is the name of starting parameter values input,
-
-- `.value` is the name of the optimal function value in the output,
-
-- `.parameter` is the name of the optimal parameter vector in the
-  output,
-
-- and `.direction` indicates whether the optimizer minimizes or
-  maximizes.
-
-Now we optimize (with initial parameter vector `initial = c(-1, 1)`):
+**2. Create the optimizer objects**
 
 ``` r
-results <- lapply(
-  list(optimizer_nlm(), optimizer_optim(), optimizer_nelder_mead),
-  apply_optimizer, 
-  objective = f_ackley, 
-  initial = c(-1, 1)
+nlm <- Optimizer$new(which = "stats::nlm")
+```
+
+Explain custom.
+
+``` r
+nelder_mead <- Optimizer$new(which = "custom")
+#> Please use method `$definition()` next to define a custom optimizer.
+nelder_mead$definition(
+  algorithm = pracma::nelder_mead, # the optimization function
+  arg_objective = "fn",            # the argument name for the objective function
+  arg_initial = "x0",              # the argument name for the initial values
+  out_value = "fmin",              # the element for the optimal function value in the output
+  out_parameter = "xmin",          # the element for the optimal parameters in the output
+  direction = "min"                # the optimizer minimizes
 )
-names(results) <- c("stats::nlm", "stats::optim", "pracma::nelder_mead")
 ```
 
-In the optimization output, `value` and `parameter` consistently denote
-the optimal function values and the optimal parameters, while additional
-optimizer-specific outputs are preserved. The optimization time in
-seconds, `seconds`, and the initial parameter vector, `initial`, are
-added:
+**3. Set a time limit**
+
+Time limit optional. Here it makes no sense.
 
 ``` r
-str(results)
-#> List of 3
-#>  $ stats::nlm         :List of 7
-#>   ..$ value     : num 1.66e-06
-#>   ..$ parameter : num [1:2] -2.91e-07 5.08e-07
-#>   ..$ seconds   : num 0.0131
-#>   ..$ initial   : num [1:2] -1 1
-#>   ..$ gradient  : num [1:2] -0.00824 0.0144
-#>   ..$ code      : int 2
-#>   ..$ iterations: int 33
-#>  $ stats::optim       :List of 7
-#>   ..$ value      : num 3.57
-#>   ..$ parameter  : num [1:2] -0.969 0.969
-#>   ..$ seconds    : num 0.000167
-#>   ..$ initial    : num [1:2] -1 1
-#>   ..$ counts     : Named int [1:2] 45 NA
-#>   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"
-#>   ..$ convergence: int 0
-#>   ..$ message    : NULL
-#>  $ pracma::nelder_mead:List of 7
-#>   ..$ value      : num 0
-#>   ..$ parameter  : num [1:2] 0 0
-#>   ..$ seconds    : num 0.000552
-#>   ..$ initial    : num [1:2] -1 1
-#>   ..$ count      : num 111
-#>   ..$ convergence: num 0
-#>   ..$ info       :List of 2
-#>   .. ..$ solver  : chr "Nelder-Mead"
-#>   .. ..$ restarts: num 0
+nlm$seconds <- 10
+nelder_mead$seconds <- 10
 ```
 
-By the way, are you surprised to see that `value` for `stats::optim()`
-is different from the other two optimizers? Apparently, this optimizer
-has become trapped in a local minimum. If you are interested in
-exploring the initialization problem in numerical optimization, you may
-find the [{ino} R package](https://github.com/loelschlaeger/ino) to be
-useful.
+**4. Maximize the target function**
+
+Comment on outcome.
+
+``` r
+initial <- c(3, 3)
+nlm$maximize(objective, initial)
+#> $value
+#> [1] -6.559645
+#> 
+#> $parameter
+#> [1] 1.974451 1.974451
+#> 
+#> $seconds
+#> [1] 0.03366303
+#> 
+#> $initial
+#> [1] 3 3
+#> 
+#> $gradient
+#> [1] 5.577962e-08 5.577962e-08
+#> 
+#> $code
+#> [1] 1
+#> 
+#> $iterations
+#> [1] 6
+nelder_mead$maximize(objective, initial)
+#> $value
+#> [1] 0
+#> 
+#> $parameter
+#> [1] 0 0
+#> 
+#> $seconds
+#> [1] 0.01516891
+#> 
+#> $initial
+#> [1] 3 3
+#> 
+#> $count
+#> [1] 105
+#> 
+#> $convergence
+#> [1] 0
+#> 
+#> $info
+#> $info$solver
+#> [1] "Nelder-Mead"
+#> 
+#> $info$restarts
+#> [1] 0
+```
 
 ## Installation
 
-You can install the released version of {optimizeR} from
+You can install the released package version from
 [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
 install.packages("optimizeR")
 ```
 
-… and the development version from [GitHub](https://github.com/) with:
+## Roadmap
 
-``` r
-# install.packages("devtools")
-devtools::install_github("loelschlaeger/optimizeR")
-```
+- [ ] The package already provides a dictionary that stores optimizers
+  together with information about names of their inputs and outputs. We
+  want to extend this dictionary with more optimizers that are commonly
+  used.
+
+- [ ] We want to use alias for optimizers in the dictionary that group
+  optimizers into classes (such as “Unconstrained optimization”,
+  “Constrained Optimization” etc.). This would help to find alternative
+  optimizers for a given task.
+
+- [ ] We want to implement a `$summary()` method for an optimizer object
+  that gives an overview of the optimizer, its arguments, and its
+  properties.
 
 ## Contact
 
-Have a question, found a bug, request a feature, want to contribute?
-[Please file an issue on
+You have a question, found a bug, request a feature, give feedback, want
+to contribute? We are happy to hear from you, [please file an issue on
 GitHub](https://github.com/loelschlaeger/optimizeR/issues/new/choose).

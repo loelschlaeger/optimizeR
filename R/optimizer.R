@@ -39,7 +39,7 @@
 #'
 #' # 1. define objective function and initial values
 #' objective <- TestFunctions::TF_ackley
-#' initial <- 1:2
+#' initial <- c(3, 3)
 #'
 #' # 2. get overview of optimizers in dictionary
 #' optimizer_dictionary$keys
@@ -60,10 +60,8 @@
 #' )
 #'
 #' # 5. compare the minimization results
-#' lapply(
-#'   list(nlm, nelder_mead),
-#'   function(optimizer) optimizer$minimize(objective, initial)
-#' )
+#' nlm$minimize(objective, initial)
+#' nelder_mead$minimize(objective, initial)
 #'
 #' @export
 
@@ -261,16 +259,17 @@ Optimizer <- R6::R6Class(
     print = function(...) {
       cat("<optimizer '", self$label, "'>", sep = "")
       invisible(self)
-    },
-
-    #' @description
-    #' Returns a summary of the optimizer
-    #' @return
-    #' Invisibly the \code{Optimizer} object.
-
-    summary = function(...) {
-      invisible(self)
     }
+
+    # #' @description
+    # #' Returns a summary of the optimizer
+    # #' @return
+    # #' Invisibly the \code{Optimizer} object.
+    #
+    # summary = function(...) {
+    #   # TODO
+    #   invisible(self)
+    # }
 
   ),
 

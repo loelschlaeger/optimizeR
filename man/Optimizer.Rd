@@ -29,7 +29,7 @@ value and the optimal parameter vector.
 
 # 1. define objective function and initial values
 objective <- TestFunctions::TF_ackley
-initial <- 1:2
+initial <- c(3, 3)
 
 # 2. get overview of optimizers in dictionary
 optimizer_dictionary$keys
@@ -50,10 +50,8 @@ nelder_mead$definition(
 )
 
 # 5. compare the minimization results
-lapply(
-  list(nlm, nelder_mead),
-  function(optimizer) optimizer$minimize(objective, initial)
-)
+nlm$minimize(objective, initial)
+nelder_mead$minimize(objective, initial)
 
 
 ## ------------------------------------------------
@@ -113,7 +111,6 @@ is interrupted. Can also be \code{NULL} for no time limit.}
 \item \href{#method-Optimizer-minimize}{\code{Optimizer$minimize()}}
 \item \href{#method-Optimizer-maximize}{\code{Optimizer$maximize()}}
 \item \href{#method-Optimizer-print}{\code{Optimizer$print()}}
-\item \href{#method-Optimizer-summary}{\code{Optimizer$summary()}}
 \item \href{#method-Optimizer-clone}{\code{Optimizer$clone()}}
 }
 }
@@ -346,27 +343,6 @@ occurred, then the error message is also appended as element \code{.error}.
 Prints the optimizer label.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimizer$print(...)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
-Without specifications, default values are used.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Invisibly the \code{Optimizer} object.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Optimizer-summary"></a>}}
-\if{latex}{\out{\hypertarget{method-Optimizer-summary}{}}}
-\subsection{Method \code{summary()}}{
-Returns a summary of the optimizer
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Optimizer$summary(...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

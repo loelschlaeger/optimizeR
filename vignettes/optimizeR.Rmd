@@ -1,0 +1,95 @@
+---
+title: "optimizeR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{optimizeR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(optimizeR)
+```
+
+## What is the problem? 
+
+When working with popular R optimizers such as [`stats::nlm()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/nlm.html) and [`stats::optim()`](https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html), it can be challenging to compare their results due to inconsistencies in function arguments and output labels. For instance, `stats::nlm()` uses `f` as its function argument and `p` as the argument for initial values, while `stats::optim()` uses `fn` for its function argument and `par` for initial values. Additionally, the optimal parameters and function values are labeled differently, with `estimate` and `minimum` used in `stats::nlm()` and `par` and `value` in `stats::optim()`. And all is different again with, for example, [`pracma::nelder_mead()`](https://CRAN.R-project.org/package=pracma). This inconsistency is frustrating, especially if one wants to apply and compare different optimizers.
+
+## Our solution
+
+To standardize the inputs and outputs of different R optimizers and make them easier to apply and compare, you can define them using the `define_optimizer()` function and then apply them using `apply_optimizer()`. This way, the inputs and outputs will always be in a consistent format across different optimizers.
+
+For demonstration, say we want to minimize the [Ackley function](https://en.wikipedia.org/wiki/Ackley_function) ...
+
+```{r, ackley function}
+f_ackley <- function(x) {
+  stopifnot(is.numeric(x), length(x) == 2)
+  -20 * exp(-0.2 * sqrt(0.5 * (x[1]^2 + x[2]^2))) -
+    exp(0.5 * (cos(2 * pi * x[1]) + cos(2 * pi * x[2]))) + exp(1) + 20
+}
+```
+
+... and compare the performance of three optimizers: `stats::nlm()`, `stats::optim()`, and `pracma::nelder_mead()`. Wrappers for the first two are already available ...
+
+```{r, optimizer nlm and optim}
+optimizer_nlm()
+optimizer_optim()
+```
+
+... and for the latter (as for any other optimizer you like) we can use the general constructor:
+
+```{r, optimizer nelder_mead}
+optimizer_nelder_mead <- define_optimizer(
+  .optimizer = pracma::nelder_mead,
+  .objective = "fn",
+  .initial = "x0",
+  .value = "fmin",
+  .parameter = "xmin",
+  .direction = "min"
+)
+```
+
+Here,
+
+- `.optimizer` is the optimization algorithm,
+
+- `.objective` is the name of the function input,
+
+- `.initial` is the name of starting parameter values input,
+
+- `.value` is the name of the optimal function value in the output,
+
+- `.parameter` is the name of the optimal parameter vector in the output,
+
+- and `.direction` indicates whether the optimizer minimizes or maximizes.
+
+Now we optimize (with initial parameter vector `initial = c(-1, 1)`):
+
+```{r, optimization}
+results <- lapply(
+  list(optimizer_nlm(), optimizer_optim(), optimizer_nelder_mead),
+  apply_optimizer, 
+  objective = f_ackley, 
+  initial = c(-1, 1)
+)
+names(results) <- c("stats::nlm", "stats::optim", "pracma::nelder_mead")
+```
+
+In the optimization output, `value` and `parameter` consistently denote the optimal function values and the optimal parameters, while additional optimizer-specific outputs are preserved. The optimization time in seconds, `seconds`, and the initial parameter vector, `initial`, are added:
+
+```{r, results}
+str(results)
+```
+
+By the way, are you surprised to see that `value` for `stats::optim()` is different from the other two optimizers? Apparently, this optimizer has become trapped in a local minimum. If you are interested in exploring the initialization problem in numerical optimization, you may find the [{ino} R package](https://github.com/loelschlaeger/ino) to be useful.
+
+
+
+Cite task view (HWB).

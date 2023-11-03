@@ -2,17 +2,38 @@
 % Please edit documentation in R/debug.R
 \name{test_objective}
 \alias{test_objective}
-\title{TODO}
+\title{Test objective function}
 \usage{
-test_objective(x, warning_prob = 0, error_prob = 0)
+test_objective(
+  x,
+  value = x,
+  warning_prob = 0,
+  error_prob = 0,
+  warning_msg = "warning",
+  error_msg = "error",
+  call. = TRUE
+)
 }
 \arguments{
-\item{x}{TODO}
+\item{x}{Any input.}
 
-\item{warning_prob}{TODO}
+\item{value}{The return value, any object.}
 
-\item{error_prob}{TODO}
+\item{warning_prob}{The probability for throwing a warning.}
+
+\item{error_prob}{The probability for throwing an error.}
+
+\item{warning_msg}{The warning message.}
+
+\item{error_msg}{The error message.}
+
+\item{call.}{Passed to \code{\link[base]{warning}} or \code{\link[base]{stop}},
+respectively.}
+}
+\value{
+The argument \code{value}.
 }
 \description{
-TODO
+This function is useful for testing or debugging the behavior of objective
+functions. It can throw a warning and / or an error on purpose.
 }
