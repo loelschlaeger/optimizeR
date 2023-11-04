@@ -183,7 +183,7 @@ nlm$maximize(objective = objective, initial = c(3, 3))
 #> [1] 1.974451 1.974451
 #> 
 #> $seconds
-#> [1] 0.006807804
+#> [1] 0.006532907
 #> 
 #> $initial
 #> [1] 3 3
@@ -207,7 +207,7 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> [1] 0 0
 #> 
 #> $seconds
-#> [1] 0.003500938
+#> [1] 0.003427029
 #> 
 #> $initial
 #> [1] 3 3

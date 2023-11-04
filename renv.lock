@@ -919,6 +919,20 @@
       ],
       "Hash": "d908914ae53b04d4c0c0fd72ecc35370"
     },
+    "lbfgsb3c": {
+      "Package": "lbfgsb3c",
+      "Version": "2020-3.2",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R",
+        "Rcpp",
+        "RcppArmadillo",
+        "methods",
+        "numDeriv"
+      ],
+      "Hash": "cd47ad5419c85ab82771a15f1a9649e8"
+    },
     "lifecycle": {
       "Package": "lifecycle",
       "Version": "1.0.3",
@@ -1041,6 +1055,16 @@
         "utils"
       ],
       "Hash": "8d1938040a05566f4f7a14af4feadd6b"
+    },
+    "numDeriv": {
+      "Package": "numDeriv",
+      "Version": "2016.8-1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Requirements": [
+        "R"
+      ],
+      "Hash": "df58958f293b166e4ab885ebcad90e02"
     },
     "oeli": {
       "Package": "oeli",

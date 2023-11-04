@@ -9,7 +9,7 @@
 #' @export
 
 install_optimizer_packages <- function() {
-  pkgs_required <- c("stats", "ucminf")
+  pkgs_required <- c("lbfgsb3c", "stats", "ucminf")
   pkgs_not_installed <- character()
   for (pkg in pkgs_required) {
     if (!require(pkg, quietly = TRUE, character.only = TRUE)) {
@@ -89,6 +89,20 @@ optimizer_dictionary <- oeli::Dictionary$new(
   alias_choices = c("constrained", "unconstrained")
 )
 
+if (require("lbfgsb3c", quietly = TRUE)) {
+
+  optimizer_dictionary$add(
+    "label" = "lbfgsb3c::lbfgsb3c",
+    "algorithm" = lbfgsb3c::lbfgsb3c,
+    "arg_objective" = "fn",
+    "arg_initial" = "par",
+    "out_value" = "value",
+    "out_parameter" = "par",
+    "direction" = "min"
+  )
+
+}
+
 if (require("stats", quietly = TRUE)) {
 
   optimizer_dictionary$add(
@@ -99,6 +113,14 @@ if (require("stats", quietly = TRUE)) {
     "arg_initial" = "p",
     "out_value" = "minimum",
     "out_parameter" = "estimate",
+    "direction" = "min"
+  )$add(
+    "label" = "stats::nlminb",
+    "algorithm" = stats::nlminb,
+    "arg_objective" = "objective",
+    "arg_initial" = "start",
+    "out_value" = "objective",
+    "out_parameter" = "par",
     "direction" = "min"
   )$add(
     "label" = "stats::optim",
