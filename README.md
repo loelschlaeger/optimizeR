@@ -64,9 +64,7 @@ library("optimizeR")
 
 **1. Define the objective function**
 
-Let
-![equation](https://latex.codecogs.com/svg.image?&space;f:\mathbb%7BR%7D%5E4\to\mathbb%7BR%7D)
-with
+Let *f* : ℝ<sup>4</sup> → ℝ with
 
 ``` r
 f <- function(a, b, x, y) {
@@ -185,7 +183,7 @@ nlm$maximize(objective = objective, initial = c(3, 3))
 #> [1] 1.974451 1.974451
 #> 
 #> $seconds
-#> [1] 0.007199049
+#> [1] 0.0089221
 #> 
 #> $initial
 #> [1] 3 3
@@ -209,7 +207,7 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> [1] 0 0
 #> 
 #> $seconds
-#> [1] 0.003269911
+#> [1] 0.003278971
 #> 
 #> $initial
 #> [1] 3 3
@@ -257,8 +255,8 @@ to go.
 
 ## Roadmap
 
-We aim to further improve the package.🔧 The following issues are
-currently on our agenda:
+The following steps to further improve the package are currently on our
+agenda:
 
 -   [ ] The package already provides a dictionary that stores optimizers
     together with information about names of their inputs and outputs

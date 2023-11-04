@@ -62,7 +62,7 @@ library("optimizeR")
 
 **1. Define the objective function**
 
-Let ![equation](https://latex.codecogs.com/svg.image?&space;f:\mathbb{R}^4\to\mathbb{R}) with
+Let $f:\mathbb{R}^4\to\mathbb{R}$ with
 
 ```{r, ackley}
 f <- function(a, b, x, y) {
@@ -186,7 +186,7 @@ Then load the package via `library("optimizeR")` and you should be ready to go.
 
 ## Roadmap
 
-We aim to further improve the package.🔧 The following issues are currently on our agenda:
+The following steps to further improve the package are currently on our agenda:
 
 - [ ] The package already provides a dictionary that stores optimizers together with information about names of their inputs and outputs (see the `optimizer_dictionary` object). We want to extend this dictionary with more optimizers that are commonly used.
 
