@@ -30,7 +30,7 @@ Depends:
 Imports: 
     checkmate,
     cli,
-    oeli,
+    oeli (>= 0.2.0),
     R6,
     stats,
     TestFunctions,
