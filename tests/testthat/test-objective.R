@@ -40,7 +40,7 @@ test_that("objective with one target argument can be evalauted", {
 })
 
 test_that("objective with more than one target argument can be evalauted", {
-  llk <- function(mu, sd, lambda, data){
+  llk <- function(mu, sd, lambda, data) {
     sd <- exp(sd)
     lambda <- plogis(lambda)
     sum(log(lambda * dnorm(data, mu[1], sd[1]) + (1 - lambda) * dnorm(data, mu[2], sd[2])))

@@ -42,7 +42,8 @@ install_optimizer_packages <- function() {
         "You need to reload {optimizeR} to update the optimizer dictionary."
       )
       reload_optimizeR <- oeli::user_confirm(
-        "May I do this for you?", default = TRUE
+        "May I do this for you?",
+        default = TRUE
       )
       if (reload_optimizeR) {
         library("optimizeR")
@@ -90,7 +91,6 @@ optimizer_dictionary <- oeli::Dictionary$new(
 )
 
 if (require("lbfgsb3c", quietly = TRUE)) {
-
   optimizer_dictionary$add(
     "label" = "lbfgsb3c::lbfgsb3c",
     "algorithm" = lbfgsb3c::lbfgsb3c,
@@ -100,11 +100,9 @@ if (require("lbfgsb3c", quietly = TRUE)) {
     "out_parameter" = "par",
     "direction" = "min"
   )
-
 }
 
 if (require("stats", quietly = TRUE)) {
-
   optimizer_dictionary$add(
     "label" = "stats::nlm",
     "method" = c("unconstrained"),
@@ -131,11 +129,9 @@ if (require("stats", quietly = TRUE)) {
     "out_parameter" = "min",
     "direction" = "min"
   )
-
 }
 
 if (require("ucminf", quietly = TRUE)) {
-
   optimizer_dictionary$add(
     "label" = "ucminf::ucminf",
     "algorithm" = ucminf::ucminf,
@@ -145,8 +141,4 @@ if (require("ucminf", quietly = TRUE)) {
     "out_parameter" = "par",
     "direction" = "min"
   )
-
 }
-
-
-

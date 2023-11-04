@@ -39,10 +39,3 @@ test_that("minimization with additional arguments works", {
     c("value", "parameter", "seconds", "initial", "gradient", "code", "iterations")
   )
 })
-
-
-
-
-
-
-
