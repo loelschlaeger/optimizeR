@@ -32,7 +32,7 @@ The `{optimizeR}` package
 ❌ **You won't need the package if you...**
 
 - already know which optimizer you want to use and if you are happy with its constraints (e.g., only minimization over the first function argument possible),
-- want to compare optimizers that are already covered by [`{optimx}`](https://CRAN.R-project.org/package=optimx) (they provide a framework to compare about 30 optimizers),
+- want to compare optimizers that are already covered by [`{optimx}`](https://CRAN.R-project.org/package=optimx) [@optimx] (they provide a framework to compare about 30 optimizers),
 - or search for new optimization algorithms (because this package does not implement any optimizer functions itself).
 
 ✅ **But you might find the package useful if you want to...**
@@ -43,8 +43,6 @@ The `{optimizeR}` package
 - use optimizers for both minimization and maximization,
 - optimize over more than one function argument,
 - measure computation time or set a time limit for long optimization tasks.
-
-👉️ See the [package vignette](https://loelschlaeger.de/optimizeR/articles/optimizeR.html) for more details on these benefits and how we implemented them.
 
 ## How to use the package?
 
@@ -199,3 +197,5 @@ The following steps to further improve the package are currently on our agenda:
 You have a question, found a bug, request a feature, give feedback, want to contribute? 
 
 We are happy to hear from you, [please file an issue on GitHub](https://github.com/loelschlaeger/optimizeR/issues/new/choose). 😊
+
+## References

@@ -24,8 +24,9 @@ The `{optimizeR}` package
     with its constraints (e.g., only minimization over the first
     function argument possible),
 -   want to compare optimizers that are already covered by
-    [`{optimx}`](https://CRAN.R-project.org/package=optimx) (they
-    provide a framework to compare about 30 optimizers),
+    [`{optimx}`](https://CRAN.R-project.org/package=optimx) (Nash and
+    Varadhan 2011) (they provide a framework to compare about 30
+    optimizers),
 -   or search for new optimization algorithms (because this package does
     not implement any optimizer functions itself).
 
@@ -41,10 +42,6 @@ The `{optimizeR}` package
 -   optimize over more than one function argument,
 -   measure computation time or set a time limit for long optimization
     tasks.
-
-👉️ See the [package
-vignette](https://loelschlaeger.de/optimizeR/articles/optimizeR.html)
-for more details on these benefits and how we implemented them.
 
 ## How to use the package?
 
@@ -183,7 +180,7 @@ nlm$maximize(objective = objective, initial = c(3, 3))
 #> [1] 1.974451 1.974451
 #> 
 #> $seconds
-#> [1] 0.0089221
+#> [1] 0.006552935
 #> 
 #> $initial
 #> [1] 3 3
@@ -207,7 +204,7 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> [1] 0 0
 #> 
 #> $seconds
-#> [1] 0.003278971
+#> [1] 0.003288984
 #> 
 #> $initial
 #> [1] 3 3
@@ -280,3 +277,10 @@ to contribute?
 We are happy to hear from you, [please file an issue on
 GitHub](https://github.com/loelschlaeger/optimizeR/issues/new/choose).
 😊
+
+## References
+
+Nash, John C., and Ravi Varadhan. 2011. “Unifying Optimization
+Algorithms to Aid Software System Users:
+<span class="nocase">optimx</span> for R.” *Journal of Statistical
+Software* 43 (9): 1–14. <https://doi.org/10.18637/jss.v043.i09>.
