@@ -14,3 +14,4 @@ LICENSE
 ^docs$
 ^pkgdown$
 ^dev_pkgs\.R$
+^bibliography\.bib$

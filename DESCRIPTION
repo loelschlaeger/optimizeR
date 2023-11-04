@@ -1,6 +1,6 @@
 Package: optimizeR
 Title: Unified Framework for Numerical Optimizers
-Version: 0.3.3
+Version: 1.0.0
 Authors@R: c(
     person("Lennart", "Oelschl\u00e4ger", 
            email = "oelschlaeger.lennart@gmail.com", 
@@ -28,6 +28,11 @@ BugReports: https://github.com/loelschlaeger/optimizeR/issues
 Depends:
     R (>= 4.0.0)
 Imports: 
+    checkmate,
     cli,
+    oeli (>= 0.2.0),
+    R6,
     stats,
-    TestFunctions
+    TestFunctions,
+    utils
+VignetteBuilder: knitr
