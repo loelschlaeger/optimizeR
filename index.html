@@ -35,7 +35,7 @@
     
     <a class="navbar-brand me-2" href="index.html">optimizeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,105 +76,187 @@
 </div>
 <!-- badges: start -->
 
-<p>If you’re looking for a way to standardize the inputs and outputs of numerical optimizers in R, you might find the <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a> package useful. This package provides a unified framework for the inputs and outputs of any R optimizer. Note that it does not actually implement any optimizer functions itself.</p>
-<div class="section level2">
-<h2 id="what-is-the-problem">What is the problem?<a class="anchor" aria-label="anchor" href="#what-is-the-problem"></a>
-</h2>
-<p>When working with popular R optimizers such as <a href="https://stat.ethz.ch/R-manual/R-devel/library/stats/html/nlm.html" class="external-link"><code>stats::nlm()</code></a> and <a href="https://stat.ethz.ch/R-manual/R-devel/library/stats/html/optim.html" class="external-link"><code>stats::optim()</code></a>, it can be challenging to compare their results due to inconsistencies in function arguments and output labels. For instance, <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">stats::nlm()</a></code> uses <code>f</code> as its function argument and <code>p</code> as the argument for initial values, while <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim()</a></code> uses <code>fn</code> for its function argument and <code>par</code> for initial values. Additionally, the optimal parameters and function values are labeled differently, with <code>estimate</code> and <code>minimum</code> used in <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">stats::nlm()</a></code> and <code>par</code> and <code>value</code> in <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim()</a></code>. And all is different again with, for example, <a href="https://CRAN.R-project.org/package=pracma" class="external-link"><code>pracma::nelder_mead()</code></a>. This inconsistency is frustrating, especially if one wants to apply and compare different optimizers.</p>
-</div>
-<div class="section level2">
-<h2 id="our-solution">Our solution<a class="anchor" aria-label="anchor" href="#our-solution"></a>
-</h2>
-<p>To standardize the inputs and outputs of different R optimizers and make them easier to apply and compare, you can define them using the <code><a href="reference/define_optimizer.html">define_optimizer()</a></code> function and then apply them using <code><a href="reference/apply_optimizer.html">apply_optimizer()</a></code>. This way, the inputs and outputs will always be in a consistent format across different optimizers.</p>
-<p>For demonstration, say we want to minimize the <a href="https://en.wikipedia.org/wiki/Ackley_function" class="external-link">Ackley function</a> …</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">f_ackley</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/stopifnot.html" class="external-link">stopifnot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">is.numeric</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">==</span> <span class="fl">2</span><span class="op">)</span></span>
-<span>  <span class="op">-</span><span class="fl">20</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="fl">20</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p>… and compare the performance of three optimizers: <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">stats::nlm()</a></code>, <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim()</a></code>, and <code><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">pracma::nelder_mead()</a></code>. Wrappers for the first two are already available …</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="reference/define_optimizer.html">optimizer_nlm</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;optimizer 'stats::nlm'&gt;</span></span>
-<span><span class="fu"><a href="reference/define_optimizer.html">optimizer_optim</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; &lt;optimizer 'stats::optim'&gt;</span></span></code></pre></div>
-<p>… and for the latter (as for any other optimizer you like) we can use the general constructor:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">optimizer_nelder_mead</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/define_optimizer.html">define_optimizer</a></span><span class="op">(</span></span>
-<span>  .optimizer <span class="op">=</span> <span class="fu">pracma</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">nelder_mead</a></span>,</span>
-<span>  .objective <span class="op">=</span> <span class="st">"fn"</span>,</span>
-<span>  .initial <span class="op">=</span> <span class="st">"x0"</span>,</span>
-<span>  .value <span class="op">=</span> <span class="st">"fmin"</span>,</span>
-<span>  .parameter <span class="op">=</span> <span class="st">"xmin"</span>,</span>
-<span>  .direction <span class="op">=</span> <span class="st">"min"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
-<p>Here,</p>
+<p>The <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a> package</p>
 <ul>
-<li><p><code>.optimizer</code> is the optimization algorithm,</p></li>
-<li><p><code>.objective</code> is the name of the function input,</p></li>
-<li><p><code>.initial</code> is the name of starting parameter values input,</p></li>
-<li><p><code>.value</code> is the name of the optimal function value in the output,</p></li>
-<li><p><code>.parameter</code> is the name of the optimal parameter vector in the output,</p></li>
-<li><p>and <code>.direction</code> indicates whether the optimizer minimizes or maximizes.</p></li>
+<li>provides an object-oriented framework for optimizer functions in R</li>
+<li>and offers some convenience for useRs when minimizing or maximizing.</li>
 </ul>
-<p>Now we optimize (with initial parameter vector <code>initial = c(-1, 1)</code>):</p>
+<p>❌ <strong>You won’t need the package if you…</strong></p>
+<ul>
+<li>already know which optimizer you want to use and if you are happy with its constraints (e.g., only minimization over the first function argument possible),</li>
+<li>want to compare optimizers that are already covered by <a href="https://CRAN.R-project.org/package=optimx" class="external-link"><code>{optimx}</code></a> (Nash and Varadhan 2011) (they provide a framework to compare about 30 optimizers),</li>
+<li>or search for new optimization algorithms (because this package does not implement any optimizer functions itself).</li>
+</ul>
+<p>✅ <strong>But you might find the package useful if you want to…</strong></p>
+<ul>
+<li>compare any optimizer function (also those not covered by <code>{optimx}</code> or other frameworks; see the <a href="https://cran.r-project.org/web/views/Optimization.html" class="external-link">CRAN Task View: Optimization and Mathematical Programming</a> (Schwendinger and Borchers 2023) for an overview of R optimizers),</li>
+<li>have consistently named inputs and outputs across different optimizers (which is generally not the case),</li>
+<li>view optimizers as objects (which can be helpful when implementing packages that depend on optimization),</li>
+<li>use optimizers for both minimization and maximization,</li>
+<li>optimize over more than one function argument,</li>
+<li>measure computation time or set a time limit for long optimization tasks.</li>
+</ul>
+<div class="section level2">
+<h2 id="how-to-use-the-package">How to use the package?<a class="anchor" aria-label="anchor" href="#how-to-use-the-package"></a>
+</h2>
+<p>The following demo is a bit artificial but showcases the package purpose. Let’s assume we want to</p>
+<ul>
+<li>maximize a function over two of its arguments,</li>
+<li>interrupt optimization if it exceeds 10 seconds,</li>
+<li>and compare the performance between the optimizers <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">stats::nlm</a></code> and <code><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">pracma::nelder_mead</a></code>.</li>
+</ul>
+<p>We can easily do this task with <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a>:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://loelschlaeger.de/optimizeR/">"optimizeR"</a></span><span class="op">)</span></span></code></pre></div>
+<p><strong>1. Define the objective function</strong></p>
+<p>Let <em>f</em> : ℝ<sup>4</sup> → ℝ with</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">a</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="va">y</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">-</span> <span class="va">b</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>For <code>a = b = 20</code>, this is the inverted <a href="https://en.wikipedia.org/wiki/Ackley_function" class="external-link">Ackley function</a> with a global maximum in <code>x = y = 0</code>:</p>
+<p><img src="reference/figures/README-plot-ackley-1.png" width="50%" style="display: block; margin: auto;"></p>
+<p>We want to keep <code>a</code> and <code>b</code> fixed here and optimize over <code>x</code> and <code>y</code> (which are also both single numeric values).</p>
+<p>Two problems would occur if we would optimize <code>f</code> with say <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">stats::nlm</a></code> directly:</p>
+<ol style="list-style-type: decimal">
+<li>there are two target arguments (<code>x</code> and <code>y</code>) and</li>
+<li>the position of the target argument is not in the first place.</li>
+</ol>
+<p>Both artifacts are not allowed by <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">stats::nlm</a></code> and most of other available optimizers, but supported by <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a>. We just have to define an objective object which we later can pass to the optimizers:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">objective</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/Objective.html">Objective</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<span>  objective <span class="op">=</span> <span class="va">f</span>,         <span class="co"># f is our objective function</span></span>
+<span>  target <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"x"</span>, <span class="st">"y"</span><span class="op">)</span>,  <span class="co"># x and y are the target arguments</span></span>
+<span>  npar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>,        <span class="co"># the target arguments have both a length of 1</span></span>
+<span>  <span class="st">"a"</span> <span class="op">=</span> <span class="fl">20</span>,              </span>
+<span>  <span class="st">"b"</span> <span class="op">=</span> <span class="fl">20</span>               <span class="co"># a and b have fixed values</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><strong>2. Create the optimizer objects</strong></p>
+<p>Now that we have defined the objective function, let’s define our optimizer objects. For <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">stats::nlm</a></code>, this is a one-liner:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="reference/define_optimizer.html">optimizer_nlm</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="reference/define_optimizer.html">optimizer_optim</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">optimizer_nelder_mead</span><span class="op">)</span>,</span>
-<span>  <span class="va">apply_optimizer</span>, </span>
-<span>  objective <span class="op">=</span> <span class="va">f_ackley</span>, </span>
-<span>  initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"stats::nlm"</span>, <span class="st">"stats::optim"</span>, <span class="st">"pracma::nelder_mead"</span><span class="op">)</span></span></code></pre></div>
-<p>In the optimization output, <code>value</code> and <code>parameter</code> consistently denote the optimal function values and the optimal parameters, while additional optimizer-specific outputs are preserved. The optimization time in seconds, <code>seconds</code>, and the initial parameter vector, <code>initial</code>, are added:</p>
+<code class="sourceCode R"><span><span class="va">nlm</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/Optimizer.html">Optimizer</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>which <span class="op">=</span> <span class="st">"stats::nlm"</span><span class="op">)</span></span></code></pre></div>
+<p>The <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a> package provides a dictionary of optimizers, that can be directly selected via the <code>which</code> argument. For an overview of available optimizers, see:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">results</span><span class="op">)</span></span>
-<span><span class="co">#&gt; List of 3</span></span>
-<span><span class="co">#&gt;  $ stats::nlm         :List of 7</span></span>
-<span><span class="co">#&gt;   ..$ value     : num 1.66e-06</span></span>
-<span><span class="co">#&gt;   ..$ parameter : num [1:2] -2.91e-07 5.08e-07</span></span>
-<span><span class="co">#&gt;   ..$ seconds   : num 0.0131</span></span>
-<span><span class="co">#&gt;   ..$ initial   : num [1:2] -1 1</span></span>
-<span><span class="co">#&gt;   ..$ gradient  : num [1:2] -0.00824 0.0144</span></span>
-<span><span class="co">#&gt;   ..$ code      : int 2</span></span>
-<span><span class="co">#&gt;   ..$ iterations: int 33</span></span>
-<span><span class="co">#&gt;  $ stats::optim       :List of 7</span></span>
-<span><span class="co">#&gt;   ..$ value      : num 3.57</span></span>
-<span><span class="co">#&gt;   ..$ parameter  : num [1:2] -0.969 0.969</span></span>
-<span><span class="co">#&gt;   ..$ seconds    : num 0.000167</span></span>
-<span><span class="co">#&gt;   ..$ initial    : num [1:2] -1 1</span></span>
-<span><span class="co">#&gt;   ..$ counts     : Named int [1:2] 45 NA</span></span>
-<span><span class="co">#&gt;   .. ..- attr(*, "names")= chr [1:2] "function" "gradient"</span></span>
-<span><span class="co">#&gt;   ..$ convergence: int 0</span></span>
-<span><span class="co">#&gt;   ..$ message    : NULL</span></span>
-<span><span class="co">#&gt;  $ pracma::nelder_mead:List of 7</span></span>
-<span><span class="co">#&gt;   ..$ value      : num 0</span></span>
-<span><span class="co">#&gt;   ..$ parameter  : num [1:2] 0 0</span></span>
-<span><span class="co">#&gt;   ..$ seconds    : num 0.000552</span></span>
-<span><span class="co">#&gt;   ..$ initial    : num [1:2] -1 1</span></span>
-<span><span class="co">#&gt;   ..$ count      : num 111</span></span>
-<span><span class="co">#&gt;   ..$ convergence: num 0</span></span>
-<span><span class="co">#&gt;   ..$ info       :List of 2</span></span>
-<span><span class="co">#&gt;   .. ..$ solver  : chr "Nelder-Mead"</span></span>
-<span><span class="co">#&gt;   .. ..$ restarts: num 0</span></span></code></pre></div>
-<p>By the way, are you surprised to see that <code>value</code> for <code><a href="https://rdrr.io/r/stats/optim.html" class="external-link">stats::optim()</a></code> is different from the other two optimizers? Apparently, this optimizer has become trapped in a local minimum. If you are interested in exploring the initialization problem in numerical optimization, you may find the <a href="https://github.com/loelschlaeger/ino" class="external-link">{ino} R package</a> to be useful.</p>
-</div>
-<div class="section level2">
-<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
-</h2>
-<p>You can install the released version of {optimizeR} from <a href="https://CRAN.R-project.org" class="external-link">CRAN</a> with:</p>
+<code class="sourceCode R"><span><span class="va">optimizer_dictionary</span></span>
+<span><span class="co">#&gt; &lt;Dictionary&gt; optimizer algorithms </span></span>
+<span><span class="co">#&gt; Keys: </span></span>
+<span><span class="co">#&gt; - stats::nlm</span></span>
+<span><span class="co">#&gt; - stats::optim</span></span>
+<span><span class="co">#&gt; - ucminf::ucminf</span></span></code></pre></div>
+<p>Optimizers that are implemented in packages which are not installed yet are only shown here after you install the required packages (for instance using the convenience function <code><a href="reference/install_optimizer_packages.html">install_optimizer_packages()</a></code>).</p>
+<p>But in fact any optimizer that is not contained in the dictionary can be put into the <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a> framework by setting <code>which = "custom"</code> first…</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"optimizeR"</span><span class="op">)</span></span></code></pre></div>
-<p>… and the development version from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<code class="sourceCode R"><span><span class="va">nelder_mead</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/Optimizer.html">Optimizer</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>which <span class="op">=</span> <span class="st">"custom"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Please use method `$definition()` next to define a custom optimizer.</span></span></code></pre></div>
+<p>… and using the <code>$definition()</code> method next:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># install.packages("devtools")</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"loelschlaeger/optimizeR"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">nelder_mead</span><span class="op">$</span><span class="fu">definition</span><span class="op">(</span></span>
+<span>  algorithm <span class="op">=</span> <span class="fu">pracma</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">nelder_mead</a></span>, <span class="co"># the optimization function</span></span>
+<span>  arg_objective <span class="op">=</span> <span class="st">"fn"</span>,            <span class="co"># the argument name for the objective function</span></span>
+<span>  arg_initial <span class="op">=</span> <span class="st">"x0"</span>,              <span class="co"># the argument name for the initial values</span></span>
+<span>  out_value <span class="op">=</span> <span class="st">"fmin"</span>,              <span class="co"># the element for the optimal function value in the output</span></span>
+<span>  out_parameter <span class="op">=</span> <span class="st">"xmin"</span>,          <span class="co"># the element for the optimal parameters in the output</span></span>
+<span>  direction <span class="op">=</span> <span class="st">"min"</span>                <span class="co"># the optimizer minimizes</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p><strong>3. Set a time limit</strong></p>
+<p>Each optimizer object has a field called <code>$seconds</code> which equals <code>Inf</code> by default. You can optionally set a different, single numeric value here to set a time limit in seconds for the optimization:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nlm</span><span class="op">$</span><span class="va">seconds</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
+<span><span class="va">nelder_mead</span><span class="op">$</span><span class="va">seconds</span> <span class="op">&lt;-</span> <span class="fl">10</span></span></code></pre></div>
+<p><strong>4. Maximize the objective function</strong></p>
+<p>Each optimizer object has the two methods <code>$maximize()</code> and <code>$minimize()</code> for function maximization or minimization, respectively. Both methods require values for the two arguments</p>
+<ol style="list-style-type: decimal">
+<li>
+<code>objective</code> (either an objective object as defined above or just a function) and</li>
+<li>
+<code>initial</code> (an initial parameter vector from where the optimizer should start)</li>
+</ol>
+<p>and optionally accepts additional arguments to be passed to the optimizer or the objective function.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nlm</span><span class="op">$</span><span class="fu">maximize</span><span class="op">(</span>objective <span class="op">=</span> <span class="va">objective</span>, initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $value</span></span>
+<span><span class="co">#&gt; [1] -6.559645</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $parameter</span></span>
+<span><span class="co">#&gt; [1] 1.974451 1.974451</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $seconds</span></span>
+<span><span class="co">#&gt; [1] 0.006532907</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $initial</span></span>
+<span><span class="co">#&gt; [1] 3 3</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $gradient</span></span>
+<span><span class="co">#&gt; [1] 5.577962e-08 5.577962e-08</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $code</span></span>
+<span><span class="co">#&gt; [1] 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $iterations</span></span>
+<span><span class="co">#&gt; [1] 6</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">nelder_mead</span><span class="op">$</span><span class="fu">maximize</span><span class="op">(</span>objective <span class="op">=</span> <span class="va">objective</span>, initial <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $value</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $parameter</span></span>
+<span><span class="co">#&gt; [1] 0 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $seconds</span></span>
+<span><span class="co">#&gt; [1] 0.003427029</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $initial</span></span>
+<span><span class="co">#&gt; [1] 3 3</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $count</span></span>
+<span><span class="co">#&gt; [1] 105</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $convergence</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $info</span></span>
+<span><span class="co">#&gt; $info$solver</span></span>
+<span><span class="co">#&gt; [1] "Nelder-Mead"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $info$restarts</span></span>
+<span><span class="co">#&gt; [1] 0</span></span></code></pre></div>
+<p>Note that</p>
+<ul>
+<li><p>the inputs for the objective function and initial parameter values are named consistently across optimizers,</p></li>
+<li><p>the output values for the optimal parameter vector and the maximimum function value are also named consistently across optimizers,</p></li>
+<li><p>the output contains the initial parameter values and the optimization time in seconds and additionally other optimizer-specific elements,</p></li>
+<li><p><code><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">pracma::nelder_mead</a></code> outperforms <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">stats::nlm</a></code> here both in terms of optimization time and convergence to the global maximum.</p></li>
+</ul>
 </div>
 <div class="section level2">
-<h2 id="contact">Contact<a class="anchor" aria-label="anchor" href="#contact"></a>
+<h2 id="how-to-get-the-access">How to get the access?<a class="anchor" aria-label="anchor" href="#how-to-get-the-access"></a>
 </h2>
-<p>Have a question, found a bug, request a feature, want to contribute? <a href="https://github.com/loelschlaeger/optimizeR/issues/new/choose" class="external-link">Please file an issue on GitHub</a>.</p>
+<p>You can install the released package version from <a href="https://CRAN.R-project.org" class="external-link">CRAN</a> with:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"optimizeR"</span><span class="op">)</span></span></code></pre></div>
+<p>Then load the package via <code><a href="https://loelschlaeger.de/optimizeR/">library("optimizeR")</a></code> and you should be ready to go.</p>
+</div>
+<div class="section level2">
+<h2 id="roadmap">Roadmap<a class="anchor" aria-label="anchor" href="#roadmap"></a>
+</h2>
+<p>The following steps to further improve the package are currently on our agenda:</p>
+<ul class="task-list">
+<li><p><input type="checkbox" disabled>The package already provides a dictionary that stores optimizers together with information about names of their inputs and outputs (see the <code>optimizer_dictionary</code> object). We want to extend this dictionary with more optimizers that are commonly used.</p></li>
+<li><p><input type="checkbox" disabled>We want to use alias for optimizers in the dictionary that group optimizers into classes (such as “unconstrained optimization”, “constrained Optimization”, “direct search”, “Newton-type” etc.). This would help to find alternative optimizers for a given task.</p></li>
+<li><p><input type="checkbox" disabled>We want to implement a <code>$summary()</code> method for an optimizer object that gives an overview of the optimizer, its arguments, and its properties.</p></li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="getting-in-touch">Getting in touch<a class="anchor" aria-label="anchor" href="#getting-in-touch"></a>
+</h2>
+<p>You have a question, found a bug, request a feature, give feedback, want to contribute?</p>
+<p>We are happy to hear from you, <a href="https://github.com/loelschlaeger/optimizeR/issues/new/choose" class="external-link">please file an issue on GitHub</a>. 😊</p>
+</div>
+<div class="section level2">
+<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
+</h2>
+<p>Nash, John C., and Ravi Varadhan. 2011. “Unifying Optimization Algorithms to Aid Software System Users: <span class="nocase">optimx</span> for R.” <em>Journal of Statistical Software</em> 43 (9): 1–14. <a href="https://doi.org/10.18637/jss.v043.i09" class="external-link uri">https://doi.org/10.18637/jss.v043.i09</a>.</p>
+<p>Schwendinger, F., and H. W. Borchers. 2023. “CRAN Task View: Optimization and Mathematical Programming.” <a href="https://CRAN.R-project.org/view=Optimization" class="external-link uri">https://CRAN.R-project.org/view=Optimization</a>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

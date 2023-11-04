@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">optimizeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,8 +47,8 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.3" id="version-033">version 0.3.3<a class="anchor" aria-label="anchor" href="#version-033"></a></h2><p class="text-muted">CRAN release: 2023-09-27</p>
 <ul><li><p>Removed package start-up message.</p></li>
-<li><p>Added the <code>.direction</code> argument to <code><a href="../reference/define_optimizer.html">define_optimizer()</a></code> to specify whether the optimizer minimizes or maximizes.</p></li>
-<li><p>Added a dot before the argument names for <code><a href="../reference/define_optimizer.html">define_optimizer()</a></code> to avoid clashes with the <code>...</code> argument.</p></li>
+<li><p>Added the <code>.direction</code> argument to <code>define_optimizer()</code> to specify whether the optimizer minimizes or maximizes.</p></li>
+<li><p>Added a dot before the argument names for <code>define_optimizer()</code> to avoid clashes with the <code>...</code> argument.</p></li>
 <li><p>Removed dependency on <a href="https://github.com/tidyverse/glue" class="external-link">glue</a>.</p></li>
 <li><p>Using <code><a href="https://rdrr.io/pkg/TestFunctions/man/TF_ackley.html" class="external-link">TestFunctions::TF_ackley</a></code> instead of own implementation of Ackley function (for the validation).</p></li>
 </ul></div>
@@ -58,13 +58,13 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.1" id="version-031">version 0.3.1<a class="anchor" aria-label="anchor" href="#version-031"></a></h2><p class="text-muted">CRAN release: 2023-03-05</p>
-<ul><li>In <code><a href="../reference/define_optimizer.html">define_optimizer()</a></code>, now <code>validate = FALSE</code> by default.</li>
+<ul><li>In <code>define_optimizer()</code>, now <code>validate = FALSE</code> by default.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.0" id="version-030">version 0.3.0<a class="anchor" aria-label="anchor" href="#version-030"></a></h2><p class="text-muted">CRAN release: 2023-01-22</p>
-<ul><li><p>Function <code>set_optimizer()</code> was renamed to <code><a href="../reference/define_optimizer.html">define_optimizer()</a></code>.</p></li>
+<ul><li><p>Function <code>set_optimizer()</code> was renamed to <code>define_optimizer()</code>.</p></li>
 <li>
-<p>Inputs for <code><a href="../reference/define_optimizer.html">define_optimizer()</a></code> were renamed for clarity:</p>
+<p>Inputs for <code>define_optimizer()</code> were renamed for clarity:</p>
 <ul><li>
 <code>opt_fun</code> -&gt; <code>optimizer</code>
 </li>
@@ -87,9 +87,9 @@
 <code>test_par</code> -&gt; <code>validation_settings</code>
 </li>
 </ul></li>
-<li><p>Elements for input <code>validation_settings</code> have been simplified, please see the documentation of <code><a href="../reference/define_optimizer.html">define_optimizer()</a></code>.</p></li>
+<li><p>Elements for input <code>validation_settings</code> have been simplified, please see the documentation of <code>define_optimizer()</code>.</p></li>
 <li>
-<p>Elements in the output of <code><a href="../reference/apply_optimizer.html">apply_optimizer()</a></code> were renamed for clarity:</p>
+<p>Elements in the output of <code>apply_optimizer()</code> were renamed for clarity:</p>
 <ul><li>
 <code>v</code> -&gt; <code>value</code>
 </li>
@@ -99,23 +99,23 @@
 <li>
 <code>time</code> -&gt; <code>seconds</code> (now just a <code>numeric</code>)</li>
 </ul></li>
-<li><p>Element <code>initial</code> (the starting parameter vector) was added to the output of <code><a href="../reference/apply_optimizer.html">apply_optimizer()</a></code>.</p></li>
+<li><p>Element <code>initial</code> (the starting parameter vector) was added to the output of <code>apply_optimizer()</code>.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="version-020">version 0.2.0<a class="anchor" aria-label="anchor" href="#version-020"></a></h2><p class="text-muted">CRAN release: 2022-12-02</p>
 <ul><li>
 <p>Some functions were renamed:</p>
 <ul><li>
-<code><a href="../reference/optimizeR-package.html">optimizeR()</a></code> -&gt; <code><a href="../reference/apply_optimizer.html">apply_optimizer()</a></code>
+<code><a href="../reference/optimizeR-package.html">optimizeR()</a></code> -&gt; <code>apply_optimizer()</code>
 </li>
 <li>
-<code>set_optimizer_nlm()</code> -&gt; <code><a href="../reference/define_optimizer.html">optimizer_nlm()</a></code>
+<code>set_optimizer_nlm()</code> -&gt; <code>optimizer_nlm()</code>
 </li>
 <li>
-<code>set_optimizer_optim()</code> -&gt; <code><a href="../reference/define_optimizer.html">optimizer_optim()</a></code>
+<code>set_optimizer_optim()</code> -&gt; <code>optimizer_optim()</code>
 </li>
 </ul></li>
-<li><p>Functions <code><a href="../reference/is_number.html">is_number()</a></code>, <code><a href="../reference/try_silent.html">try_silent()</a></code>, <code><a href="../reference/timed.html">timed()</a></code>, and <code><a href="../reference/do.call_timed.html">do.call_timed()</a></code> are no longer exported.</p></li>
+<li><p>Functions <code>is_number()</code>, <code>try_silent()</code>, <code>timed()</code>, and <code>do.call_timed()</code> are no longer exported.</p></li>
 <li><p>Function <code>try_silent_timed()</code> was removed.</p></li>
 </ul></div>
     <div class="section level2">
