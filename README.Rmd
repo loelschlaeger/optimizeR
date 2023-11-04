@@ -37,7 +37,7 @@ The `{optimizeR}` package
 
 ✅ **But you might find the package useful if you want to...**
 
-- compare any optimizer function (also those not covered by `{optimx}` or other frameworks; see the [CRAN Task View: Optimization and Mathematical Programming](https://cran.r-project.org/web/views/Optimization.html) [@taskview] for an overview of R optimizers),
+- compare any optimizer function (also those not covered by `{optimx}` or other frameworks; see the [CRAN Task View: Optimization and Mathematical Programming](https://CRAN.R-project.org/view=Optimization) [@taskview] for an overview of R optimizers),
 - have consistently named inputs and outputs across different optimizers (which is generally not the case),
 - view optimizers as objects (which can be helpful when implementing packages that depend on optimization),
 - use optimizers for both minimization and maximization,

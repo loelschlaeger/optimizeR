@@ -35,7 +35,7 @@ The `{optimizeR}` package
 -   compare any optimizer function (also those not covered by `{optimx}`
     or other frameworks; see the [CRAN Task View: Optimization and
     Mathematical
-    Programming](https://cran.r-project.org/web/views/Optimization.html)
+    Programming](https://CRAN.R-project.org/view=Optimization)
     (Schwendinger and Borchers 2023) for an overview of R optimizers),
 -   have consistently named inputs and outputs across different
     optimizers (which is generally not the case),
@@ -183,7 +183,7 @@ nlm$maximize(objective = objective, initial = c(3, 3))
 #> [1] 1.974451 1.974451
 #> 
 #> $seconds
-#> [1] 0.006532907
+#> [1] 0.007139921
 #> 
 #> $initial
 #> [1] 3 3
@@ -207,7 +207,7 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> [1] 0 0
 #> 
 #> $seconds
-#> [1] 0.003427029
+#> [1] 0.003467083
 #> 
 #> $initial
 #> [1] 3 3
