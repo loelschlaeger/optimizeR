@@ -33,7 +33,10 @@ The `{optimizeR}` package
 ✅ **But you might find the package useful if you want to…**
 
 -   compare any optimizer function (also those not covered by `{optimx}`
-    or other frameworks),
+    or other frameworks; see the [CRAN Task View: Optimization and
+    Mathematical
+    Programming](https://cran.r-project.org/web/views/Optimization.html)
+    (Schwendinger and Borchers 2023) for an overview of R optimizers),
 -   have consistently named inputs and outputs across different
     optimizers (which is generally not the case),
 -   view optimizers as objects (which can be helpful when implementing
@@ -180,7 +183,7 @@ nlm$maximize(objective = objective, initial = c(3, 3))
 #> [1] 1.974451 1.974451
 #> 
 #> $seconds
-#> [1] 0.006552935
+#> [1] 0.006639004
 #> 
 #> $initial
 #> [1] 3 3
@@ -204,7 +207,7 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> [1] 0 0
 #> 
 #> $seconds
-#> [1] 0.003288984
+#> [1] 0.003309965
 #> 
 #> $initial
 #> [1] 3 3
@@ -284,3 +287,7 @@ Nash, John C., and Ravi Varadhan. 2011. “Unifying Optimization
 Algorithms to Aid Software System Users:
 <span class="nocase">optimx</span> for R.” *Journal of Statistical
 Software* 43 (9): 1–14. <https://doi.org/10.18637/jss.v043.i09>.
+
+Schwendinger, F., and H. W. Borchers. 2023. “CRAN Task View:
+Optimization and Mathematical Programming.”
+<https://CRAN.R-project.org/view=Optimization>.
