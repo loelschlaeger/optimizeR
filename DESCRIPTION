@@ -30,7 +30,9 @@ Depends:
 Imports: 
     checkmate,
     cli,
+    oeli,
     R6,
     stats,
-    TestFunctions
+    TestFunctions,
+    utils
 VignetteBuilder: knitr

@@ -28,7 +28,7 @@ install_optimizer_packages <- function() {
   if (install_pkgs) {
     for (pkg in pkgs_not_installed) {
       tryCatch(
-        install.packages(pkg),
+        utils::install.packages(pkg),
         error = function(e) {
           message(
             "Please install the package '", pkg, "' yourself.\n",

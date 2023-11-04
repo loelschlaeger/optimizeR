@@ -70,7 +70,7 @@ f <- function(a, b, x, y) {
 
 For `a = b = 20`, this is the inverted [Ackley function](https://en.wikipedia.org/wiki/Ackley_function) with a global maximum in `x = y = 0`:
 
-```{r, plot ackley, echo = FALSE, out.width = "50%", warning = FALSE, fig.align = "center"}
+```{r, plot-ackley, echo = FALSE, out.width = "50%", warning = FALSE, fig.align = "center"}
 x <- y <- seq(-3, 3, length.out = 100)
 grid <- expand.grid(x, y)
 z <- mapply(f, x = grid[, 1], y = grid[, 2], a = 20, b = 20)

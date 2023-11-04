@@ -76,7 +76,7 @@ For `a = b = 20`, this is the inverted [Ackley
 function](https://en.wikipedia.org/wiki/Ackley_function) with a global
 maximum in `x = y = 0`:
 
-<img src="man/figures/README-plot ackley-1.png" width="50%" style="display: block; margin: auto;" />
+<img src="man/figures/README-plot-ackley-1.png" width="50%" style="display: block; margin: auto;" />
 
 We want to keep `a` and `b` fixed here and optimize over `x` and `y`
 (which are also both single numeric values).
@@ -183,7 +183,7 @@ nlm$maximize(objective = objective, initial = c(3, 3))
 #> [1] 1.974451 1.974451
 #> 
 #> $seconds
-#> [1] 0.006639004
+#> [1] 0.006607056
 #> 
 #> $initial
 #> [1] 3 3
@@ -207,7 +207,7 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> [1] 0 0
 #> 
 #> $seconds
-#> [1] 0.003309965
+#> [1] 0.003329992
 #> 
 #> $initial
 #> [1] 3 3

@@ -36,7 +36,6 @@ optimizer_dictionary$keys
 
 # 3. define 'nlm' optimizer
 nlm <- Optimizer$new(which = "stats::nlm")
-summary(nlm)
 
 # 4. define the 'pracma::nelder_mead' optimizer (not contained in the dictionary)
 nelder_mead <- Optimizer$new(which = "custom")
@@ -224,7 +223,10 @@ Validates the \code{Optimizer} object.
 \enumerate{
 \item has at least one argument that receives a \code{numeric} \code{vector}
 \item and returns a single \code{numeric} value.
-}}
+}
+
+Alternatively, it can also be a \code{\link{Objective}} object for more
+flexibility.}
 
 \item{\code{initial}}{A \code{numeric} vector with starting parameter values for the optimization.}
 
@@ -258,7 +260,10 @@ Performing minimization.
 \enumerate{
 \item has at least one argument that receives a \code{numeric} \code{vector}
 \item and returns a single \code{numeric} value.
-}}
+}
+
+Alternatively, it can also be a \code{\link{Objective}} object for more
+flexibility.}
 
 \item{\code{initial}}{A \code{numeric} vector with starting parameter values for the optimization.}
 
@@ -305,7 +310,10 @@ Performing maximization.
 \enumerate{
 \item has at least one argument that receives a \code{numeric} \code{vector}
 \item and returns a single \code{numeric} value.
-}}
+}
+
+Alternatively, it can also be a \code{\link{Objective}} object for more
+flexibility.}
 
 \item{\code{initial}}{A \code{numeric} vector with starting parameter values for the optimization.}
 
