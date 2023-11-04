@@ -1,6 +1,9 @@
 if (!require("covr", quietly = TRUE)) {
   renv::install("covr", prompt = FALSE)
 }
+if (!require("devtools", quietly = TRUE)) {
+  renv::install("devtools", prompt = FALSE)
+}
 if (!require("DT", quietly = TRUE)) {
   renv::install("DT", prompt = FALSE)
 }

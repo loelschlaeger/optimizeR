@@ -1,6 +1,6 @@
 Package: optimizeR
 Title: Unified Framework for Numerical Optimizers
-Version: 0.3.2.9000
+Version: 0.3.3
 Authors@R: c(
     person("Lennart", "Oelschl\u00e4ger", 
            email = "oelschlaeger.lennart@gmail.com", 
@@ -23,7 +23,7 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-URL: https://loelschlaeger.de/optimizeR, https://github.com/loelschlaeger/optimizeR
+URL: https://loelschlaeger.de/optimizeR/, https://github.com/loelschlaeger/optimizeR/
 BugReports: https://github.com/loelschlaeger/optimizeR/issues
 Depends:
     R (>= 4.0.0)

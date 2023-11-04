@@ -13,8 +13,8 @@ Provides a unified framework for numerical optimizers in R, particularly for the
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://loelschlaeger.de/optimizeR}
-  \item \url{https://github.com/loelschlaeger/optimizeR}
+  \item \url{https://loelschlaeger.de/optimizeR/}
+  \item \url{https://github.com/loelschlaeger/optimizeR/}
   \item Report bugs at \url{https://github.com/loelschlaeger/optimizeR/issues}
 }
 
