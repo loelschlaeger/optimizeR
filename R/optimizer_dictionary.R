@@ -125,8 +125,8 @@ if (require("stats", quietly = TRUE)) {
     "algorithm" = stats::optim,
     "arg_objective" = "fn",
     "arg_initial" = "par",
-    "out_value" = "minimum",
-    "out_parameter" = "min",
+    "out_value" = "value",
+    "out_parameter" = "par",
     "direction" = "min"
   )
 }

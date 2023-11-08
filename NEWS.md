@@ -1,3 +1,7 @@
+# version 1.0.1
+
+* Fixed wrong values for `"out_value"` and `"out_parameter"` in the optimizer dictionary entry for `stats::optim`.
+
 # verion 1.0.0
 
 * Instead of using S3 classes, we treat optimizers as R6 objects now.
