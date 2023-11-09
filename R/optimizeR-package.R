@@ -13,3 +13,17 @@
 #' @importFrom utils install.packages
 ## usethis namespace: end
 NULL
+
+#' @noRd
+.onLoad <- function(lib, pkg) {
+  optimizer_dictionary$add(
+    "label" = "optimizeR::test_optimizer",
+    "algorithm" = test_optimizer,
+    "arg_objective" = "objective",
+    "arg_initial" = "initial",
+    "out_value" = "value",
+    "out_parameter" = "parameter",
+    "direction" = "min"
+  )
+  invisible()
+}
