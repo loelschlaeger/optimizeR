@@ -1,4 +1,8 @@
-# version 1.0.1
+# optimizeR development
+
+* Small bug fixes.
+
+# optimizeR 1.0.1
 
 * Fixed wrong values for `"out_value"` and `"out_parameter"` in the optimizer dictionary entry for `stats::optim`.
 
@@ -6,7 +10,7 @@
 
 * Instead of using S3 classes, we treat optimizers as R6 objects now.
 
-# version 0.3.3
+# optimizeR 0.3.3
 
 * Removed package start-up message.
 
@@ -18,15 +22,15 @@
 
 * Using `TestFunctions::TF_ackley` instead of own implementation of Ackley function (for the validation).
 
-# version 0.3.2
+# optimizeR 0.3.2
 
 * Just added package logo and created package website (https://loelschlaeger.de/optimizeR) with the [{pkgdown}](https://pkgdown.r-lib.org/) package. No code changes.
 
-# version 0.3.1
+# optimizeR 0.3.1
 
 * In `define_optimizer()`, now `validate = FALSE` by default.
 
-# version 0.3.0
+# optimizeR 0.3.0
 
 * Function `set_optimizer()` was renamed to `define_optimizer()`.
 
@@ -50,7 +54,7 @@
   
 * Element `initial` (the starting parameter vector) was added to the output of `apply_optimizer()`.
 
-# version 0.2.0
+# optimizeR 0.2.0
 
 * Some functions were renamed:
 
@@ -62,6 +66,6 @@
 
 * Function `try_silent_timed()` was removed.
 
-# version 0.1.0
+# optimizeR 0.1.0
 
 * Initial CRAN release.
