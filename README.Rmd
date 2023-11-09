@@ -1,7 +1,7 @@
 ---
 output:
   md_document:
-    variant: markdown_github
+    variant: gfm
 bibliography: bibliography.bib
 ---
 
@@ -144,6 +144,8 @@ Each optimizer object has a field called `$seconds` which equals `Inf` by defaul
 nlm$seconds <- 10
 nelder_mead$seconds <- 10
 ```
+
+Note that not everything (especially compiled C code) can technically be timed out, see `?R.utils::withTimeout` for more details. 
 
 **4. Maximize the objective function**
 
