@@ -92,8 +92,12 @@ output \code{list} of \code{algorithm}.}
 \item{\code{arguments}}{A named \code{list} of custom arguments for \code{algorithm}. Defaults
 are used for arguments that are not specified.}
 
-\item{\code{seconds}}{A \code{numeric}, the number of seconds after which the optimization
-is interrupted. Can also be \code{NULL} for no time limit.}
+\item{\code{seconds}}{A \code{numeric}, a time limit in seconds. Optimization is interrupted
+prematurely if \code{seconds} is exceeded.
+
+No time limit if \code{seconds = Inf} (the default).
+
+Note the limitations documented in \code{\link[base]{setTimeLimit}}.}
 
 \item{\code{hide_warnings}}{Either \code{TRUE} to hide warnings during optimization, or \code{FALSE}
 (default) else.}
@@ -205,14 +209,14 @@ The \code{Optimizer} object.
 \if{html}{\out{<a id="method-Optimizer-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-Optimizer-validate}{}}}
 \subsection{Method \code{validate()}}{
-Validates the \code{Optimizer} object.
+Validates the \code{Optimizer} object. A time limit in seconds for
+the optimization can be set via the \code{$seconds} field.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimizer$validate(
   objective = optimizeR::test_objective,
   initial = round(stats::rnorm(2)),
   ...,
-  direction = "min",
-  seconds = 3
+  direction = "min"
 )}\if{html}{\out{</div>}}
 }
 
@@ -234,9 +238,6 @@ flexibility.}
 Without specifications, default values are used.}
 
 \item{\code{direction}}{Either \code{"min"} for minimization or \code{"max"} for maximization.}
-
-\item{\code{seconds}}{A \code{numeric}, the number of seconds after which the optimization
-is interrupted. Can also be \code{NULL} for no time limit.}
 }
 \if{html}{\out{</div>}}
 }
@@ -281,8 +282,13 @@ where the minimum is obtained.}
 \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
 \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
 }
-Appended are additional output elements of the optimizer. If an error
-occurred, then the error message is also appended as element \code{.error}.
+Appended are additional output elements of the optimizer.
+
+If an error occurred, then the error message is also appended as element
+\code{.error_message}.
+
+If the time limit was exceeded, then the element \code{.time_out} is
+also appended.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
