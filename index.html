@@ -39,7 +39,7 @@
     
     <a class="navbar-brand me-2" href="index.html">optimizeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -113,7 +113,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://loelschlaeger.de/optimizeR/">"optimizeR"</a></span><span class="op">)</span></span></code></pre></div>
 <p><strong>1. Define the objective function</strong></p>
-<p>Let <em>f</em> : ℝ<sup>4</sup> → ℝ with</p>
+<p>Let <span class="math inline"><em>f</em> : ℝ<sup>4</sup> → ℝ</span> with</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">a</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="va">y</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">-</span> <span class="va">b</span></span>
@@ -145,8 +145,7 @@
 <span><span class="co">#&gt; &lt;Dictionary&gt; optimizer algorithms </span></span>
 <span><span class="co">#&gt; Keys: </span></span>
 <span><span class="co">#&gt; - stats::nlm</span></span>
-<span><span class="co">#&gt; - stats::optim</span></span>
-<span><span class="co">#&gt; - ucminf::ucminf</span></span></code></pre></div>
+<span><span class="co">#&gt; - stats::optim</span></span></code></pre></div>
 <p>Optimizers that are implemented in packages which are not installed yet are only shown here after you install the required packages (for instance using the convenience function <code><a href="reference/install_optimizer_packages.html">install_optimizer_packages()</a></code>).</p>
 <p>But in fact any optimizer that is not contained in the dictionary can be put into the <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a> framework by setting <code>which = "custom"</code> first…</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -167,6 +166,7 @@
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nlm</span><span class="op">$</span><span class="va">seconds</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
 <span><span class="va">nelder_mead</span><span class="op">$</span><span class="va">seconds</span> <span class="op">&lt;-</span> <span class="fl">10</span></span></code></pre></div>
+<p>Note that not everything (especially compiled C code) can technically be timed out, see <code>?R.utils::withTimeout</code> for more details.</p>
 <p><strong>4. Maximize the objective function</strong></p>
 <p>Each optimizer object has the two methods <code>$maximize()</code> and <code>$minimize()</code> for function maximization or minimization, respectively. Both methods require values for the two arguments</p>
 <ol style="list-style-type: decimal">
@@ -259,8 +259,14 @@
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
-<p>Nash, John C., and Ravi Varadhan. 2011. “Unifying Optimization Algorithms to Aid Software System Users: <span class="nocase">optimx</span> for R.” <em>Journal of Statistical Software</em> 43 (9): 1–14. <a href="https://doi.org/10.18637/jss.v043.i09" class="external-link uri">https://doi.org/10.18637/jss.v043.i09</a>.</p>
-<p>Schwendinger, F., and H. W. Borchers. 2023. “CRAN Task View: Optimization and Mathematical Programming.” <a href="https://CRAN.R-project.org/view=Optimization" class="external-link uri">https://CRAN.R-project.org/view=Optimization</a>.</p>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-optimx" class="csl-entry">
+Nash, John C., and Ravi Varadhan. 2011. “Unifying Optimization Algorithms to Aid Software System Users: <span class="nocase">optimx</span> for R.” <em>Journal of Statistical Software</em> 43 (9): 1–14. <a href="https://doi.org/10.18637/jss.v043.i09" class="external-link uri">https://doi.org/10.18637/jss.v043.i09</a>.
+</div>
+<div id="ref-taskview" class="csl-entry">
+Schwendinger, F., and H. W. Borchers. 2023. “CRAN Task View: Optimization and Mathematical Programming.” <a href="https://CRAN.R-project.org/view=Optimization" class="external-link uri">https://CRAN.R-project.org/view=Optimization</a>.
+</div>
+</div>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">

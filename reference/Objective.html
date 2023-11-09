@@ -12,7 +12,7 @@ for numerical optimization."><meta property="og:image" content="https://loelschl
     
     <a class="navbar-brand me-2" href="../index.html">optimizeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,9 +67,9 @@ for numerical optimization.</p>
 
 <dt><code>seconds</code></dt>
 <dd><p>A <code>numeric</code>, a time limit in seconds. Computations are interrupted
-prematurely if <code>seconds</code> is exceeded.
-This currently only works reliably under Windows OS.
-No time limit if <code>seconds = Inf</code> (the default).</p></dd>
+prematurely if <code>seconds</code> is exceeded.</p>
+<p>No time limit if <code>seconds = Inf</code> (the default).</p>
+<p>Note the limitations documented in <code><a href="https://rdrr.io/r/base/setTimeLimit.html" class="external-link">setTimeLimit</a></code>.</p></dd>
 
 
 <dt><code>hide_warnings</code></dt>

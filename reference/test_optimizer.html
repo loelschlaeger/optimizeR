@@ -12,7 +12,7 @@ functions. It can throw a warning and / or an error on purpose."><meta property=
     
     <a class="navbar-brand me-2" href="../index.html">optimizeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.1.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -55,11 +55,11 @@ functions. It can throw a warning and / or an error on purpose.</p>
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">test_optimizer</span><span class="op">(</span></span>
-<span>  f <span class="op">=</span> <span class="va">test_objective</span>,</span>
-<span>  p <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  objective <span class="op">=</span> <span class="va">test_objective</span>,</span>
+<span>  initial <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>  <span class="va">...</span>,</span>
-<span>  parameter <span class="op">=</span> <span class="va">p</span>,</span>
-<span>  value <span class="op">=</span> <span class="fu">f</span><span class="op">(</span><span class="va">parameter</span><span class="op">)</span>,</span>
+<span>  parameter <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  value <span class="op">=</span> <span class="fu">objective</span><span class="op">(</span><span class="va">parameter</span><span class="op">)</span>,</span>
 <span>  seconds <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  warning_prob <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  error_prob <span class="op">=</span> <span class="fl">0</span>,</span>
@@ -71,16 +71,16 @@ functions. It can throw a warning and / or an error on purpose.</p>
 
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
-    <dl><dt>f</dt>
+    <dl><dt>objective</dt>
 <dd><p>An objective <code>function</code>.</p></dd>
 
 
-<dt>p</dt>
+<dt>initial</dt>
 <dd><p>The initial parameter vector.</p></dd>
 
 
 <dt>...</dt>
-<dd><p>Optionally additional arguments to be passed to <code>f</code>.</p></dd>
+<dd><p>Optionally additional arguments to be passed to <code>objective</code>.</p></dd>
 
 
 <dt>parameter</dt>
