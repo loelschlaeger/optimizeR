@@ -160,7 +160,8 @@ nelder_mead$seconds <- 10
 ```
 
 Note that not everything (especially compiled C code) can technically be
-timed out, see `?R.utils::withTimeout` for more details.
+timed out, see the help site `help("withTimeout", package = "R.utils")`
+for more details.
 
 **4. Maximize the objective function**
 
