@@ -36,8 +36,7 @@
 test_optimizer <- function(
     objective = test_objective, initial = 1, ..., parameter = 1,
     value = objective(parameter), seconds = 0, warning_prob = 0, error_prob = 0,
-    warning_msg = "warning", error_msg = "error", call. = TRUE
-  ) {
+    warning_msg = "warning", error_msg = "error", call. = TRUE) {
   checkmate::assert_function(objective)
   checkmate::assert_number(seconds, lower = 0)
   checkmate::assert_number(warning_prob, lower = 0, upper = 1)
@@ -84,8 +83,7 @@ test_optimizer <- function(
 
 test_objective <- function(
     x, value = x, warning_prob = 0, error_prob = 0, warning_msg = "warning",
-    error_msg = "error", call. = TRUE
-  ) {
+    error_msg = "error", call. = TRUE) {
   checkmate::assert_number(warning_prob, lower = 0, upper = 1)
   checkmate::assert_number(error_prob, lower = 0, upper = 1)
   checkmate::assert_string(warning_msg)

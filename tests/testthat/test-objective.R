@@ -63,4 +63,3 @@ test_that("objective with more than one target argument can be evaluated", {
     -llk(mu = 1:2, sd = 3:4, lambda = 5, data = faithful$eruptions)
   )
 })
-
