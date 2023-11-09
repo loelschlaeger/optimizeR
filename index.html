@@ -166,7 +166,7 @@
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nlm</span><span class="op">$</span><span class="va">seconds</span> <span class="op">&lt;-</span> <span class="fl">10</span></span>
 <span><span class="va">nelder_mead</span><span class="op">$</span><span class="va">seconds</span> <span class="op">&lt;-</span> <span class="fl">10</span></span></code></pre></div>
-<p>Note that not everything (especially compiled C code) can technically be timed out, see <code>?R.utils::withTimeout</code> for more details.</p>
+<p>Note that not everything (especially compiled C code) can technically be timed out, see the help site <code>help("withTimeout", package = "R.utils")</code> for more details.</p>
 <p><strong>4. Maximize the objective function</strong></p>
 <p>Each optimizer object has the two methods <code>$maximize()</code> and <code>$minimize()</code> for function maximization or minimization, respectively. Both methods require values for the two arguments</p>
 <ol style="list-style-type: decimal">
