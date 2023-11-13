@@ -145,8 +145,8 @@ Objective <- R6::R6Class(
     #' @return
     #' Invisibly the \code{Objective} object.
     validate = function(.at) {
+      self$check_target(.at, verbose = TRUE)
       private$.check_arguments_complete(verbose = TRUE)
-      private$.check_target(.at, verbose = TRUE)
       cli::cli_progress_step(
         "Evaluating {private$.objective_name}({cli::cli_vec(.at, list('vec-trunc' = 3, 'vec-sep' = ',', 'vec-last' = ','))}).",
         msg_done = "The function value is a single number, great!",
@@ -157,6 +157,29 @@ Objective <- R6::R6Class(
       }
       cli::cli_progress_done()
       invisible(self)
+    },
+
+    #' @description
+    #' Checks the target argument.
+    #' @return
+    #' Invisibly \code{TRUE} if the target argument is valid.
+    check_target = function(.at, verbose = self$verbose) {
+      if (!checkmate::test_numeric(
+        .at, any.missing = FALSE, len = sum(private$.npar)
+      )) {
+        variable_name <- oeli::variable_name(.at, fallback = ".at")
+        cli::cli_abort(
+          "Input {.var {variable_name}} must be a {.cls numeric} of length
+          {sum(private$.npar)}.",
+          call = NULL
+        )
+      }
+      if (verbose) {
+        cli::cli_alert_success(
+          "The value for the target argument(s) is correctly specified."
+        )
+      }
+      invisible(TRUE)
     },
 
     #' @description
@@ -291,21 +314,6 @@ Objective <- R6::R6Class(
     .seconds = Inf,
     .hide_warnings = FALSE,
     .verbose = TRUE,
-
-    ### helper function that checks the value for the target argument
-    .check_target = function(.at, verbose = self$verbose) {
-      if (!checkmate::test_numeric(.at, any.missing = FALSE, len = sum(private$.npar))) {
-        cli::cli_abort(
-          "Input {.var .at} must be a {.cls numeric} of length {sum(private$.npar)}.",
-          call = NULL
-        )
-      }
-      if (verbose) {
-        cli::cli_alert_success(
-          "The value for the target argument(s) is correctly specified."
-        )
-      }
-    },
 
     ### helper function that checks if a function argument is specified
     .check_argument_specified = function(argument_name, verbose = self$verbose) {
