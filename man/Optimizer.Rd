@@ -274,21 +274,22 @@ Without specifications, default values are used.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A named \code{list}, containing at least these four elements:
+A named \code{list}, containing at least these five elements:
 \describe{
 \item{\code{value}}{A \code{numeric}, the minimum function value.}
 \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
 where the minimum is obtained.}
 \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
 \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
+\item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
 }
 Appended are additional output elements of the optimizer.
 
 If an error occurred, then the error message is also appended as element
-\code{.error_message}.
+\code{error_message}.
 
-If the time limit was exceeded, then the element \code{.time_out} is
-also appended.
+If the time limit was exceeded, this also counts as an error. In addition,
+the flag \code{time_out = TRUE} is appended.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -329,16 +330,22 @@ Without specifications, default values are used.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A named \code{list}, containing at least these four elements:
+A named \code{list}, containing at least these five elements:
 \describe{
 \item{\code{value}}{A \code{numeric}, the maximum function value.}
 \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
 where the maximum is obtained.}
 \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
 \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
+\item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
 }
-Appended are additional output elements of the optimizer. If an error
-occurred, then the error message is also appended as element \code{.error}.
+Appended are additional output elements of the optimizer.
+
+If an error occurred, then the error message is also appended as element
+\code{error_message}.
+
+If the time limit was exceeded, this also counts as an error. In addition,
+the flag \code{time_out = TRUE} is appended.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

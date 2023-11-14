@@ -219,13 +219,13 @@ Optimizer <- R6::R6Class(
       )
 
       ### output checks
-      if (isTRUE(out[[".time_out"]])) {
+      if (isTRUE(out[["time_out"]])) {
         cli::cli_alert_warning(
           "Time limit reached, consider increasing {.val $seconds}."
         )
-      } else if (!is.null(out[[".error_message"]])) {
+      } else if (!is.null(out[["error_message"]])) {
         cli::cli_abort(
-          "Test optimization failed: {out[['.error_message']]}"
+          "Test optimization failed: {out[['error_message']]}"
         )
       }
       cli::cli_progress_step(
@@ -256,22 +256,22 @@ Optimizer <- R6::R6Class(
     #' @description
     #' Performing minimization.
     #' @return
-    #' A named \code{list}, containing at least these four elements:
+    #' A named \code{list}, containing at least these five elements:
     #' \describe{
     #'   \item{\code{value}}{A \code{numeric}, the minimum function value.}
     #'   \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
     #'   where the minimum is obtained.}
     #'   \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
     #'   \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
+    #'   \item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
     #' }
     #' Appended are additional output elements of the optimizer.
     #'
     #' If an error occurred, then the error message is also appended as element
-    #' \code{.error_message}.
+    #' \code{error_message}.
     #'
-    #' If the time limit was exceeded, then the element \code{.time_out} is
-    #' also appended.
-    #'
+    #' If the time limit was exceeded, this also counts as an error. In addition,
+    #' the flag \code{time_out = TRUE} is appended.
     #' @examples
     #' Optimizer$new("stats::nlm")$
     #'   minimize(objective = function(x) x^4 + 3*x - 5, initial = 2)
@@ -286,16 +286,22 @@ Optimizer <- R6::R6Class(
     #' @description
     #' Performing maximization.
     #' @return
-    #' A named \code{list}, containing at least these four elements:
+    #' A named \code{list}, containing at least these five elements:
     #' \describe{
     #'   \item{\code{value}}{A \code{numeric}, the maximum function value.}
     #'   \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
     #'   where the maximum is obtained.}
     #'   \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
     #'   \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
+    #'   \item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
     #' }
-    #' Appended are additional output elements of the optimizer. If an error
-    #' occurred, then the error message is also appended as element \code{.error}.
+    #' Appended are additional output elements of the optimizer.
+    #'
+    #' If an error occurred, then the error message is also appended as element
+    #' \code{error_message}.
+    #'
+    #' If the time limit was exceeded, this also counts as an error. In addition,
+    #' the flag \code{time_out = TRUE} is appended.
     #' @examples
     #' Optimizer$new("stats::nlm")$
     #'   maximize(objective = function(x) -x^4 + 3*x - 5, initial = 2)
@@ -365,6 +371,11 @@ Optimizer <- R6::R6Class(
         out[["seconds"]] <- NA_real_
       }
       out[["initial"]] <- initial
+      if (!"error" %in% names(result)) {
+        out[["error"]] <- FALSE
+      } else {
+        out[["error"]] <- TRUE
+      }
       oeli::merge_lists(
         out,
         result$result[!names(result$result) %in% c(private$.out_value, private$.out_parameter)]
@@ -425,13 +436,15 @@ Optimizer <- R6::R6Class(
           if (time_out) {
             list(
               "result" = list(
-                ".error_message" = error_message, ".time_out" = TRUE
+                "error" = TRUE, "error_message" = error_message, "time_out" = TRUE
               ),
               "time" = NA_real_
             )
           } else {
             list(
-              "result" = list(".error_message" = error_message),
+              "result" = list(
+                "error" = TRUE, "error_message" = error_message
+              ),
               "time" = NA_real_
             )
           }

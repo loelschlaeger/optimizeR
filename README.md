@@ -118,8 +118,11 @@ available optimizers, see:
 optimizer_dictionary
 #> <Dictionary> optimizer algorithms 
 #> Keys: 
+#> - lbfgsb3c::lbfgsb3c
 #> - stats::nlm
+#> - stats::nlminb
 #> - stats::optim
+#> - ucminf::ucminf
 ```
 
 Optimizers that are implemented in packages which are not installed yet
@@ -191,6 +194,9 @@ nlm$maximize(objective = objective, initial = c(3, 3))
 #> $initial
 #> [1] 3 3
 #> 
+#> $error
+#> [1] FALSE
+#> 
 #> $gradient
 #> [1] 5.577962e-08 5.577962e-08
 #> 
@@ -214,6 +220,9 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> 
 #> $initial
 #> [1] 3 3
+#> 
+#> $error
+#> [1] FALSE
 #> 
 #> $count
 #> [1] 105
