@@ -144,8 +144,11 @@
 <code class="sourceCode R"><span><span class="va">optimizer_dictionary</span></span>
 <span><span class="co">#&gt; &lt;Dictionary&gt; optimizer algorithms </span></span>
 <span><span class="co">#&gt; Keys: </span></span>
+<span><span class="co">#&gt; - lbfgsb3c::lbfgsb3c</span></span>
 <span><span class="co">#&gt; - stats::nlm</span></span>
-<span><span class="co">#&gt; - stats::optim</span></span></code></pre></div>
+<span><span class="co">#&gt; - stats::nlminb</span></span>
+<span><span class="co">#&gt; - stats::optim</span></span>
+<span><span class="co">#&gt; - ucminf::ucminf</span></span></code></pre></div>
 <p>Optimizers that are implemented in packages which are not installed yet are only shown here after you install the required packages (for instance using the convenience function <code><a href="reference/install_optimizer_packages.html">install_optimizer_packages()</a></code>).</p>
 <p>But in fact any optimizer that is not contained in the dictionary can be put into the <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a> framework by setting <code>which = "custom"</code> first…</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
@@ -190,6 +193,9 @@
 <span><span class="co">#&gt; $initial</span></span>
 <span><span class="co">#&gt; [1] 3 3</span></span>
 <span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $error</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $gradient</span></span>
 <span><span class="co">#&gt; [1] 5.577962e-08 5.577962e-08</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -211,6 +217,9 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $initial</span></span>
 <span><span class="co">#&gt; [1] 3 3</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $error</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $count</span></span>
 <span><span class="co">#&gt; [1] 105</span></span>

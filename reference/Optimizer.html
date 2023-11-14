@@ -334,7 +334,7 @@ Without specifications, default values are used.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
-<p>A named <code>list</code>, containing at least these four elements:</p><dl><dt><code>value</code></dt>
+<p>A named <code>list</code>, containing at least these five elements:</p><dl><dt><code>value</code></dt>
 <dd><p>A <code>numeric</code>, the minimum function value.</p></dd>
 
 <dt><code>parameter</code></dt>
@@ -347,12 +347,15 @@ where the minimum is obtained.</p></dd>
 <dt><code>initial</code></dt>
 <dd><p>A <code>numeric</code>, the initial parameter values.</p></dd>
 
+<dt><code>error</code></dt>
+<dd><p>Either <code>TRUE</code> if an error occurred, or <code>FALSE</code>, else.</p></dd>
+
 
 </dl><p>Appended are additional output elements of the optimizer.</p>
 <p>If an error occurred, then the error message is also appended as element
-<code>.error_message</code>.</p>
-<p>If the time limit was exceeded, then the element <code>.time_out</code> is
-also appended.</p>
+<code>error_message</code>.</p>
+<p>If the time limit was exceeded, this also counts as an error. In addition,
+the flag <code>time_out = TRUE</code> is appended.</p>
 </div>
 <div class="section">
 <h4 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a></h4>
@@ -390,7 +393,7 @@ Without specifications, default values are used.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-5">Returns<a class="anchor" aria-label="anchor" href="#returns-5"></a></h4>
-<p>A named <code>list</code>, containing at least these four elements:</p><dl><dt><code>value</code></dt>
+<p>A named <code>list</code>, containing at least these five elements:</p><dl><dt><code>value</code></dt>
 <dd><p>A <code>numeric</code>, the maximum function value.</p></dd>
 
 <dt><code>parameter</code></dt>
@@ -403,9 +406,15 @@ where the maximum is obtained.</p></dd>
 <dt><code>initial</code></dt>
 <dd><p>A <code>numeric</code>, the initial parameter values.</p></dd>
 
+<dt><code>error</code></dt>
+<dd><p>Either <code>TRUE</code> if an error occurred, or <code>FALSE</code>, else.</p></dd>
 
-</dl><p>Appended are additional output elements of the optimizer. If an error
-occurred, then the error message is also appended as element <code>.error</code>.</p>
+
+</dl><p>Appended are additional output elements of the optimizer.</p>
+<p>If an error occurred, then the error message is also appended as element
+<code>error_message</code>.</p>
+<p>If the time limit was exceeded, this also counts as an error. In addition,
+the flag <code>time_out = TRUE</code> is appended.</p>
 </div>
 <div class="section">
 <h4 id="examples-1">Examples<a class="anchor" aria-label="anchor" href="#examples-1"></a></h4>
@@ -496,7 +505,10 @@ Without specifications, default values are used.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $.error_message</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $error</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $error_message</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "unused argument (on_time_out = \"error\")"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span><span class="va">nelder_mead</span><span class="op">$</span><span class="fu">minimize</span><span class="op">(</span><span class="va">objective</span>, <span class="va">initial</span><span class="op">)</span></span></span>
@@ -512,7 +524,10 @@ Without specifications, default values are used.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3 3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $.error_message</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $error</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $error_message</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "unused argument (on_time_out = \"error\")"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
@@ -535,7 +550,10 @@ Without specifications, default values are used.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $.error_message</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $error</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $error_message</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "unused argument (on_time_out = \"error\")"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
@@ -557,7 +575,10 @@ Without specifications, default values are used.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $.error_message</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $error</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $error_message</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "unused argument (on_time_out = \"error\")"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 </code></pre></div>
