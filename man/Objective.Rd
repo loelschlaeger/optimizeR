@@ -59,7 +59,6 @@ to hide those.}
 \item \href{#method-Objective-get_argument}{\code{Objective$get_argument()}}
 \item \href{#method-Objective-remove_argument}{\code{Objective$remove_argument()}}
 \item \href{#method-Objective-validate}{\code{Objective$validate()}}
-\item \href{#method-Objective-check_target}{\code{Objective$check_target()}}
 \item \href{#method-Objective-evaluate}{\code{Objective$evaluate()}}
 \item \href{#method-Objective-print}{\code{Objective$print()}}
 \item \href{#method-Objective-clone}{\code{Objective$clone()}}
@@ -183,30 +182,6 @@ arguments written in a single vector.}
 }
 \subsection{Returns}{
 Invisibly the \code{Objective} object.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Objective-check_target"></a>}}
-\if{latex}{\out{\hypertarget{method-Objective-check_target}{}}}
-\subsection{Method \code{check_target()}}{
-Checks the target argument.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$check_target(.at, verbose = self$verbose)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{.at}}{A \code{numeric} of length \code{sum(self$npar)}, the values for the target
-arguments written in a single vector.}
-
-\item{\code{verbose}}{Either \code{TRUE} (default) to print status messages, or \code{FALSE}
-to hide those.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Invisibly \code{TRUE} if the target argument is valid.
 }
 }
 \if{html}{\out{<hr>}}

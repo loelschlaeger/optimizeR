@@ -214,7 +214,7 @@ Optimizer <- R6::R6Class(
       out <- private$.optimize(
         objective = objective,
         initial = initial,
-        additional_arguments = list(), # list(...)
+        additional_arguments = list(...),
         direction = direction
       )
 
