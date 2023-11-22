@@ -177,7 +177,7 @@ output \code{list} of \code{algorithm}.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The \code{Optimizer} object.
+Invisibly the \code{Optimizer} object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -211,8 +211,7 @@ Validates the \code{Optimizer} object.
   objective = optimizeR::test_objective,
   initial = round(stats::rnorm(2)),
   ...,
-  direction = "min",
-  seconds = 3
+  direction = "min"
 )}\if{html}{\out{</div>}}
 }
 
@@ -234,9 +233,6 @@ flexibility.}
 Without specifications, default values are used.}
 
 \item{\code{direction}}{Either \code{"min"} for minimization or \code{"max"} for maximization.}
-
-\item{\code{seconds}}{A \code{numeric}, the number of seconds after which the optimization
-is interrupted. Can also be \code{NULL} for no time limit.}
 }
 \if{html}{\out{</div>}}
 }

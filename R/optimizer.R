@@ -125,7 +125,7 @@ Optimizer <- R6::R6Class(
     #' Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
     #' (if the optimizer maximizes).
     #' @return
-    #' The \code{Optimizer} object.
+    #' Invisibly the \code{Optimizer} object.
 
     definition = function(
       algorithm, arg_objective, arg_initial, out_value, out_parameter, direction
@@ -179,6 +179,7 @@ Optimizer <- R6::R6Class(
         ), call = NULL)
       }
       self$direction <- direction
+      invisible(self)
     },
 
     #' @description
@@ -198,11 +199,11 @@ Optimizer <- R6::R6Class(
 
     validate = function(
       objective = optimizeR::test_objective, initial = round(stats::rnorm(2)),
-      ..., direction = "min", seconds = 3
+      ..., direction = "min"
     ) {
-      self$apply(
-        objective = objective, initial = initial, ..., direction = direction,
-        seconds = seconds
+      private$.optimize(
+        objective = objective, initial = initial,
+        additional_arguments = list(...), direction = direction
       )
     },
 
