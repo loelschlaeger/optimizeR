@@ -145,27 +145,17 @@ Objective <- R6::R6Class(
     #' @return
     #' Invisibly the \code{Objective} object.
     validate = function(.at) {
-      private$.check_arguments_complete()
-      private$.check_target(.at)
-      if (self$verbose) {
-        cli::cli_alert(
-          "Trying to evaluate {private$.objective_name}({cli::cli_vec(.at, list('vec-trunc' = 3, 'vec-sep' = ',', 'vec-last' = ','))})."
-        )
+      private$.check_target(.at, verbose = TRUE)
+      private$.check_arguments_complete(verbose = TRUE)
+      cli::cli_progress_step(
+        "Evaluating {private$.objective_name}({cli::cli_vec(.at, list('vec-trunc' = 3, 'vec-sep' = ',', 'vec-last' = ','))}).",
+        msg_done = "The function value is a single number, great!",
+        msg_failed = "Test evaluation failed."
+      )
+      if (!checkmate::test_number(self$evaluate(.at = .at))) {
+        stop("The function output is the expected single number.")
       }
-      out <- self$evaluate(.at = .at)
-      if (checkmate::test_number(out)) {
-        if (self$verbose) {
-          cli::cli_alert_success("The function value is a single number, great!")
-        }
-      } else {
-        cli::cli_abort(
-          paste0(
-            "The function output is not as expected. ",
-            checkmate::check_number(out), "."
-          ),
-          call = NULL
-        )
-      }
+      cli::cli_progress_done()
       invisible(self)
     },
 
@@ -239,13 +229,15 @@ Objective <- R6::R6Class(
     #' @field seconds
     #' A \code{numeric}, a time limit in seconds. Computations are interrupted
     #' prematurely if \code{seconds} is exceeded.
-    #' This currently only works reliably under Windows OS.
+    #'
     #' No time limit if \code{seconds = Inf} (the default).
+    #'
+    #' Note the limitations documented in \code{\link[base]{setTimeLimit}}.
     seconds = function(value) {
       if (missing(value)) {
         return(private$.seconds)
       } else {
-        checkmate::assert_number(value, lower = 0)
+        checkmate::assert_number(value, lower = 0, finite = FALSE)
         private$.seconds <- value
       }
     },
@@ -300,21 +292,28 @@ Objective <- R6::R6Class(
     .hide_warnings = FALSE,
     .verbose = TRUE,
 
-    .check_target = function(.at) {
-      if (!checkmate::test_numeric(.at, any.missing = FALSE, len = sum(private$.npar))) {
+    ### helper function that checks the target argument
+    .check_target = function(.at, verbose = self$verbose) {
+      if (!checkmate::test_numeric(
+        .at, any.missing = FALSE, len = sum(private$.npar)
+      )) {
+        variable_name <- oeli::variable_name(.at, fallback = ".at")
         cli::cli_abort(
-          "Input {.var .at} must be a {.cls numeric} of length {sum(private$.npar)}.",
+          "Input {.var {variable_name}} must be a {.cls numeric} of length
+          {sum(private$.npar)}.",
           call = NULL
         )
       }
-      if (self$verbose) {
+      if (verbose) {
         cli::cli_alert_success(
-          "The value {.var .at} for the target argument(s) is correctly specified."
+          "The value for the target argument(s) is correctly specified."
         )
       }
+      invisible(TRUE)
     },
 
-    .check_argument_specified = function(argument_name) {
+    ### helper function that checks if a function argument is specified
+    .check_argument_specified = function(argument_name, verbose = self$verbose) {
       checkmate::assert_string(argument_name)
       if (!argument_name %in% names(private$.arguments)) {
         cli::cli_abort(
@@ -323,20 +322,21 @@ Objective <- R6::R6Class(
           call = NULL
         )
       }
-      if (self$verbose) {
+      if (verbose) {
         cli::cli_alert_success("Required argument {.val {argument_name}} is specified.")
       }
     },
 
-    .check_arguments_complete = function() {
+    ### helper function that checks if all required arguments are specified
+    .check_arguments_complete = function(verbose = self$verbose) {
       arguments_required <- oeli::function_arguments(
         private$.objective, with_default = FALSE, with_ellipsis = FALSE
       )
       for (argument_name in setdiff(arguments_required, private$.target)) {
-        private$.check_argument_specified(argument_name)
+        private$.check_argument_specified(argument_name, verbose = FALSE)
       }
-      if (self$verbose) {
-        cli::cli_alert_success("All required arguments are specified.")
+      if (verbose) {
+        cli::cli_alert_success("All required fixed arguments are specified.")
       }
     }
 

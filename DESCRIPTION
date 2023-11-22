@@ -1,6 +1,6 @@
 Package: optimizeR
 Title: Unified Framework for Numerical Optimizers
-Version: 1.0.0.9000
+Version: 1.0.1.9000
 Authors@R: c(
     person("Lennart", "Oelschl\u00e4ger", 
            email = "oelschlaeger.lennart@gmail.com", 
@@ -11,8 +11,10 @@ Authors@R: c(
            role = c("ctb"),
            comment = c(ORCID = "0000-0002-9373-0365"))
            )
-Description: Provides a unified framework for numerical optimizers in R, 
-    particularly for their inputs and outputs.
+Description: Provides a unified object-oriented framework for numerical 
+    optimizers in R. Allows for both minimization and maximization with any 
+    optimizer, optimization over more than one function argument, measuring of 
+    computation time, setting a time limit for long optimization tasks.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

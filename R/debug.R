@@ -4,12 +4,12 @@
 #' This function is useful for testing or debugging the behavior of optimization
 #' functions. It can throw a warning and / or an error on purpose.
 #'
-#' @param f
+#' @param objective
 #' An objective \code{function}.
-#' @param p
+#' @param initial
 #' The initial parameter vector.
 #' @param ...
-#' Optionally additional arguments to be passed to \code{f}.
+#' Optionally additional arguments to be passed to \code{objective}.
 #' @param parameter
 #' Defines the output \code{parameter}.
 #' @param value
@@ -34,22 +34,23 @@
 #' @export
 
 test_optimizer <- function(
-    f = test_objective, p = 1, ..., parameter = p, value = f(parameter),
-    seconds = 0, warning_prob = 0, error_prob = 0, warning_msg = "warning",
-    error_msg = "error", call. = TRUE) {
-  checkmate::assert_function(f)
+    objective = test_objective, initial = 1, ..., parameter = 1,
+    value = objective(parameter), seconds = 0, warning_prob = 0, error_prob = 0,
+    warning_msg = "warning", error_msg = "error", call. = TRUE) {
+  checkmate::assert_function(objective)
   checkmate::assert_number(seconds, lower = 0)
+  checkmate::assert_number(warning_prob, lower = 0, upper = 1)
+  checkmate::assert_number(error_prob, lower = 0, upper = 1)
+  checkmate::assert_string(warning_msg)
+  checkmate::assert_string(error_msg)
+  checkmate::assert_flag(call.)
   Sys.sleep(seconds)
-  do.call(
-    what = f,
-    args = c(
-      list(
-        x = p, warning_prob = warning_prob, error_prob = error_prob,
-        warning_msg = warning_msg, error_msg = error_msg, call. = call.
-      ),
-      list(...)
-    )
-  )
+  if (sample(c(TRUE, FALSE), 1, prob = c(warning_prob, 1 - warning_prob))) {
+    warning(warning_msg, call. = call.)
+  }
+  if (sample(c(TRUE, FALSE), 1, prob = c(error_prob, 1 - error_prob))) {
+    stop(error_msg, call. = call.)
+  }
   list("parameter" = parameter, "value" = value)
 }
 

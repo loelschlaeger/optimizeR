@@ -5,11 +5,11 @@
 \title{Test optimization function}
 \usage{
 test_optimizer(
-  f = test_objective,
-  p = 1,
+  objective = test_objective,
+  initial = 1,
   ...,
-  parameter = p,
-  value = f(parameter),
+  parameter = 1,
+  value = objective(parameter),
   seconds = 0,
   warning_prob = 0,
   error_prob = 0,
@@ -19,11 +19,11 @@ test_optimizer(
 )
 }
 \arguments{
-\item{f}{An objective \code{function}.}
+\item{objective}{An objective \code{function}.}
 
-\item{p}{The initial parameter vector.}
+\item{initial}{The initial parameter vector.}
 
-\item{...}{Optionally additional arguments to be passed to \code{f}.}
+\item{...}{Optionally additional arguments to be passed to \code{objective}.}
 
 \item{parameter}{Defines the output \code{parameter}.}
 

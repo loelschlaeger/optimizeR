@@ -34,9 +34,6 @@
 #' Without specifications, default values are used.
 #' @param direction
 #' Either \code{"min"} for minimization or \code{"max"} for maximization.
-#' @param seconds
-#' A \code{numeric}, the number of seconds after which the optimization
-#' is interrupted. Can also be \code{NULL} for no time limit.
 #'
 #' @examples
 #' ### Task: compare minimization with 'stats::nlm' and 'pracma::nelder_mead'
@@ -193,7 +190,8 @@ Optimizer <- R6::R6Class(
     },
 
     #' @description
-    #' Validates the \code{Optimizer} object.
+    #' Validates the \code{Optimizer} object. A time limit in seconds for
+    #' the optimization can be set via the \code{$seconds} field.
     #' @return
     #' The \code{Optimizer} object.
 
@@ -201,25 +199,80 @@ Optimizer <- R6::R6Class(
       objective = optimizeR::test_objective, initial = round(stats::rnorm(2)),
       ..., direction = "min"
     ) {
-      private$.optimize(
-        objective = objective, initial = initial,
-        additional_arguments = list(...), direction = direction
+
+      ### test objective
+      objective <- private$.build_objective(objective, initial)
+      cli::cli_progress_step(
+        "Checking the objective.",
+        msg_done = "The objective is fine."
       )
+      objective$validate(.at = initial)
+
+      ### test optimization
+      cli::cli_progress_step(
+        paste0("Trying to ", direction, "imize.")
+      )
+      out <- private$.optimize(
+        objective = objective,
+        initial = initial,
+        additional_arguments = list(...),
+        direction = direction
+      )
+
+      ### output checks
+      if (isTRUE(out[["time_out"]])) {
+        cli::cli_alert_warning(
+          "Time limit reached, consider increasing {.val $seconds}."
+        )
+      } else if (!is.null(out[["error_message"]])) {
+        cli::cli_abort(
+          "Test optimization failed: {out[['error_message']]}"
+        )
+      }
+      cli::cli_progress_step(
+        "Checking that the output is a list.",
+        msg_done = "The output is the required list."
+      )
+      if (!is.list(out)) {
+        cli::cli_abort(
+          "Test optimization did not return a {.cls list}."
+        )
+      }
+      values_required <- c("value", "parameter", "seconds", "initial")
+      cli::cli_progress_step(
+        "Checking for output elements {values_required}.",
+        msg_done = "All required elements are in the output."
+      )
+      for (value in values_required) {
+        if (!value %in% names(out)) {
+          cli::cli_abort("Output does not contain the element {.var {value}}.")
+        }
+      }
+
+      ### finish
+      cli::cli_progress_done()
+      invisible(self)
     },
 
     #' @description
     #' Performing minimization.
     #' @return
-    #' A named \code{list}, containing at least these four elements:
+    #' A named \code{list}, containing at least these five elements:
     #' \describe{
     #'   \item{\code{value}}{A \code{numeric}, the minimum function value.}
     #'   \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
     #'   where the minimum is obtained.}
     #'   \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
     #'   \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
+    #'   \item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
     #' }
-    #' Appended are additional output elements of the optimizer. If an error
-    #' occurred, then the error message is also appended as element \code{.error}.
+    #' Appended are additional output elements of the optimizer.
+    #'
+    #' If an error occurred, then the error message is also appended as element
+    #' \code{error_message}.
+    #'
+    #' If the time limit was exceeded, this also counts as an error. In addition,
+    #' the flag \code{time_out = TRUE} is appended.
     #' @examples
     #' Optimizer$new("stats::nlm")$
     #'   minimize(objective = function(x) x^4 + 3*x - 5, initial = 2)
@@ -234,16 +287,22 @@ Optimizer <- R6::R6Class(
     #' @description
     #' Performing maximization.
     #' @return
-    #' A named \code{list}, containing at least these four elements:
+    #' A named \code{list}, containing at least these five elements:
     #' \describe{
     #'   \item{\code{value}}{A \code{numeric}, the maximum function value.}
     #'   \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
     #'   where the maximum is obtained.}
     #'   \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
     #'   \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
+    #'   \item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
     #' }
-    #' Appended are additional output elements of the optimizer. If an error
-    #' occurred, then the error message is also appended as element \code{.error}.
+    #' Appended are additional output elements of the optimizer.
+    #'
+    #' If an error occurred, then the error message is also appended as element
+    #' \code{error_message}.
+    #'
+    #' If the time limit was exceeded, this also counts as an error. In addition,
+    #' the flag \code{time_out = TRUE} is appended.
     #' @examples
     #' Optimizer$new("stats::nlm")$
     #'   maximize(objective = function(x) -x^4 + 3*x - 5, initial = 2)
@@ -290,6 +349,7 @@ Optimizer <- R6::R6Class(
     .seconds = Inf,
     .hide_warnings = FALSE,
 
+    ### helper function that prepares the optimization results
     .prepare_result = function(result, initial, invert_objective) {
       out <- list()
       if (private$.out_value %in% names(result$result)) {
@@ -312,26 +372,37 @@ Optimizer <- R6::R6Class(
         out[["seconds"]] <- NA_real_
       }
       out[["initial"]] <- initial
+      if (!"error" %in% names(result)) {
+        out[["error"]] <- FALSE
+      } else {
+        out[["error"]] <- TRUE
+      }
       oeli::merge_lists(
         out,
         result$result[!names(result$result) %in% c(private$.out_value, private$.out_parameter)]
       )
     },
 
-    .optimize = function(objective, initial, additional_arguments, direction) {
-      checkmate::assert_choice(direction, c("min", "max"))
-      checkmate::assert_list(additional_arguments)
-      checkmate::assert_atomic_vector(initial, any.missing = FALSE)
-      checkmate::assert_numeric(initial)
+    ### helper function that build an 'Objective' object from a function
+    .build_objective = function(objective, initial) {
       if (!checkmate::test_r6(objective, "Objective")) {
         objective <- Objective$new(
           objective = objective,
           target = names(formals(objective))[1],
           npar = length(initial)
         )
-      } else {
-        checkmate::assert_numeric(initial, len = sum(objective$npar))
       }
+      return(objective)
+    },
+
+    ### helper function that performs optimization
+    .optimize = function(objective, initial, additional_arguments, direction) {
+      checkmate::assert_choice(direction, c("min", "max"))
+      checkmate::assert_list(additional_arguments)
+      checkmate::assert_atomic_vector(initial, any.missing = FALSE)
+      checkmate::assert_numeric(initial)
+      objective <- private$.build_objective(objective, initial)
+      checkmate::assert_numeric(initial, len = sum(objective$npar))
       invert_objective <- !identical(private$.direction, direction)
       args <- c(
         ### defines objective and initial argument for optimizer
@@ -354,23 +425,30 @@ Optimizer <- R6::R6Class(
                 args = args,
                 units = "secs"
               ),
-              seconds = private$.seconds
+              seconds = private$.seconds,
+              on_time_out = "error"
             ),
             classes = if (private$.hide_warnings) "warning" else ""
           )
         },
         error = function(e) {
           error_message <- e$message
-          time_limit_reached <- grepl(
-            "reached elapsed time limit|reached CPU time limit", error_message
-          )
-          if (time_limit_reached) {
-            error_message <- paste("time limit of", private$.seconds, "seconds reached")
+          time_out <- grepl("time limit exceeded", error_message)
+          if (time_out) {
+            list(
+              "result" = list(
+                "error" = TRUE, "error_message" = error_message, "time_out" = TRUE
+              ),
+              "time" = NA_real_
+            )
+          } else {
+            list(
+              "result" = list(
+                "error" = TRUE, "error_message" = error_message
+              ),
+              "time" = NA_real_
+            )
           }
-          list(
-            "result" = list("error_message" = error_message),
-            "time" = NA_real_
-          )
         }
       )
       private$.prepare_result(result, initial, invert_objective)
@@ -475,13 +553,17 @@ Optimizer <- R6::R6Class(
     },
 
     #' @field seconds
-    #' A \code{numeric}, the number of seconds after which the optimization
-    #' is interrupted. Can also be \code{NULL} for no time limit.
+    #' A \code{numeric}, a time limit in seconds. Optimization is interrupted
+    #' prematurely if \code{seconds} is exceeded.
+    #'
+    #' No time limit if \code{seconds = Inf} (the default).
+    #'
+    #' Note the limitations documented in \code{\link[base]{setTimeLimit}}.
     seconds = function(value) {
       if (missing(value)) {
         private$.seconds
       } else {
-        checkmate::assert_number(value, lower = 0)
+        checkmate::assert_number(value, lower = 0, finite = FALSE)
         private$.seconds <- value
       }
     },

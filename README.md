@@ -15,46 +15,46 @@ coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badg
 
 The `{optimizeR}` package
 
--   provides an object-oriented framework for optimizer functions in R
--   and offers some convenience for useRs when minimizing or maximizing.
+- provides an object-oriented framework for optimizer functions in R
+- and offers some convenience for useRs when minimizing or maximizing.
 
 ❌ **You won’t need the package if you…**
 
--   already know which optimizer you want to use and if you are happy
-    with its constraints (e.g., only minimization over the first
-    function argument possible),
--   want to compare optimizers that are already covered by
-    [`{optimx}`](https://CRAN.R-project.org/package=optimx) (Nash and
-    Varadhan 2011) (they provide a framework to compare about 30
-    optimizers),
--   or search for new optimization algorithms (because this package does
-    not implement any optimizer functions itself).
+- already know which optimizer you want to use and if you are happy with
+  its constraints (e.g., only minimization over the first function
+  argument possible),
+- want to compare optimizers that are already covered by
+  [`{optimx}`](https://CRAN.R-project.org/package=optimx) (Nash and
+  Varadhan 2011) (they provide a framework to compare about 30
+  optimizers),
+- or search for new optimization algorithms (because this package does
+  not implement any optimizer functions itself).
 
 ✅ **But you might find the package useful if you want to…**
 
--   compare any optimizer function (also those not covered by `{optimx}`
-    or other frameworks; see the [CRAN Task View: Optimization and
-    Mathematical
-    Programming](https://CRAN.R-project.org/view=Optimization)
-    (Schwendinger and Borchers 2023) for an overview of R optimizers),
--   have consistently named inputs and outputs across different
-    optimizers (which is generally not the case),
--   view optimizers as objects (which can be helpful when implementing
-    packages that depend on optimization),
--   use optimizers for both minimization and maximization,
--   optimize over more than one function argument,
--   measure computation time or set a time limit for long optimization
-    tasks.
+- compare any optimizer function (also those not covered by `{optimx}`
+  or other frameworks; see the [CRAN Task View: Optimization and
+  Mathematical
+  Programming](https://CRAN.R-project.org/view=Optimization)
+  (Schwendinger and Borchers 2023) for an overview of R optimizers),
+- have consistently named inputs and outputs across different optimizers
+  (which is generally not the case),
+- view optimizers as objects (which can be helpful when implementing
+  packages that depend on optimization),
+- use optimizers for both minimization and maximization,
+- optimize over more than one function argument,
+- measure computation time or set a time limit for long optimization
+  tasks.
 
 ## How to use the package?
 
 The following demo is a bit artificial but showcases the package
 purpose. Let’s assume we want to
 
--   maximize a function over two of its arguments,
--   interrupt optimization if it exceeds 10 seconds,
--   and compare the performance between the optimizers `stats::nlm` and
-    `pracma::nelder_mead`.
+- maximize a function over two of its arguments,
+- interrupt optimization if it exceeds 10 seconds,
+- and compare the performance between the optimizers `stats::nlm` and
+  `pracma::nelder_mead`.
 
 We can easily do this task with `{optimizeR}`:
 
@@ -64,7 +64,7 @@ library("optimizeR")
 
 **1. Define the objective function**
 
-Let *f* : ℝ<sup>4</sup> → ℝ with
+Let $f:\mathbb{R}^4\to\mathbb{R}$ with
 
 ``` r
 f <- function(a, b, x, y) {
@@ -118,7 +118,9 @@ available optimizers, see:
 optimizer_dictionary
 #> <Dictionary> optimizer algorithms 
 #> Keys: 
+#> - lbfgsb3c::lbfgsb3c
 #> - stats::nlm
+#> - stats::nlminb
 #> - stats::optim
 #> - ucminf::ucminf
 ```
@@ -160,6 +162,10 @@ nlm$seconds <- 10
 nelder_mead$seconds <- 10
 ```
 
+Note that not everything (especially compiled C code) can technically be
+timed out, see the help site `help("withTimeout", package = "R.utils")`
+for more details.
+
 **4. Maximize the objective function**
 
 Each optimizer object has the two methods `$maximize()` and
@@ -188,6 +194,9 @@ nlm$maximize(objective = objective, initial = c(3, 3))
 #> $initial
 #> [1] 3 3
 #> 
+#> $error
+#> [1] FALSE
+#> 
 #> $gradient
 #> [1] 5.577962e-08 5.577962e-08
 #> 
@@ -212,6 +221,9 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> $initial
 #> [1] 3 3
 #> 
+#> $error
+#> [1] FALSE
+#> 
 #> $count
 #> [1] 105
 #> 
@@ -228,18 +240,17 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 
 Note that
 
--   the inputs for the objective function and initial parameter values
-    are named consistently across optimizers,
+- the inputs for the objective function and initial parameter values are
+  named consistently across optimizers,
 
--   the output values for the optimal parameter vector and the maximimum
-    function value are also named consistently across optimizers,
+- the output values for the optimal parameter vector and the maximimum
+  function value are also named consistently across optimizers,
 
--   the output contains the initial parameter values and the
-    optimization time in seconds and additionally other
-    optimizer-specific elements,
+- the output contains the initial parameter values and the optimization
+  time in seconds and additionally other optimizer-specific elements,
 
--   `pracma::nelder_mead` outperforms `stats::nlm` here both in terms of
-    optimization time and convergence to the global maximum.
+- `pracma::nelder_mead` outperforms `stats::nlm` here both in terms of
+  optimization time and convergence to the global maximum.
 
 ## How to get the access?
 
@@ -258,19 +269,19 @@ to go.
 The following steps to further improve the package are currently on our
 agenda:
 
--   [ ] The package already provides a dictionary that stores optimizers
-    together with information about names of their inputs and outputs
-    (see the `optimizer_dictionary` object). We want to extend this
-    dictionary with more optimizers that are commonly used.
+- [ ] The package already provides a dictionary that stores optimizers
+  together with information about names of their inputs and outputs (see
+  the `optimizer_dictionary` object). We want to extend this dictionary
+  with more optimizers that are commonly used.
 
--   [ ] We want to use alias for optimizers in the dictionary that group
-    optimizers into classes (such as “unconstrained optimization”,
-    “constrained Optimization”, “direct search”, “Newton-type” etc.).
-    This would help to find alternative optimizers for a given task.
+- [ ] We want to use alias for optimizers in the dictionary that group
+  optimizers into classes (such as “unconstrained optimization”,
+  “constrained Optimization”, “direct search”, “Newton-type” etc.). This
+  would help to find alternative optimizers for a given task.
 
--   [ ] We want to implement a `$summary()` method for an optimizer
-    object that gives an overview of the optimizer, its arguments, and
-    its properties.
+- [ ] We want to implement a `$summary()` method for an optimizer object
+  that gives an overview of the optimizer, its arguments, and its
+  properties.
 
 ## Getting in touch
 
@@ -283,11 +294,23 @@ GitHub](https://github.com/loelschlaeger/optimizeR/issues/new/choose).
 
 ## References
 
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-optimx" class="csl-entry">
+
 Nash, John C., and Ravi Varadhan. 2011. “Unifying Optimization
 Algorithms to Aid Software System Users:
 <span class="nocase">optimx</span> for R.” *Journal of Statistical
 Software* 43 (9): 1–14. <https://doi.org/10.18637/jss.v043.i09>.
 
+</div>
+
+<div id="ref-taskview" class="csl-entry">
+
 Schwendinger, F., and H. W. Borchers. 2023. “CRAN Task View:
 Optimization and Mathematical Programming.”
 <https://CRAN.R-project.org/view=Optimization>.
+
+</div>
+
+</div>

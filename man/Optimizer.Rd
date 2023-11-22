@@ -92,8 +92,12 @@ output \code{list} of \code{algorithm}.}
 \item{\code{arguments}}{A named \code{list} of custom arguments for \code{algorithm}. Defaults
 are used for arguments that are not specified.}
 
-\item{\code{seconds}}{A \code{numeric}, the number of seconds after which the optimization
-is interrupted. Can also be \code{NULL} for no time limit.}
+\item{\code{seconds}}{A \code{numeric}, a time limit in seconds. Optimization is interrupted
+prematurely if \code{seconds} is exceeded.
+
+No time limit if \code{seconds = Inf} (the default).
+
+Note the limitations documented in \code{\link[base]{setTimeLimit}}.}
 
 \item{\code{hide_warnings}}{Either \code{TRUE} to hide warnings during optimization, or \code{FALSE}
 (default) else.}
@@ -205,7 +209,8 @@ The \code{Optimizer} object.
 \if{html}{\out{<a id="method-Optimizer-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-Optimizer-validate}{}}}
 \subsection{Method \code{validate()}}{
-Validates the \code{Optimizer} object.
+Validates the \code{Optimizer} object. A time limit in seconds for
+the optimization can be set via the \code{$seconds} field.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimizer$validate(
   objective = optimizeR::test_objective,
@@ -269,16 +274,22 @@ Without specifications, default values are used.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A named \code{list}, containing at least these four elements:
+A named \code{list}, containing at least these five elements:
 \describe{
 \item{\code{value}}{A \code{numeric}, the minimum function value.}
 \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
 where the minimum is obtained.}
 \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
 \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
+\item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
 }
-Appended are additional output elements of the optimizer. If an error
-occurred, then the error message is also appended as element \code{.error}.
+Appended are additional output elements of the optimizer.
+
+If an error occurred, then the error message is also appended as element
+\code{error_message}.
+
+If the time limit was exceeded, this also counts as an error. In addition,
+the flag \code{time_out = TRUE} is appended.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -319,16 +330,22 @@ Without specifications, default values are used.}
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A named \code{list}, containing at least these four elements:
+A named \code{list}, containing at least these five elements:
 \describe{
 \item{\code{value}}{A \code{numeric}, the maximum function value.}
 \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
 where the maximum is obtained.}
 \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
 \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
+\item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
 }
-Appended are additional output elements of the optimizer. If an error
-occurred, then the error message is also appended as element \code{.error}.
+Appended are additional output elements of the optimizer.
+
+If an error occurred, then the error message is also appended as element
+\code{error_message}.
+
+If the time limit was exceeded, this also counts as an error. In addition,
+the flag \code{time_out = TRUE} is appended.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}

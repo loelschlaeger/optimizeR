@@ -8,7 +8,7 @@ test_that("simple minimization works", {
   )
   expect_named(
     out,
-    c("value", "parameter", "seconds", "initial", "gradient", "code", "iterations")
+    c("value", "parameter", "seconds", "initial", "error", "gradient", "code", "iterations")
   )
 })
 
@@ -22,7 +22,7 @@ test_that("simple maximization works", {
   )
   expect_named(
     out,
-    c("value", "parameter", "seconds", "initial", "gradient", "code", "iterations")
+    c("value", "parameter", "seconds", "initial", "error", "gradient", "code", "iterations")
   )
 })
 
@@ -36,6 +36,6 @@ test_that("minimization with additional arguments works", {
   )
   expect_named(
     out,
-    c("value", "parameter", "seconds", "initial", "gradient", "code", "iterations")
+    c("value", "parameter", "seconds", "initial", "error", "gradient", "code", "iterations")
   )
 })

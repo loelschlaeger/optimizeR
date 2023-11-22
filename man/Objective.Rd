@@ -36,8 +36,10 @@ objective$evaluate(1:5)
 
 \item{\code{seconds}}{A \code{numeric}, a time limit in seconds. Computations are interrupted
 prematurely if \code{seconds} is exceeded.
-This currently only works reliably under Windows OS.
-No time limit if \code{seconds = Inf} (the default).}
+
+No time limit if \code{seconds = Inf} (the default).
+
+Note the limitations documented in \code{\link[base]{setTimeLimit}}.}
 
 \item{\code{hide_warnings}}{Either \code{TRUE} to hide warnings when evaluating the objective function,
 or \code{FALSE} (default) if not.}

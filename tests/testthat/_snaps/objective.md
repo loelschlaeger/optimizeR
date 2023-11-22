@@ -1,4 +1,4 @@
-# objective with one target argument can be evalauted
+# objective with one target argument can be evaluated
 
     Code
       print(objective)
@@ -8,7 +8,7 @@
       * Targets (length): x (1)
       * Fixed arguments specified: b, a
 
-# objective with more than one target argument can be evalauted
+# objective with more than one target argument can be evaluated
 
     Code
       print(objective)
