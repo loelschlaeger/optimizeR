@@ -20,9 +20,9 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Suggests:
-    knitr,
-    pracma,
-    rmarkdown,
+    knitr (>= 1.44),
+    pracma (>= 2.4.2),
+    rmarkdown (>= 2.55),
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 URL: https://loelschlaeger.de/optimizeR/, https://github.com/loelschlaeger/optimizeR/
@@ -30,10 +30,10 @@ BugReports: https://github.com/loelschlaeger/optimizeR/issues
 Depends:
     R (>= 4.0.0)
 Imports: 
-    checkmate,
-    cli,
-    oeli (>= 0.2.0),
-    R6,
+    checkmate (>= 2.3.1),
+    cli (>= 3.6.1),
+    oeli (>= 0.3.1.9000),
+    R6 (>= 2.5.1),
     stats,
-    TestFunctions,
+    TestFunctions (>= 0.2.0),
     utils

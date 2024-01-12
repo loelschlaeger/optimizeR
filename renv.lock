@@ -1081,9 +1081,14 @@
     },
     "oeli": {
       "Package": "oeli",
-      "Version": "0.3.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
+      "Version": "0.3.1.9000",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "oeli",
+      "RemoteUsername": "loelschlaeger",
+      "RemoteRef": "HEAD",
+      "RemoteSha": "2bb146fe9e582f985f3ba923639d81d532289b1e",
       "Requirements": [
         "Rcpp",
         "RcppArmadillo",
@@ -1099,7 +1104,7 @@
         "testthat",
         "usethis"
       ],
-      "Hash": "964285a2ec33ecd5f55203582452a473"
+      "Hash": "0dfaadbe1d9dd8c6268b0d83afcfec83"
     },
     "openssl": {
       "Package": "openssl",
@@ -1376,13 +1381,13 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.0.2",
+      "Version": "1.0.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "utils"
       ],
-      "Hash": "4b22ac016fe54028b88d0c68badbd061"
+      "Hash": "41b847654f567341725473431dd0d5ab"
     },
     "rex": {
       "Package": "rex",
