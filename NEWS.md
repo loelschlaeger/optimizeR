@@ -2,6 +2,8 @@
 
 * Small bug fixes.
 
+* Backward compatibility with `{optimizeR}` version 0.3.3.
+
 # optimizeR 1.0.1
 
 * Fixed wrong values for `"out_value"` and `"out_parameter"` in the optimizer dictionary entry for `stats::optim`.

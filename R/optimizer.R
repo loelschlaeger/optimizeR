@@ -348,6 +348,7 @@ Optimizer <- R6::R6Class(
     .arguments = list(),
     .seconds = Inf,
     .hide_warnings = FALSE,
+    .output_ignore = character(),
 
     ### helper function that prepares the optimization results
     .prepare_result = function(result, initial, invert_objective) {
@@ -377,10 +378,11 @@ Optimizer <- R6::R6Class(
       } else {
         out[["error"]] <- TRUE
       }
-      oeli::merge_lists(
+      out <- oeli::merge_lists(
         out,
         result$result[!names(result$result) %in% c(private$.out_value, private$.out_parameter)]
       )
+      out[!names(out) %in% private$.output_ignore]
     },
 
     ### helper function that build an 'Objective' object from a function
@@ -578,8 +580,19 @@ Optimizer <- R6::R6Class(
         checkmate::assert_flag(value)
         private$.hide_warnings <- value
       }
-    }
+    },
 
+    #' @field output_ignore
+    #' A \code{character} \code{vector} of elements to ignore in the
+    #' optimization output.
+    output_ignore = function(value) {
+      if (missing(value)) {
+        private$.output_ignore
+      } else {
+        checkmate::assert_names(value)
+        private$.output_ignore <- value
+      }
+    }
   )
 
 )

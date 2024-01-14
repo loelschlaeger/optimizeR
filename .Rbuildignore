@@ -13,5 +13,5 @@ LICENSE
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-^dev_pkgs\.R$
 ^bibliography\.bib$
+^development_packages\.R$

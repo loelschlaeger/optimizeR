@@ -101,6 +101,9 @@ Note the limitations documented in \code{\link[base]{setTimeLimit}}.}
 
 \item{\code{hide_warnings}}{Either \code{TRUE} to hide warnings during optimization, or \code{FALSE}
 (default) else.}
+
+\item{\code{output_ignore}}{A \code{character} \code{vector} of elements to ignore in the
+optimization output.}
 }
 \if{html}{\out{</div>}}
 }

@@ -2,8 +2,12 @@
 
 export(Objective)
 export(Optimizer)
+export(apply_optimizer)
+export(define_optimizer)
 export(install_optimizer_packages)
 export(optimizer_dictionary)
+export(optimizer_nlm)
+export(optimizer_optim)
 export(test_objective)
 export(test_optimizer)
 importFrom(R6,R6Class)

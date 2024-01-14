@@ -13,3 +13,6 @@ if (!require("markdown", quietly = TRUE)) {
 if (!require("R.utils", quietly = TRUE)) {
   renv::install("R.utils", prompt = FALSE)
 }
+if (!require("yaml", quietly = TRUE)) {
+  renv::install("yaml", prompt = FALSE)
+}
