@@ -378,11 +378,11 @@ Optimizer <- R6::R6Class(
       } else {
         out[["error"]] <- TRUE
       }
-      out <- oeli::merge_lists(
+      not_add <- c(private$.output_ignore, private$.out_value, private$.out_parameter)
+      oeli::merge_lists(
         out,
-        result$result[!names(result$result) %in% c(private$.out_value, private$.out_parameter)]
+        result$result[!names(result$result) %in% not_add]
       )
-      out[!names(out) %in% private$.output_ignore]
     },
 
     ### helper function that build an 'Objective' object from a function
