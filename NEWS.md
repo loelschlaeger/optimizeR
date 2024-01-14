@@ -1,4 +1,4 @@
-# optimizeR development
+# optimizeR 1.0.2
 
 * Small bug fixes.
 
