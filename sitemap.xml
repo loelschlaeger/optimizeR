@@ -22,10 +22,19 @@
     <loc>https://loelschlaeger.de/optimizeR/reference/Optimizer.html</loc>
   </url>
   <url>
+    <loc>https://loelschlaeger.de/optimizeR/reference/apply_optimizer.html</loc>
+  </url>
+  <url>
+    <loc>https://loelschlaeger.de/optimizeR/reference/define_optimizer.html</loc>
+  </url>
+  <url>
     <loc>https://loelschlaeger.de/optimizeR/reference/index.html</loc>
   </url>
   <url>
     <loc>https://loelschlaeger.de/optimizeR/reference/install_optimizer_packages.html</loc>
+  </url>
+  <url>
+    <loc>https://loelschlaeger.de/optimizeR/reference/new_optimizer.html</loc>
   </url>
   <url>
     <loc>https://loelschlaeger.de/optimizeR/reference/optimizeR-package.html</loc>
@@ -38,5 +47,8 @@
   </url>
   <url>
     <loc>https://loelschlaeger.de/optimizeR/reference/test_optimizer.html</loc>
+  </url>
+  <url>
+    <loc>https://loelschlaeger.de/optimizeR/reference/validate_optimizer.html</loc>
   </url>
 </urlset>
