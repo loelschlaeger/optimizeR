@@ -23,7 +23,7 @@ Suggests:
     knitr,
     pracma,
     rmarkdown,
-    testthat (>= 3.0.0)
+    testthat
 Config/testthat/edition: 3
 URL: https://loelschlaeger.de/optimizeR/, https://github.com/loelschlaeger/optimizeR/
 BugReports: https://github.com/loelschlaeger/optimizeR/issues
@@ -32,7 +32,7 @@ Depends:
 Imports: 
     checkmate,
     cli,
-    oeli (>= 0.2.0),
+    oeli (>= 0.3.1.9000),
     R6,
     stats,
     TestFunctions,
