@@ -1,3 +1,9 @@
+# optimizeR 1.0.3
+
+* Fixed bug in creating error message in case of a time out.
+
+* Added checks for objective, initial, and ellipsis argument for the optimizer function.
+
 # optimizeR 1.0.2
 
 * Small bug fixes.

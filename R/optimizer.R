@@ -176,6 +176,24 @@ Optimizer <- R6::R6Class(
         ), call = NULL)
       }
       self$direction <- direction
+      args_available <- oeli::function_arguments(
+        self$algorithm, with_default = TRUE, with_ellipsis = TRUE
+      )
+      if (!self$arg_objective %in% args_available) {
+        cli::cli_warn(
+          "The optimizer needs to have the argument {.val {self$arg_objective}}."
+        )
+      }
+      if (!self$arg_initial %in% args_available) {
+        cli::cli_warn(
+          "The optimizer needs to have the argument {.val {self$arg_initial}}."
+        )
+      }
+      if (!"..." %in% args_available) {
+        cli::cli_warn(
+          "The optimizer needs to have an ellipsis argument."
+        )
+      }
       invisible(self)
     },
 
@@ -438,16 +456,14 @@ Optimizer <- R6::R6Class(
           time_out <- grepl("time limit exceeded", error_message)
           if (time_out) {
             list(
-              "result" = list(
-                "error" = TRUE, "error_message" = error_message, "time_out" = TRUE
-              ),
+              "result" = list("error_message" = error_message, "time_out" = TRUE),
+              "error" = TRUE,
               "time" = NA_real_
             )
           } else {
             list(
-              "result" = list(
-                "error" = TRUE, "error_message" = error_message
-              ),
+              "result" = list("error_message" = error_message),
+              "error" = TRUE,
               "time" = NA_real_
             )
           }
