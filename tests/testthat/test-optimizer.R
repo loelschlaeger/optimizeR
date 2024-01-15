@@ -56,6 +56,7 @@ test_that("error can be detected", {
 })
 
 test_that("exceed of time limit can be detected", {
+  skip_if_not(.Platform$OS.type == "windows")
   slow_optimizer <- define_optimizer(
     .optimizer = function(f, p, ...) {
       Sys.sleep(2)
