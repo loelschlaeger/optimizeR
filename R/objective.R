@@ -229,6 +229,19 @@ Objective <- R6::R6Class(
       }
     },
 
+    #' @field fixed_arguments
+    #' A \code{character}, the names of the fixed arguments (if any).
+    fixed_arguments = function(value) {
+      if (missing(value)) {
+        names(private$.arguments)
+      } else {
+        cli::cli_abort(
+          "Field {.var fixed_arguments} is read-only.",
+          call = NULL
+        )
+      }
+    },
+
     #' @field seconds
     #' A \code{numeric}, a time limit in seconds. Computations are interrupted
     #' prematurely if \code{seconds} is exceeded.

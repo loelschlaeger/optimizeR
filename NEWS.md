@@ -6,6 +6,8 @@
 
 * Added `verbose` argument to methods `$get_argument()` and `$remove_argument()` of `Objective` object.
 
+* Added field `fixed_arguments` to `Objective` object which returns the names of the fixed arguments.
+
 # optimizeR 1.0.2
 
 * Small bug fixes.

@@ -34,6 +34,10 @@ test_that("objective with one target argument can be evaluated", {
   expect_snapshot(
     print(objective)
   )
+  expect_equal(
+    objective$fixed_arguments,
+    c("b", "a")
+  )
 })
 
 test_that("objective with more than one target argument can be evaluated", {

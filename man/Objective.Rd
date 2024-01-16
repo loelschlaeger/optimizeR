@@ -34,6 +34,8 @@ objective$evaluate(1:5)
 \describe{
 \item{\code{objective_name}}{A \code{character}, a label for the objective function.}
 
+\item{\code{fixed_arguments}}{A \code{character}, the names of the fixed arguments (if any).}
+
 \item{\code{seconds}}{A \code{numeric}, a time limit in seconds. Computations are interrupted
 prematurely if \code{seconds} is exceeded.
 
