@@ -1,8 +1,10 @@
-# optimizeR 1.0.3
+# optimizeR development
 
 * Fixed bug in creating error message in case of a time out.
 
 * Added checks for objective, initial, and ellipsis argument for the optimizer function.
+
+* Added `verbose` argument to methods `$get_argument()` and `$remove_argument()` of `Objective` object.
 
 # optimizeR 1.0.2
 

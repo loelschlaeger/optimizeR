@@ -129,13 +129,16 @@ Invisibly the \code{Objective} object.
 \subsection{Method \code{get_argument()}}{
 Get a fixed function argument.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$get_argument(argument_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Objective$get_argument(argument_name, verbose = self$verbose)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{argument_name}}{A \code{character}, a name of an argument for \code{objective}.}
+
+\item{\code{verbose}}{Either \code{TRUE} (default) to print status messages, or \code{FALSE}
+to hide those.}
 }
 \if{html}{\out{</div>}}
 }
@@ -149,13 +152,16 @@ The argument value.
 \subsection{Method \code{remove_argument()}}{
 Remove a fixed function argument.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$remove_argument(argument_name)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Objective$remove_argument(argument_name, verbose = self$verbose)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{argument_name}}{A \code{character}, a name of an argument for \code{objective}.}
+
+\item{\code{verbose}}{Either \code{TRUE} (default) to print status messages, or \code{FALSE}
+to hide those.}
 }
 \if{html}{\out{</div>}}
 }
