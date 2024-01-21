@@ -121,7 +121,7 @@ Objective <- R6::R6Class(
     #' @return
     #' The argument value.
     get_argument = function(argument_name, verbose = self$verbose) {
-      private$.check_argument_specified(argument_name)
+      private$.check_argument_specified(argument_name, verbose = verbose)
       checkmate::assert_flag(verbose)
       if (verbose) {
         cli::cli_alert("Returning argument {.val {argument_name}}.")
@@ -134,7 +134,7 @@ Objective <- R6::R6Class(
     #' @return
     #' Invisibly the \code{Objective} object.
     remove_argument = function(argument_name, verbose = self$verbose) {
-      private$.check_argument_specified(argument_name)
+      private$.check_argument_specified(argument_name, verbose = verbose)
       checkmate::assert_flag(verbose)
       if (verbose) {
         cli::cli_alert("Removing argument {.val {argument_name}}.")
