@@ -342,16 +342,6 @@ Optimizer <- R6::R6Class(
       invisible(self)
     }
 
-    # #' @description
-    # #' Returns a summary of the optimizer
-    # #' @return
-    # #' Invisibly the \code{Optimizer} object.
-    #
-    # summary = function(...) {
-    #   # TODO
-    #   invisible(self)
-    # }
-
   ),
 
   private = list(
@@ -478,6 +468,7 @@ Optimizer <- R6::R6Class(
 
     #' @field label
     #' A \code{character}, the label for the optimizer.
+
     label = function(value) {
       if (missing(value)) {
         private$.label
@@ -489,6 +480,7 @@ Optimizer <- R6::R6Class(
 
     #' @field algorithm
     #' A \code{function}, the optimization algorithm.
+
     algorithm = function(value) {
       if (missing(value)) {
         private$.algorithm
@@ -501,6 +493,7 @@ Optimizer <- R6::R6Class(
     #' @field arg_objective
     #' A \code{character}, the argument name for the objective function in
     #' \code{algorithm}.
+
     arg_objective = function(value) {
       if (missing(value)) {
         private$.arg_objective
@@ -513,6 +506,7 @@ Optimizer <- R6::R6Class(
     #' @field arg_initial
     #' A \code{character}, the argument name for the initial values in
     #' \code{algorithm}.
+
     arg_initial = function(value) {
       if (missing(value)) {
         private$.arg_initial
@@ -525,6 +519,7 @@ Optimizer <- R6::R6Class(
     #' @field out_value
     #' A \code{character}, the element name for the optimal function value in
     #' the output \code{list} of \code{algorithm}.
+
     out_value = function(value) {
       if (missing(value)) {
         private$.out_value
@@ -537,6 +532,7 @@ Optimizer <- R6::R6Class(
     #' @field out_parameter
     #' A \code{character}, the element name for the optimal parameters in the
     #' output \code{list} of \code{algorithm}.
+
     out_parameter = function(value) {
       if (missing(value)) {
         private$.out_parameter
@@ -549,6 +545,7 @@ Optimizer <- R6::R6Class(
     #' @field direction
     #' Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
     #' (if the optimizer maximizes).
+
     direction = function(value) {
       if (missing(value)) {
         private$.direction
@@ -561,6 +558,7 @@ Optimizer <- R6::R6Class(
     #' @field arguments
     #' A named \code{list} of custom arguments for \code{algorithm}. Defaults
     #' are used for arguments that are not specified.
+
     arguments = function(value) {
       if (missing(value)) {
         private$.arguments
@@ -577,6 +575,7 @@ Optimizer <- R6::R6Class(
     #' No time limit if \code{seconds = Inf} (the default).
     #'
     #' Note the limitations documented in \code{\link[base]{setTimeLimit}}.
+
     seconds = function(value) {
       if (missing(value)) {
         private$.seconds
@@ -589,6 +588,7 @@ Optimizer <- R6::R6Class(
     #' @field hide_warnings
     #' Either \code{TRUE} to hide warnings during optimization, or \code{FALSE}
     #' (default) else.
+
     hide_warnings = function(value) {
       if (missing(value)) {
         private$.hide_warnings
@@ -601,6 +601,7 @@ Optimizer <- R6::R6Class(
     #' @field output_ignore
     #' A \code{character} \code{vector} of elements to ignore in the
     #' optimization output.
+
     output_ignore = function(value) {
       if (missing(value)) {
         private$.output_ignore
