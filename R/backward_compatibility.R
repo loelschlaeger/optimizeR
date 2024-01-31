@@ -118,16 +118,19 @@ define_optimizer <- function(
     optimizer_r6_object <- Optimizer$new(which = "custom")
   )
   optimizer_r6_object$definition(
-      algorithm = optimizer_s3_object$optimizer,
-      arg_objective = optimizer_s3_object$optimizer_labels$objective,
-      arg_initial = optimizer_s3_object$optimizer_labels$initial,
-      out_value = optimizer_s3_object$optimizer_labels$value,
-      out_parameter = optimizer_s3_object$optimizer_labels$parameter,
-      direction = optimizer_s3_object$optimizer_direction
-    )
-  optimizer_r6_object$set_arguments(optimizer_s3_object$optimizer_arguments)
+    algorithm = optimizer_s3_object$optimizer,
+    arg_objective = optimizer_s3_object$optimizer_labels$objective,
+    arg_initial = optimizer_s3_object$optimizer_labels$initial,
+    out_value = optimizer_s3_object$optimizer_labels$value,
+    out_parameter = optimizer_s3_object$optimizer_labels$parameter,
+    direction = optimizer_s3_object$optimizer_direction
+  )
+  do.call(optimizer_r6_object$set_arguments, optimizer_s3_object$optimizer_arguments)
   optimizer_r6_object$label <- optimizer_s3_object$optimizer_name
-  optimizer_r6_object$output_ignore <- optimizer_s3_object$output_ignore
+  optimizer_r6_object$output_ignore <- setdiff(
+    optimizer_s3_object$output_ignore,
+    unlist(optimizer_s3_object$optimizer_labels[c("value", "parameter")])
+  )
   return(optimizer_r6_object)
 }
 

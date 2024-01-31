@@ -8,6 +8,8 @@
 
 * Added field `fixed_arguments` to `Objective` object which returns the names of the fixed arguments.
 
+* Fixed a bug in proper backwards compatibility.
+
 # optimizeR 1.0.2
 
 * Small bug fixes.

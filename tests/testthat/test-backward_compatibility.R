@@ -201,3 +201,16 @@ test_that("optimization works", {
   expect_type(out$value, "double")
   expect_type(out$parameter, "double")
 })
+
+test_that("old way of constructing optimizer is equivalent to new way", {
+  expect_true(
+    all.equal(
+      old <- optimizeR::optimizer_optim(
+        lower = -5, upper = 5, method = "L-BFGS-B"
+      ),
+      new <- optimizeR::Optimizer$new(
+        which = "stats::optim", lower = -5, upper = 5, method = "L-BFGS-B"
+      )
+    )
+  )
+})
