@@ -1,4 +1,4 @@
-# optimizeR development
+# optimizeR 1.0.3
 
 * Fixed bug in creating error message in case of a time out.
 
