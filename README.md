@@ -285,10 +285,9 @@ agenda:
 
 ## Getting in touch
 
-You have a question, found a bug, request a feature, give feedback, want
-to contribute?
-
-We are happy to hear from you, [please file an issue on
+You have a question, found a bug, request a feature, want to give
+feedback, or like to contribute? It would be great to hear from you,
+[please file an issue on
 GitHub](https://github.com/loelschlaeger/optimizeR/issues/new/choose).
 😊
 
