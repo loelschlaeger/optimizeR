@@ -425,7 +425,7 @@ Optimizer <- R6::R6Class(
         ### arguments via ... have priority over previously specified arguments
         oeli::merge_lists(additional_arguments, private$.arguments)
       )
-      checkmate::assert_list(args, any.missing = FALSE, names = "unique")
+      checkmate::assert_list(args, names = "unique")
       result <- tryCatch(
         {
           suppressWarnings(

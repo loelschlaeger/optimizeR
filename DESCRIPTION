@@ -1,6 +1,6 @@
 Package: optimizeR
 Title: Unified Framework for Numerical Optimizers
-Version: 1.0.3
+Version: 1.0.4
 Authors@R: c(
     person("Lennart", "Oelschl\u00e4ger", 
            email = "oelschlaeger.lennart@gmail.com", 
@@ -32,7 +32,7 @@ Depends:
 Imports: 
     checkmate,
     cli,
-    oeli (>= 0.3.2),
+    oeli (>= 0.4.0),
     R6,
     stats,
     TestFunctions,

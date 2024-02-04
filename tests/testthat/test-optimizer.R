@@ -71,3 +71,25 @@ test_that("exceed of time limit can be detected", {
   expect_true(out$error)
   expect_equal(out$error_message, "time limit exceeded")
 })
+
+test_that("fixed argument that is NULL can be passed", {
+  f <- function(x, a, b, ind) {
+    if (is.null(ind)) {
+      (x[1]^2 + x[2] + a)^2 + (x[1] + x[2]^2 + b)^2 + (x[3] - 1)^2
+    }
+  }
+  expect_false(
+    optimizer_nlm()$minimize(
+      objective = f,
+      initial = c(0, 0, 0),
+      a = -11, b = -7, ind = NULL
+    )$error
+  )
+  expect_false(
+    Optimizer$new("stats::nlm")$minimize(
+      objective = f,
+      initial = c(0, 0, 0),
+      a = -11, b = -7, ind = NULL
+    )$error
+  )
+})
