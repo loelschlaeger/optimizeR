@@ -1,3 +1,7 @@
+# optimizeR development
+
+* Fixed bug and added test cases when having fixed arguments that are `NULL`.
+
 # optimizeR 1.0.3
 
 * Fixed bug in creating error message in case of a time out.
@@ -8,7 +12,7 @@
 
 * Added field `fixed_arguments` to `Objective` object which returns the names of the fixed arguments.
 
-* Fixed a bug in proper backwards compatibility.
+* Fixed bug in proper backwards compatibility.
 
 # optimizeR 1.0.2
 

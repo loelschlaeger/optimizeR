@@ -111,7 +111,7 @@ Objective <- R6::R6Class(
             cli::cli_alert("Setting argument {.val {argument_names[i]}}.")
           }
         }
-        private$.arguments[[argument_names[i]]] <- arguments[[i]]
+        private$.arguments[argument_names[i]] <- arguments[i]
       }
       invisible(self)
     },

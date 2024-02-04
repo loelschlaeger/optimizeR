@@ -67,3 +67,27 @@ test_that("objective with more than one target argument can be evaluated", {
     -llk(mu = 1:2, sd = 3:4, lambda = 5, data = faithful$eruptions)
   )
 })
+
+test_that("objective with NULL argument can be evaluated", {
+  f <- function(x, a, b, ind) {
+    if (is.null(ind)) {
+      (x[1]^2 + x[2] + a)^2 + (x[1] + x[2]^2 + b)^2 + (x[3] - 1)^2
+    }
+  }
+  obj <- Objective$new(
+    objective = f,
+    target = "x",
+    npar = 3
+  )
+  obj$verbose <- FALSE
+  checkmate::expect_number(
+    obj$evaluate(.at = c(0, 0, 0), a = -11, b = -7, ind = NULL)
+  )
+  expect_null(
+    obj$evaluate(.at = c(0, 0, 0), a = -11, b = -7, ind = TRUE)
+  )
+  obj$set_argument("a" = -11, "b" = -7, "ind" = NULL)
+  checkmate::expect_number(
+    obj$evaluate(.at = c(0, 0, 0))
+  )
+})
