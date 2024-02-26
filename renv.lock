@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.3.0",
+    "Version": "4.1.2",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -1203,7 +1203,7 @@
     },
     "oeli": {
       "Package": "oeli",
-      "Version": "0.4.0",
+      "Version": "0.4.1",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1222,7 +1222,7 @@
         "testthat",
         "usethis"
       ],
-      "Hash": "3ea7567759ef1fe6766fb863a83feb66"
+      "Hash": "c508787b1463fd23d99ffe265bb1bae1"
     },
     "openssl": {
       "Package": "openssl",
@@ -1886,7 +1886,7 @@
     },
     "usethis": {
       "Package": "usethis",
-      "Version": "2.2.2",
+      "Version": "2.2.3",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -1913,7 +1913,7 @@
         "withr",
         "yaml"
       ],
-      "Hash": "60e51f0b94d0324dc19e44110098fa9f"
+      "Hash": "d524fd42c517035027f866064417d7e6"
     },
     "utf8": {
       "Package": "utf8",

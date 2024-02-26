@@ -1,3 +1,7 @@
+# optimizeR 1.0.5
+
+* Removed `install_optimizer_packages()`.
+
 # optimizeR 1.0.4
 
 * Fixed bug and added test cases when having fixed arguments that are `NULL`.
