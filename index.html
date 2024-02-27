@@ -149,7 +149,6 @@
 <span><span class="co">#&gt; - stats::nlminb</span></span>
 <span><span class="co">#&gt; - stats::optim</span></span>
 <span><span class="co">#&gt; - ucminf::ucminf</span></span></code></pre></div>
-<p>Optimizers that are implemented in packages which are not installed yet are only shown here after you install the required packages (for instance using the convenience function <code>install_optimizer_packages()</code>).</p>
 <p>But in fact any optimizer that is not contained in the dictionary can be put into the <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a> framework by setting <code>which = "custom"</code> first…</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nelder_mead</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/Optimizer.html">Optimizer</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>which <span class="op">=</span> <span class="st">"custom"</span><span class="op">)</span></span>
@@ -188,7 +187,7 @@
 <span><span class="co">#&gt; [1] 1.974451 1.974451</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $seconds</span></span>
-<span><span class="co">#&gt; [1] 0.007139921</span></span>
+<span><span class="co">#&gt; [1] 0.01279807</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $initial</span></span>
 <span><span class="co">#&gt; [1] 3 3</span></span>
@@ -213,7 +212,7 @@
 <span><span class="co">#&gt; [1] 0 0</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $seconds</span></span>
-<span><span class="co">#&gt; [1] 0.003467083</span></span>
+<span><span class="co">#&gt; [1] 0.004384041</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $initial</span></span>
 <span><span class="co">#&gt; [1] 3 3</span></span>
@@ -223,9 +222,6 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $count</span></span>
 <span><span class="co">#&gt; [1] 105</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; $convergence</span></span>
-<span><span class="co">#&gt; [1] 0</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $info</span></span>
 <span><span class="co">#&gt; $info$solver</span></span>
