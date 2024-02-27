@@ -125,10 +125,6 @@ optimizer_dictionary
 #> - ucminf::ucminf
 ```
 
-Optimizers that are implemented in packages which are not installed yet
-are only shown here after you install the required packages (for
-instance using the convenience function `install_optimizer_packages()`).
-
 But in fact any optimizer that is not contained in the dictionary can be
 put into the `{optimizeR}` framework by setting `which = "custom"`
 first…
@@ -189,7 +185,7 @@ nlm$maximize(objective = objective, initial = c(3, 3))
 #> [1] 1.974451 1.974451
 #> 
 #> $seconds
-#> [1] 0.007139921
+#> [1] 0.01279807
 #> 
 #> $initial
 #> [1] 3 3
@@ -216,7 +212,7 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> [1] 0 0
 #> 
 #> $seconds
-#> [1] 0.003467083
+#> [1] 0.004384041
 #> 
 #> $initial
 #> [1] 3 3
@@ -226,9 +222,6 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> 
 #> $count
 #> [1] 105
-#> 
-#> $convergence
-#> [1] 0
 #> 
 #> $info
 #> $info$solver

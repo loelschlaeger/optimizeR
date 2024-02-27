@@ -115,8 +115,6 @@ The `{optimizeR}` package provides a dictionary of optimizers, that can be direc
 optimizer_dictionary
 ```
 
-Optimizers that are implemented in packages which are not installed yet are only shown here after you install the required packages (for instance using the convenience function `install_optimizer_packages()`).
-
 But in fact any optimizer that is not contained in the dictionary can be put into the `{optimizeR}` framework by setting `which = "custom"` first...
 
 ```{r, define nelder mead 1}
