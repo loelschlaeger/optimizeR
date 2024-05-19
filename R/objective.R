@@ -4,32 +4,43 @@
 #' The \code{Objective} object specifies the framework for an objective function
 #' for numerical optimization.
 #'
-#' @param objective
+#' @param f
 #' A \code{function} to be optimized that
 #' 1. has at least one argument that receives a \code{numeric} \code{vector}
 #' 2. and returns a single \code{numeric} value.
+#'
 #' @param target
-#' A \code{character}, the argument names of \code{objective} that get
-#' optimized. These arguments must receive a \code{numeric} \code{vector}.
+#' A \code{character}, the argument name(s) of \code{f} that get optimized.
+#'
+#' All target arguments must receive a \code{numeric} \code{vector}.
+#'
+#' Can be \code{NULL} (default), then it is the first argument of \code{f}.
+#'
 #' @param npar
 #' A \code{integer} of the same length as \code{target}, defining the length
 #' of the respective \code{numeric} \code{vector} argument.
+#'
 #' @param ...
-#' Optionally additional arguments to \code{objective} that are fixed during
+#' Optionally additional arguments to \code{f} that are fixed during
 #' the optimization.
+#'
 #' @param overwrite
 #' Either \code{TRUE} (default) to allow overwriting, or \code{FALSE} if not.
+#'
 #' @param verbose
 #' Either \code{TRUE} (default) to print status messages, or \code{FALSE}
 #' to hide those.
+#'
 #' @param argument_name
-#' A \code{character}, a name of an argument for \code{objective}.
+#' A \code{character}, a name of an argument for \code{f}.
+#'
 #' @param .at
 #' A \code{numeric} of length \code{sum(self$npar)}, the values for the target
 #' arguments written in a single vector.
+#'
 #' @param .negate
 #' Either \code{TRUE} to negate the \code{numeric} return value of
-#' \code{objective}, or \code{FALSE} (default) else.
+#' \code{f}, or \code{FALSE} (default) else.
 #'
 #' @return
 #' An \code{Objective} object.
@@ -38,16 +49,18 @@
 #'
 #' @examples
 #' ### define log-likelihood function of Gaussian mixture model
-#' llk <- function(mu, sd, lambda, data){
+#' llk <- function(mu, sd, lambda, data) {
 #'   sd <- exp(sd)
 #'   lambda <- plogis(lambda)
-#'   sum(log(lambda * dnorm(data, mu[1], sd[1]) + (1 - lambda) * dnorm(data, mu[2], sd[2])))
+#'   cluster_1 <- lambda * dnorm(data, mu[1], sd[1])
+#'   cluster_2 <- (1 - lambda) * dnorm(data, mu[2], sd[2])
+#'   sum(log(cluster_1 + cluster_2))
 #' }
 #'
 #' ### the log-likelihood function is supposed to be optimized over the first
 #' ### three arguments, the 'data' argument is constant
 #' objective <- Objective$new(
-#'   objective = llk, target = c("mu", "sd", "lambda"), npar = c(2, 2, 1),
+#'   f = llk, target = c("mu", "sd", "lambda"), npar = c(2, 2, 1),
 #'   data = faithful$eruptions
 #' )
 #'
@@ -65,20 +78,28 @@ Objective <- R6::R6Class(
     #' Creates a new \code{Objective} object.
     #' @return
     #' A new \code{Objective} object.
-    initialize = function(objective, target, npar, ...) {
+    initialize = function(f, target = NULL, npar, ...) {
+
+      ### input checks
+      checkmate::assert_function(f)
+      if (is.null(target)) {
+        target <- oeli::function_arguments(f, with_ellipsis = FALSE)[1]
+      }
       checkmate::assert_character(target, any.missing = FALSE, min.len = 1)
-      checkmate::assert_function(objective, args = target)
+      checkmate::assert_function(f, args = target)
       checkmate::assert_integerish(
         npar, lower = 1, any.missing = FALSE, len = length(target)
       )
       arguments <- list(...)
       arguments <- c(
         arguments,
-        oeli::function_defaults(objective, names(arguments))
+        oeli::function_defaults(f, names(arguments))
       )
+
+      ### define objective
       do.call(self$set_argument, c(arguments, list(verbose = FALSE)))
-      self$objective_name <- oeli::variable_name(objective)
-      private$.objective <- objective
+      self$objective_name <- oeli::variable_name(f)
+      private$.f <- f
       private$.target <- target
       private$.npar <- npar
     },
@@ -181,7 +202,7 @@ Objective <- R6::R6Class(
       tryCatch(
         {
           suppressWarnings(
-            value <- do.call(what = private$.objective, args = args),
+            value <- do.call(what = private$.f, args = args),
             classes = if (self$hide_warnings) "warning" else ""
           )
           if (.negate) -value else value
@@ -207,7 +228,7 @@ Objective <- R6::R6Class(
     print = function() {
       cli::cat_bullet(c(
         paste("Function:", private$.objective_name),
-        paste("Definition:", oeli::function_body(private$.objective, nchar = 40)),
+        paste("Definition:", oeli::function_body(private$.f, nchar = 40)),
         paste("Targets (length):", paste(paste0(private$.target, " (", private$.npar, ")"), collapse = ", ")),
         paste("Fixed arguments specified:", paste(names(private$.arguments), collapse = ", "))
       ))
@@ -299,7 +320,7 @@ Objective <- R6::R6Class(
 
   private = list(
 
-    .objective = NULL,
+    .f = NULL,
     .objective_name = character(),
     .target = character(),
     .npar = integer(),
@@ -333,26 +354,31 @@ Objective <- R6::R6Class(
       checkmate::assert_string(argument_name)
       if (!argument_name %in% names(private$.arguments)) {
         cli::cli_abort(
-          "Function argument {.var {argument_name}} is required but not specified,
-          please call {.var $set_argument({.val {argument_name}} = ...)} first.",
+          "Function argument {.var {argument_name}} is required but not
+          specified, please call
+          {.var $set_argument({.val {argument_name}} = ...)} first.",
           call = NULL
         )
       }
       if (verbose) {
-        cli::cli_alert_success("Required argument {.val {argument_name}} is specified.")
+        cli::cli_alert_success(
+          "Required argument {.val {argument_name}} is specified."
+        )
       }
     },
 
     ### helper function that checks if all required arguments are specified
     .check_arguments_complete = function(verbose = self$verbose) {
       arguments_required <- oeli::function_arguments(
-        private$.objective, with_default = FALSE, with_ellipsis = FALSE
+        private$.f, with_default = FALSE, with_ellipsis = FALSE
       )
       for (argument_name in setdiff(arguments_required, private$.target)) {
         private$.check_argument_specified(argument_name, verbose = FALSE)
       }
       if (verbose) {
-        cli::cli_alert_success("All required fixed arguments are specified.")
+        cli::cli_alert_success(
+          "All required fixed arguments are specified."
+        )
       }
     }
 

@@ -1,3 +1,11 @@
+# optimizerR 1.1.0
+
+* The `Optimizer` object has a new method `optimize` which can be used for minimization and maximization by setting the argument `direction`.
+
+* In method `Objective$initialize()`, renamed argument `objective` -> `f`.
+
+* In method `Objective$initialize()`, if `target = NULL` (the new default), the first argument from `f` is taken as target argument.
+
 # optimizeR 1.0.5
 
 * Removed `install_optimizer_packages()`.

@@ -66,6 +66,15 @@ Optimizer$new("stats::nlm")$
 
 Optimizer$new("stats::nlm")$
   maximize(objective = function(x) -x^4 + 3*x - 5, initial = 2)
+
+## ------------------------------------------------
+## Method `Optimizer$optimize`
+## ------------------------------------------------
+
+objective <- function(x) -x^4 + 3*x - 5
+optimizer <- Optimizer$new("stats::nlm")
+optimizer$optimize(objective = objective, initial = 2, direction = "min")
+optimizer$optimize(objective = objective, initial = 2, direction = "max")
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -116,6 +125,7 @@ optimization output.}
 \item \href{#method-Optimizer-validate}{\code{Optimizer$validate()}}
 \item \href{#method-Optimizer-minimize}{\code{Optimizer$minimize()}}
 \item \href{#method-Optimizer-maximize}{\code{Optimizer$maximize()}}
+\item \href{#method-Optimizer-optimize}{\code{Optimizer$optimize()}}
 \item \href{#method-Optimizer-print}{\code{Optimizer$print()}}
 \item \href{#method-Optimizer-clone}{\code{Optimizer$clone()}}
 }
@@ -354,6 +364,66 @@ the flag \code{time_out = TRUE} is appended.
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{Optimizer$new("stats::nlm")$
   maximize(objective = function(x) -x^4 + 3*x - 5, initial = 2)
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Optimizer-optimize"></a>}}
+\if{latex}{\out{\hypertarget{method-Optimizer-optimize}{}}}
+\subsection{Method \code{optimize()}}{
+Performing minimization or maximization.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Optimizer$optimize(objective, initial, direction = "min", ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{objective}}{A \code{function} to be optimized that
+\enumerate{
+\item has at least one argument that receives a \code{numeric} \code{vector}
+\item and returns a single \code{numeric} value.
+}
+
+Alternatively, it can also be a \code{\link{Objective}} object for more
+flexibility.}
+
+\item{\code{initial}}{A \code{numeric} vector with starting parameter values for the optimization.}
+
+\item{\code{direction}}{Either \code{"min"} for minimization or \code{"max"} for maximization.}
+
+\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
+Without specifications, default values are used.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A named \code{list}, containing at least these five elements:
+\describe{
+\item{\code{value}}{A \code{numeric}, the maximum function value.}
+\item{\code{parameter}}{A \code{numeric} vector, the parameter vector
+where the maximum is obtained.}
+\item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
+\item{\code{initial}}{A \code{numeric}, the initial parameter values.}
+\item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
+}
+Appended are additional output elements of the optimizer.
+
+If an error occurred, then the error message is also appended as element
+\code{error_message}.
+
+If the time limit was exceeded, this also counts as an error. In addition,
+the flag \code{time_out = TRUE} is appended.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{objective <- function(x) -x^4 + 3*x - 5
+optimizer <- Optimizer$new("stats::nlm")
+optimizer$optimize(objective = objective, initial = 2, direction = "min")
+optimizer$optimize(objective = objective, initial = 2, direction = "max")
 }
 \if{html}{\out{</div>}}
 

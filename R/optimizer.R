@@ -27,11 +27,14 @@
 #'
 #' Alternatively, it can also be a \code{\link{Objective}} object for more
 #' flexibility.
+#'
 #' @param initial
 #' A \code{numeric} vector with starting parameter values for the optimization.
+#'
 #' @param ...
 #' Optionally additional arguments to be passed to the optimizer algorithm.
 #' Without specifications, default values are used.
+#'
 #' @param direction
 #' Either \code{"min"} for minimization or \code{"max"} for maximization.
 #'
@@ -333,6 +336,38 @@ Optimizer <- R6::R6Class(
     },
 
     #' @description
+    #' Performing minimization or maximization.
+    #' @return
+    #' A named \code{list}, containing at least these five elements:
+    #' \describe{
+    #'   \item{\code{value}}{A \code{numeric}, the maximum function value.}
+    #'   \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
+    #'   where the maximum is obtained.}
+    #'   \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
+    #'   \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
+    #'   \item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
+    #' }
+    #' Appended are additional output elements of the optimizer.
+    #'
+    #' If an error occurred, then the error message is also appended as element
+    #' \code{error_message}.
+    #'
+    #' If the time limit was exceeded, this also counts as an error. In addition,
+    #' the flag \code{time_out = TRUE} is appended.
+    #' @examples
+    #' objective <- function(x) -x^4 + 3*x - 5
+    #' optimizer <- Optimizer$new("stats::nlm")
+    #' optimizer$optimize(objective = objective, initial = 2, direction = "min")
+    #' optimizer$optimize(objective = objective, initial = 2, direction = "max")
+
+    optimize = function(objective, initial, direction = "min", ...) {
+      private$.optimize(
+        objective = objective, initial = initial,
+        additional_arguments = list(...), direction = direction
+      )
+    },
+
+    #' @description
     #' Prints the optimizer label.
     #' @return
     #' Invisibly the \code{Optimizer} object.
@@ -397,7 +432,7 @@ Optimizer <- R6::R6Class(
     .build_objective = function(objective, initial) {
       if (!checkmate::test_r6(objective, "Objective")) {
         objective <- Objective$new(
-          objective = objective,
+          f = objective,
           target = names(formals(objective))[1],
           npar = length(initial)
         )

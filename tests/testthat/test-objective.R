@@ -1,6 +1,6 @@
 test_that("objective with one target argument can be evaluated", {
   f <- function(x, a, b = 0) (x + a)^2 + b
-  objective <- Objective$new(objective = f, target = "x", npar = 1, a = -2)
+  objective <- Objective$new(f = f, target = "x", npar = 1, a = -2)
   objective$verbose <- FALSE
   expect_equal(
     objective$get_argument("b"),
@@ -47,7 +47,7 @@ test_that("objective with more than one target argument can be evaluated", {
     sum(log(lambda * dnorm(data, mu[1], sd[1]) + (1 - lambda) * dnorm(data, mu[2], sd[2])))
   }
   objective <- Objective$new(
-    objective = llk, target = c("mu", "sd", "lambda"), npar = c(2, 2, 1),
+    f = llk, target = c("mu", "sd", "lambda"), npar = c(2, 2, 1),
     data = faithful$eruptions
   )
   objective$verbose <- FALSE
@@ -75,7 +75,7 @@ test_that("objective with NULL argument can be evaluated", {
     }
   }
   obj <- Objective$new(
-    objective = f,
+    f = f,
     target = "x",
     npar = 3
   )

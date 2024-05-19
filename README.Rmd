@@ -93,7 +93,7 @@ Both artifacts are not allowed by `stats::nlm` and most of other available optim
 
 ```{r, define objective}
 objective <- Objective$new(
-  objective = f,         # f is our objective function
+  f = f,                 # f is our objective function
   target = c("x", "y"),  # x and y are the target arguments
   npar = c(1, 1),        # the target arguments have both a length of 1
   "a" = 20,              

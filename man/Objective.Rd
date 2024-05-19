@@ -12,16 +12,18 @@ for numerical optimization.
 }
 \examples{
 ### define log-likelihood function of Gaussian mixture model
-llk <- function(mu, sd, lambda, data){
+llk <- function(mu, sd, lambda, data) {
   sd <- exp(sd)
   lambda <- plogis(lambda)
-  sum(log(lambda * dnorm(data, mu[1], sd[1]) + (1 - lambda) * dnorm(data, mu[2], sd[2])))
+  cluster_1 <- lambda * dnorm(data, mu[1], sd[1])
+  cluster_2 <- (1 - lambda) * dnorm(data, mu[2], sd[2])
+  sum(log(cluster_1 + cluster_2))
 }
 
 ### the log-likelihood function is supposed to be optimized over the first
 ### three arguments, the 'data' argument is constant
 objective <- Objective$new(
-  objective = llk, target = c("mu", "sd", "lambda"), npar = c(2, 2, 1),
+  f = llk, target = c("mu", "sd", "lambda"), npar = c(2, 2, 1),
   data = faithful$eruptions
 )
 
@@ -72,25 +74,28 @@ to hide those.}
 \subsection{Method \code{new()}}{
 Creates a new \code{Objective} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$new(objective, target, npar, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Objective$new(f, target = NULL, npar, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{objective}}{A \code{function} to be optimized that
+\item{\code{f}}{A \code{function} to be optimized that
 \enumerate{
 \item has at least one argument that receives a \code{numeric} \code{vector}
 \item and returns a single \code{numeric} value.
 }}
 
-\item{\code{target}}{A \code{character}, the argument names of \code{objective} that get
-optimized. These arguments must receive a \code{numeric} \code{vector}.}
+\item{\code{target}}{A \code{character}, the argument name(s) of \code{f} that get optimized.
+
+All target arguments must receive a \code{numeric} \code{vector}.
+
+Can be \code{NULL} (default), then it is the first argument of \code{f}.}
 
 \item{\code{npar}}{A \code{integer} of the same length as \code{target}, defining the length
 of the respective \code{numeric} \code{vector} argument.}
 
-\item{\code{...}}{Optionally additional arguments to \code{objective} that are fixed during
+\item{\code{...}}{Optionally additional arguments to \code{f} that are fixed during
 the optimization.}
 }
 \if{html}{\out{</div>}}
@@ -111,7 +116,7 @@ Set a fixed function argument.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{...}}{Optionally additional arguments to \code{objective} that are fixed during
+\item{\code{...}}{Optionally additional arguments to \code{f} that are fixed during
 the optimization.}
 
 \item{\code{overwrite}}{Either \code{TRUE} (default) to allow overwriting, or \code{FALSE} if not.}
@@ -137,7 +142,7 @@ Get a fixed function argument.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{argument_name}}{A \code{character}, a name of an argument for \code{objective}.}
+\item{\code{argument_name}}{A \code{character}, a name of an argument for \code{f}.}
 
 \item{\code{verbose}}{Either \code{TRUE} (default) to print status messages, or \code{FALSE}
 to hide those.}
@@ -160,7 +165,7 @@ Remove a fixed function argument.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{argument_name}}{A \code{character}, a name of an argument for \code{objective}.}
+\item{\code{argument_name}}{A \code{character}, a name of an argument for \code{f}.}
 
 \item{\code{verbose}}{Either \code{TRUE} (default) to print status messages, or \code{FALSE}
 to hide those.}
@@ -208,9 +213,9 @@ Evaluate the objective function.
 arguments written in a single vector.}
 
 \item{\code{.negate}}{Either \code{TRUE} to negate the \code{numeric} return value of
-\code{objective}, or \code{FALSE} (default) else.}
+\code{f}, or \code{FALSE} (default) else.}
 
-\item{\code{...}}{Optionally additional arguments to \code{objective} that are fixed during
+\item{\code{...}}{Optionally additional arguments to \code{f} that are fixed during
 the optimization.}
 }
 \if{html}{\out{</div>}}
