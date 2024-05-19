@@ -15,7 +15,7 @@ the objective function.
 The output must be a named list, including the optimal function
 value and the optimal parameter vector.
 
-"><title>Specify numerical optimizer as R6 object — Optimizer • optimizeR</title><!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png"><link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png"><link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png"><link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png"><link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png"><link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Specify numerical optimizer as R6 object — Optimizer"><meta property="og:description" content="A Optimizer R6 object defines a numerical optimizer based on an
+"><title>Specify numerical optimizer as R6 object — Optimizer • optimizeR</title><!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png"><link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png"><link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png"><link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png"><link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png"><link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png"><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous"><!-- bootstrap-toc --><script src="https://cdn.jsdelivr.net/gh/afeld/bootstrap-toc@v1.0.1/dist/bootstrap-toc.min.js" integrity="sha256-4veVQbu7//Lk5TSmc7YV48MxtMy98e26cf5MrgZYnwo=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.11/clipboard.min.js" integrity="sha512-7O5pXpc0oCRrxk8RUfDYFgn0nO1t+jLuIOQdOMRp4APB7uZ4vSjspzp5y6YDtDs4VzUSTbWzBFZ/LKJhnyFOKw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Specify numerical optimizer as R6 object — Optimizer"><meta property="og:description" content="A Optimizer R6 object defines a numerical optimizer based on an
 optimization function implemented in R.
 The main advantage of working with an Optimizer object instead of
 using the optimization function directly lies in the standardized inputs and
@@ -38,11 +38,11 @@ value and the optimal parameter vector.
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
     
 
-    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light"><div class="container">
+    <nav class="navbar fixed-top navbar-light navbar-expand-lg bg-light" data-bs-theme="light"><div class="container">
     
     <a class="navbar-brand me-2" href="../index.html">optimizeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -166,6 +166,7 @@ optimization output.</p></dd>
 <li><p><a href="#method-Optimizer-validate"><code>Optimizer$validate()</code></a></p></li>
 <li><p><a href="#method-Optimizer-minimize"><code>Optimizer$minimize()</code></a></p></li>
 <li><p><a href="#method-Optimizer-maximize"><code>Optimizer$maximize()</code></a></p></li>
+<li><p><a href="#method-Optimizer-optimize"><code>Optimizer$optimize()</code></a></p></li>
 <li><p><a href="#method-Optimizer-print"><code>Optimizer$print()</code></a></p></li>
 <li><p><a href="#method-Optimizer-clone"><code>Optimizer$clone()</code></a></p></li>
 </ul></div><p></p><hr><a id="method-Optimizer-new"></a><div class="section">
@@ -428,16 +429,31 @@ the flag <code>time_out = TRUE</code> is appended.</p>
 </div>
 
 
-</div><p></p><hr><a id="method-Optimizer-print"></a><div class="section">
-<h3 id="method-print-">Method <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code><a class="anchor" aria-label="anchor" href="#method-print-"></a></h3>
-<p>Prints the optimizer label.</p><div class="section">
+</div><p></p><hr><a id="method-Optimizer-optimize"></a><div class="section">
+<h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
+<p>Performing minimization or maximization.</p><div class="section">
 <h4 id="usage-6">Usage<a class="anchor" aria-label="anchor" href="#usage-6"></a></h4>
-<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Optimizer</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Optimizer</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span><span class="va">objective</span>, <span class="va">initial</span>, direction <span class="op">=</span> <span class="st">"min"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
 <h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
-<p></p><div class="arguments"><dl><dt><code>...</code></dt>
+<p></p><div class="arguments"><dl><dt><code>objective</code></dt>
+<dd><p>A <code>function</code> to be optimized that</p><ol><li><p>has at least one argument that receives a <code>numeric</code> <code>vector</code></p></li>
+<li><p>and returns a single <code>numeric</code> value.</p></li>
+</ol><p>Alternatively, it can also be a <code><a href="Objective.html">Objective</a></code> object for more
+flexibility.</p></dd>
+
+
+<dt><code>initial</code></dt>
+<dd><p>A <code>numeric</code> vector with starting parameter values for the optimization.</p></dd>
+
+
+<dt><code>direction</code></dt>
+<dd><p>Either <code>"min"</code> for minimization or <code>"max"</code> for maximization.</p></dd>
+
+
+<dt><code>...</code></dt>
 <dd><p>Optionally additional arguments to be passed to the optimizer algorithm.
 Without specifications, default values are used.</p></dd>
 
@@ -446,18 +462,68 @@ Without specifications, default values are used.</p></dd>
 </div>
 <div class="section">
 <h4 id="returns-6">Returns<a class="anchor" aria-label="anchor" href="#returns-6"></a></h4>
+<p>A named <code>list</code>, containing at least these five elements:</p><dl><dt><code>value</code></dt>
+<dd><p>A <code>numeric</code>, the maximum function value.</p></dd>
+
+<dt><code>parameter</code></dt>
+<dd><p>A <code>numeric</code> vector, the parameter vector
+where the maximum is obtained.</p></dd>
+
+<dt><code>seconds</code></dt>
+<dd><p>A <code>numeric</code>, the optimization time in seconds.</p></dd>
+
+<dt><code>initial</code></dt>
+<dd><p>A <code>numeric</code>, the initial parameter values.</p></dd>
+
+<dt><code>error</code></dt>
+<dd><p>Either <code>TRUE</code> if an error occurred, or <code>FALSE</code>, else.</p></dd>
+
+
+</dl><p>Appended are additional output elements of the optimizer.</p>
+<p>If an error occurred, then the error message is also appended as element
+<code>error_message</code>.</p>
+<p>If the time limit was exceeded, this also counts as an error. In addition,
+the flag <code>time_out = TRUE</code> is appended.</p>
+</div>
+<div class="section">
+<h4 id="examples-2">Examples<a class="anchor" aria-label="anchor" href="#examples-2"></a></h4>
+<p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="va">objective</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">-</span><span class="va">x</span><span class="op">^</span><span class="fl">4</span> <span class="op">+</span> <span class="fl">3</span><span class="op">*</span><span class="va">x</span> <span class="op">-</span> <span class="fl">5</span></span>
+<span><span class="va">optimizer</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/Optimizer.html">Optimizer</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="st">"stats::nlm"</span><span class="op">)</span></span>
+<span><span class="va">optimizer</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span>objective <span class="op">=</span> <span class="va">objective</span>, initial <span class="op">=</span> <span class="fl">2</span>, direction <span class="op">=</span> <span class="st">"min"</span><span class="op">)</span></span>
+<span><span class="va">optimizer</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span>objective <span class="op">=</span> <span class="va">objective</span>, initial <span class="op">=</span> <span class="fl">2</span>, direction <span class="op">=</span> <span class="st">"max"</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+
+</div><p></p><hr><a id="method-Optimizer-print"></a><div class="section">
+<h3 id="method-print-">Method <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code><a class="anchor" aria-label="anchor" href="#method-print-"></a></h3>
+<p>Prints the optimizer label.</p><div class="section">
+<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Optimizer</span><span class="op">$</span><span class="fu">print</span><span class="op">(</span><span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
+</div>
+
+<div class="section">
+<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
+<p></p><div class="arguments"><dl><dt><code>...</code></dt>
+<dd><p>Optionally additional arguments to be passed to the optimizer algorithm.
+Without specifications, default values are used.</p></dd>
+
+
+</dl><p></p></div>
+</div>
+<div class="section">
+<h4 id="returns-7">Returns<a class="anchor" aria-label="anchor" href="#returns-7"></a></h4>
 <p>Invisibly the <code>Optimizer</code> object.</p>
 </div>
 
 </div><p></p><hr><a id="method-Optimizer-clone"></a><div class="section">
 <h3 id="method-clone-">Method <code>clone()</code><a class="anchor" aria-label="anchor" href="#method-clone-"></a></h3>
 <p>The objects of this class are cloneable with this method.</p><div class="section">
-<h4 id="usage-7">Usage<a class="anchor" aria-label="anchor" href="#usage-7"></a></h4>
+<h4 id="usage-8">Usage<a class="anchor" aria-label="anchor" href="#usage-8"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Optimizer</span><span class="op">$</span><span class="fu">clone</span><span class="op">(</span>deep <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 <div class="section">
-<h4 id="arguments-7">Arguments<a class="anchor" aria-label="anchor" href="#arguments-7"></a></h4>
+<h4 id="arguments-8">Arguments<a class="anchor" aria-label="anchor" href="#arguments-8"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>deep</code></dt>
 <dd><p>Whether to make a deep clone.</p></dd>
 
@@ -506,7 +572,7 @@ Without specifications, default values are used.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.974451 1.974451</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01286149</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01312351</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3 3</span>
@@ -531,7 +597,7 @@ Without specifications, default values are used.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.009221554</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.008814096</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3 3</span>
@@ -565,7 +631,7 @@ Without specifications, default values are used.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.9085614</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001098394</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001064539</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
@@ -596,7 +662,64 @@ Without specifications, default values are used.</p></dd>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9085598</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001346588</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001263618</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $error</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $gradient</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -3.801404e-07</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $code</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $iterations</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Method `Optimizer$optimize`</span></span></span>
+<span class="r-in"><span><span class="co">## ------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">objective</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">-</span><span class="va">x</span><span class="op">^</span><span class="fl">4</span> <span class="op">+</span> <span class="fl">3</span><span class="op">*</span><span class="va">x</span> <span class="op">-</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span><span class="va">optimizer</span> <span class="op">&lt;-</span> <span class="va">Optimizer</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="st">"stats::nlm"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">optimizer</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span>objective <span class="op">=</span> <span class="va">objective</span>, initial <span class="op">=</span> <span class="fl">2</span>, direction <span class="op">=</span> <span class="st">"min"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1.012458e+16</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $parameter</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10031</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.000900507</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $error</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $gradient</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -4.037322e+12</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $code</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $iterations</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="va">optimizer</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span>objective <span class="op">=</span> <span class="va">objective</span>, initial <span class="op">=</span> <span class="fl">2</span>, direction <span class="op">=</span> <span class="st">"max"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $value</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -2.955739</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $parameter</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9085598</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001315832</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
@@ -620,11 +743,11 @@ Without specifications, default values are used.</p></dd>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by <a href="https://loelschlaeger.de" class="external-link">Lennart Oelschläger</a>.</p>
+  <p>Developed by <a href="https://loelschlaeger.de" class="external-link">Lennart Oelschläger</a>.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
 </div>
 
     </footer></div>
