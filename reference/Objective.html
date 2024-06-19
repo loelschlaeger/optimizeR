@@ -12,7 +12,7 @@ for numerical optimization."><meta property="og:image" content="https://loelschl
     
     <a class="navbar-brand me-2" href="../index.html">optimizeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,6 +90,11 @@ to hide those.</p></dd>
 <dd><p>An <code>integer</code> vector, defining the length of each target argument.</p></dd>
 
 
+<dt><code>output_template</code></dt>
+<dd><p>A template of the expected output value, used for the <code>validate</code>
+method.</p></dd>
+
+
 </dl><p></p></div>
     </div>
     <div class="section level2">
@@ -116,9 +121,11 @@ to hide those.</p></dd>
 <div class="section">
 <h4 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>f</code></dt>
-<dd><p>A <code>function</code> to be optimized that</p><ol><li><p>has at least one argument that receives a <code>numeric</code> <code>vector</code></p></li>
-<li><p>and returns a single <code>numeric</code> value.</p></li>
-</ol></dd>
+<dd><p>A <code>function</code> to be optimized.</p>
+<p>It is expected that <code>f</code> has at least one <code>numeric</code> argument.</p>
+<p>Further, it is expected that the return value of <code>f</code> is of the
+structure <code>numeric(1)</code>, i.e. a single <code>numeric</code> value (although
+this can be altered via the <code>output_template</code> field).</p></dd>
 
 
 <dt><code>target</code></dt>
