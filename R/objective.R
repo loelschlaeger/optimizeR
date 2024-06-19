@@ -5,9 +5,13 @@
 #' for numerical optimization.
 #'
 #' @param f
-#' A \code{function} to be optimized that
-#' 1. has at least one argument that receives a \code{numeric} \code{vector}
-#' 2. and returns a single \code{numeric} value.
+#' A \code{function} to be optimized.
+#'
+#' It is expected that \code{f} has at least one \code{numeric} argument.
+#'
+#' Further, it is expected that the return value of \code{f} is of the
+#' structure \code{numeric(1)}, i.e. a single \code{numeric} value (although
+#' this can be altered via the \code{output_template} field).
 #'
 #' @param target
 #' A \code{character}, the argument name(s) of \code{f} that get optimized.
@@ -169,15 +173,25 @@ Objective <- R6::R6Class(
     #' @return
     #' Invisibly the \code{Objective} object.
     validate = function(.at) {
+      if (missing(.at)) {
+        cli::cli_abort(
+          "Please specify the argument {.var .at}",
+          call = NULL
+        )
+      }
       private$.check_target(.at, verbose = TRUE)
       private$.check_arguments_complete(verbose = TRUE)
       cli::cli_progress_step(
-        "Evaluating {private$.objective_name}({cli::cli_vec(.at, list('vec-trunc' = 3, 'vec-sep' = ',', 'vec-last' = ','))}).",
-        msg_done = "The function value is a single number, great!",
+        "Evaluating the function.",
+        msg_done = "The function output has the expected structure, great!",
         msg_failed = "Test evaluation failed."
       )
-      if (!checkmate::test_number(self$evaluate(.at = .at))) {
-        stop("The function output is the expected single number.")
+      output <- self$evaluate(.at = .at)
+      if (!oeli::identical_structure(output, private$.output_template)) {
+        stop(
+          "The function output does not have the expected structure.",
+          call. = FALSE
+        )
       }
       cli::cli_progress_done()
       invisible(self)
@@ -188,6 +202,7 @@ Objective <- R6::R6Class(
     #' @return
     #' The objective value.
     evaluate = function(.at, .negate = FALSE, ...) {
+      private$.check_target(.at, verbose = FALSE)
       checkmate::assert_flag(.negate)
       splits <- c(0, cumsum(private$.npar))
       .at <- structure(
@@ -314,6 +329,17 @@ Objective <- R6::R6Class(
           call = NULL
         )
       }
+    },
+
+    #' @field output_template
+    #' A template of the expected output value, used for the \code{validate}
+    #' method.
+    output_template = function(value) {
+      if (missing(value)) {
+        private$.output_template
+      } else {
+        private$.output_template <- value
+      }
     }
 
   ),
@@ -328,6 +354,7 @@ Objective <- R6::R6Class(
     .seconds = Inf,
     .hide_warnings = FALSE,
     .verbose = TRUE,
+    .output_template = numeric(1),
 
     ### helper function that checks the target argument
     .check_target = function(.at, verbose = self$verbose) {
@@ -343,7 +370,7 @@ Objective <- R6::R6Class(
       }
       if (verbose) {
         cli::cli_alert_success(
-          "The value for the target argument(s) is correctly specified."
+          "The value{?s} for the {length(private$.npar)} target argument{?s} {?is/are} correctly specified."
         )
       }
       invisible(TRUE)

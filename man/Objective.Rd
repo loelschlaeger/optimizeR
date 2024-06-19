@@ -52,6 +52,9 @@ or \code{FALSE} (default) if not.}
 to hide those.}
 
 \item{\code{npar}}{An \code{integer} vector, defining the length of each target argument.}
+
+\item{\code{output_template}}{A template of the expected output value, used for the \code{validate}
+method.}
 }
 \if{html}{\out{</div>}}
 }
@@ -80,11 +83,13 @@ Creates a new \code{Objective} object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{f}}{A \code{function} to be optimized that
-\enumerate{
-\item has at least one argument that receives a \code{numeric} \code{vector}
-\item and returns a single \code{numeric} value.
-}}
+\item{\code{f}}{A \code{function} to be optimized.
+
+It is expected that \code{f} has at least one \code{numeric} argument.
+
+Further, it is expected that the return value of \code{f} is of the
+structure \code{numeric(1)}, i.e. a single \code{numeric} value (although
+this can be altered via the \code{output_template} field).}
 
 \item{\code{target}}{A \code{character}, the argument name(s) of \code{f} that get optimized.
 
