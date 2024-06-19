@@ -33,7 +33,7 @@ Imports:
     checkmate,
     cli,
     lbfgsb3c,
-    oeli (>= 0.4.1),
+    oeli (>= 0.5.2),
     R6,
     stats,
     TestFunctions,
