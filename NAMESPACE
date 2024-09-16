@@ -2,6 +2,7 @@
 
 export(Objective)
 export(Optimizer)
+export(ParameterSpaces)
 export(apply_optimizer)
 export(define_optimizer)
 export(optimizer_dictionary)
