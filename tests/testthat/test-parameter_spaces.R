@@ -36,9 +36,8 @@ test_that("parameter spaces work", {
 
 
   # TODO
-  probit_parameter$switch(rnorm(12))
-
+  probit_parameter$switch(rnorm(12)
+  )
 })
 
 # TODO: vignette
-
