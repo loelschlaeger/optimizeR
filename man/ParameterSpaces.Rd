@@ -2,9 +2,22 @@
 % Please edit documentation in R/parameter_spaces.R
 \name{ParameterSpaces}
 \alias{ParameterSpaces}
-\title{Parameter Spaces}
+\title{Switch Between Parameter Spaces}
 \description{
-TODO
+This R6 object manages two related parameter spaces: the Optimization Space
+(for optimization) and the Interpretation Space (for easier interpretation).
+
+In the Optimization Space, parameters are stored as a \code{numeric}
+\code{vector}, the standard format for numerical optimizers. Parameters in
+this space are typically identified.
+
+In the Interpretation Space, parameters are stored as a \code{list} and can
+take different formats (e.g., \code{matrix}). Parameters here do not need to
+be identified.
+
+The user can define transformation functions (not necessarily bijective) to
+switch between these two spaces via the \code{$o2i()} and \code{$i2o()}
+methods.
 }
 \examples{
 # TODO
@@ -67,7 +80,7 @@ Show transformer functions in the output?}
 \if{html}{\out{<a id="method-ParameterSpaces-switch"></a>}}
 \if{latex}{\out{\hypertarget{method-ParameterSpaces-switch}{}}}
 \subsection{Method \code{switch()}}{
-Switch between optimization and interpretation space.
+Switch between Optimization Space and Interpretation Space.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ParameterSpaces$switch(x)}\if{html}{\out{</div>}}
 }
@@ -76,8 +89,9 @@ Switch between optimization and interpretation space.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{x}}{[\code{numeric()} | \code{list()}]\cr
-The parameters, either as \code{numeric()} (will be switched to interpretation
-space), or as \code{list()} (will be switched to optimization space).}
+The parameters, either as a \verb{numeric vector} (will be switched to
+Interpretation Space), or as a \code{list()} (will be switched to Optimization
+Space).}
 }
 \if{html}{\out{</div>}}
 }

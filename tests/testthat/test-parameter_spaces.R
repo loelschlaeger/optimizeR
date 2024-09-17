@@ -1,3 +1,7 @@
+
+devtools::load_all()
+
+
 test_that("parameter spaces work", {
   parameter_names <- c("b", "Omega", "Sigma")
   parameter_lengths_in_o_space <- c(3, 6, 3)

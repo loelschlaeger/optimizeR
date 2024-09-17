@@ -1,7 +1,20 @@
-#' Parameter Spaces
+#' Switch Between Parameter Spaces
 #'
 #' @description
-#' TODO
+#' This R6 object manages two related parameter spaces: the Optimization Space
+#' (for optimization) and the Interpretation Space (for easier interpretation).
+#'
+#' In the Optimization Space, parameters are stored as a \code{numeric}
+#' \code{vector}, the standard format for numerical optimizers. Parameters in
+#' this space are typically identified.
+#'
+#' In the Interpretation Space, parameters are stored as a \code{list} and can
+#' take different formats (e.g., \code{matrix}). Parameters here do not need to
+#' be identified.
+#'
+#' The user can define transformation functions (not necessarily bijective) to
+#' switch between these two spaces via the \code{$o2i()} and \code{$i2o()}
+#' methods.
 #'
 #' @examples
 #' # TODO
@@ -61,6 +74,7 @@ ParameterSpaces <- R6::R6Class(
 
     #' @description
     #' Print an overview of the parameter spaces.
+    #'
     #' @param show_transformer \[`logical(1)`\]\cr
     #' Show transformer functions in the output?
 
@@ -73,10 +87,10 @@ ParameterSpaces <- R6::R6Class(
       )
 
       ### optimization space
-      cli::cli_h1("Optimization Space {.cls numeric({sum(private$.parameter_lengths_in_o_space)})}")
+      cli::cli_h1("Optimization Space {.cls numeric({private$.o_space_length()})}")
       print.data.frame(
         structure(
-          data.frame(private$.get_ranges(), private$.parameter_names),
+          data.frame(private$.format_ranges(), private$.parameter_names),
           names = NULL
         ),
         row.names = FALSE, right = FALSE
@@ -96,7 +110,7 @@ ParameterSpaces <- R6::R6Class(
       }
 
       ### interpretation space
-      cli::cli_h1("Interpretation Space {.cls list({length(private$.parameter_names)})}")
+      cli::cli_h1("Interpretation Space {.cls list({private$.number_parameters()})}")
       print.data.frame(
         structure(
           data.frame(
@@ -125,30 +139,53 @@ ParameterSpaces <- R6::R6Class(
     },
 
     #' @description
-    #' Switch between optimization and interpretation space.
+    #' Switch between Optimization Space and Interpretation Space.
     #'
     #' @param x \[`numeric()` | `list()`\]\cr
-    #' The parameters, either as `numeric()` (will be switched to interpretation
-    #' space), or as `list()` (will be switched to optimization space).
+    #' The parameters, either as a `numeric vector` (will be switched to
+    #' Interpretation Space), or as a `list()` (will be switched to Optimization
+    #' Space).
 
     switch = function(x) {
 
       if (oeli::test_numeric_vector(x)) {
 
         ### transform to Interpretation Space
-        # TODO
+        oeli::input_check_response(
+          check = oeli::check_numeric_vector(
+            x, any.missing = FALSE, len = private$.o_space_length()
+          ),
+          var_name = "x"
+        )
+        out <-  setNames(vector("list", private$.number_parameters()), private$.parameter_names)
+        ranges <- private$.get_ranges()
+        x_split <- lapply(ranges, function(start_end) {
+          if (is.null(start_end)) {
+            NULL
+          } else {
+            x[start_end[1]:start_end[2]]
+          }
+        })
+        names(x_split) <- private$.parameter_names
+        for (parameter in names(out)) {
+          out[[parameter]] <- private$.o2i[[parameter]](x_split[[parameter]])
+        }
+        return(out)
 
       } else if (checkmate::test_list(x)) {
 
         ### transform to Optimization Space
-        out <- numeric(sum(private$.parameter_lengths_in_o_space))
+        out <- numeric(private$.o_space_length())
         i2o_parts <- list()
         for (i in seq_along(private$.parameter_names)) {
           par_name <- private$.parameter_names[i]
           part <- private$.i2o[[par_name]](x[[par_name]])
           if (!oeli::test_numeric_vector(
-            part, len = private$.parameter_lengths_in_o_space[i], any.missing = FALSE
+            part, len = private$.parameter_lengths_in_o_space[i],
+            any.missing = FALSE
           )) {
+
+            # TODO
             stop()
           }
           i2o_parts[[i]] <- part
@@ -216,15 +253,27 @@ ParameterSpaces <- R6::R6Class(
     .o2i = list(),
     .i2o = list(),
 
-    .get_ranges = function(
-      lengths = private$.parameter_lengths_in_o_space
-    ) {
-      sapply(seq_along(lengths), function(i) {
-        if (lengths[i] == 0) "[NULL]" else {
+    .number_parameters = function(names = private$.parameter_names) {
+      length(names)
+    },
+
+    .o_space_length = function(lengths = private$.parameter_lengths_in_o_space) {
+      sum(lengths)
+    },
+
+    .get_ranges = function(lengths = private$.parameter_lengths_in_o_space) {
+      lapply(seq_along(lengths), function(i) {
+        if (lengths[i] == 0) NULL else {
           start <- if (i == 1) 1 else sum(lengths[1:(i - 1)]) + 1
           end <- start - 1 + lengths[i]
-          sprintf("[%d:%d]", start, end)
+          c(start, end)
         }
+      })
+    },
+
+    .format_ranges = function(ranges = private$.get_ranges()) {
+      sapply(ranges, function(x) {
+        if (is.null(x)) "[NULL]" else sprintf("[%d:%d]", x[1], x[2])
       })
     }
 
