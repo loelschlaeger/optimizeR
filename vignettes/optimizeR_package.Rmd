@@ -13,11 +13,13 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-library(optimizeR)
-#devtools::load_all() # TODO
+# library(optimizeR)
+devtools::load_all() # TODO
 ```
 
 # Numerical optimization
+
+# Objective function
 
 ## Example 1: Himmelblau's function
 
@@ -99,6 +101,10 @@ normal_mixture_llk <- function(theta, data) {
 ```
 
 # Optimizer objects
+
+## Optimizer dictionary
+
+## Custom optimizers
 
 # Parameter spaces
 
