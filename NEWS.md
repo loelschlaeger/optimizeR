@@ -1,6 +1,10 @@
+# optimizer development
+
+* New `ParameterSpaces` R6 object to transform parameters between optimization and interpretation space.
+
 # optimizerR 1.1.1
 
-* The `Objective` object now allows for different types of output structures of the objective function, for which a template can be provided via the `$output_template` field. 
+* The `Objective` object now allows for different types of output structures of the objective function, for which a template can be provided via the `$output_template` field.
 
 # optimizerR 1.1.0
 

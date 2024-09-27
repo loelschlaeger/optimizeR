@@ -17,7 +17,56 @@
 #' methods.
 #'
 #' @examples
-#' # TODO
+#' ### Log-likelihood function of two-class Gaussian mixture model with
+#' ### parameter vector `theta` that consists of
+#' ### - `mu`, mean vector of length 2
+#' ### - `sd`, standard deviation vector of length 2, must be positive
+#' ### - `lambda`, class probability of length 1, must be between 0 and 1
+#'
+#' normal_mixture_llk <- function(theta, data) {
+#'   mu <- theta[1:2]
+#'   sd <- exp(theta[3:4])
+#'   lambda <- plogis(theta[5])
+#'   c1 <- lambda * dnorm(data, mu[1], sd[1])
+#'   c2 <- (1 - lambda) * dnorm(data, mu[2], sd[2])
+#'   sum(log(c1 + c2))
+#' }
+#'
+#' ### define parameter spaces
+#' ### - `mu` needs no transformation
+#' ### - `sd` needs to be real in optimization space and positive in
+#' ###    interpretation space
+#' ### - `lambda` needs to be real and of length `1` in optimization space, and
+#' ###    a probability vector of length `2` in interpretation space
+#'
+#' normal_mixture_spaces <- ParameterSpaces$
+#'   new(
+#'     parameter_names = c("mu", "sd", "lambda"),
+#'     parameter_lengths_in_o_space = c(2, 2, 1)
+#'   )$
+#'   o2i(
+#'     "mu" = function(x) x,
+#'     "sd" = function(x) exp(x),
+#'     "lambda" = function(x) c(plogis(x), 1 - plogis(x))
+#'   )$
+#'   i2o(
+#'     "mu" = function(x) x,
+#'     "sd" = function(x) log(x),
+#'     "lambda" = function(x) qlogis(x[1])
+#'   )
+#'
+#' ### switch between parameter spaces
+#'
+#' par <- list(                             # parameters in interpretation space
+#'   "mu" = c(2, 4),
+#'   "sd" = c(0.5, 1),
+#'   "lambda" = c(0.4, 0.6)
+#' )
+#' (x <- normal_mixture_spaces$switch(par)) # switch to optimization space
+#' normal_mixture_llk(
+#'   theta = x, data = datasets::faithful$eruptions
+#' )
+#' normal_mixture_spaces$switch(x)          # switch back
 #'
 #' @export
 
@@ -135,7 +184,7 @@ ParameterSpaces <- R6::R6Class(
       }
 
       cat("\n")
-      return(self)
+      invisible(self)
     },
 
     #' @description
@@ -150,13 +199,15 @@ ParameterSpaces <- R6::R6Class(
 
       if (oeli::test_numeric_vector(x)) {
 
-        ### transform to Interpretation Space
+        ### input check
         oeli::input_check_response(
           check = oeli::check_numeric_vector(
             x, any.missing = FALSE, len = private$.o_space_length()
           ),
           var_name = "x"
         )
+
+        ### transform to Interpretation Space
         out <-  setNames(vector("list", private$.number_parameters()), private$.parameter_names)
         ranges <- private$.get_ranges()
         x_split <- lapply(ranges, function(start_end) {
@@ -174,20 +225,28 @@ ParameterSpaces <- R6::R6Class(
 
       } else if (checkmate::test_list(x)) {
 
+        ### input check
+        oeli::input_check_response(
+          check = checkmate::check_names(
+            names(x), permutation.of = private$.parameter_names
+          ),
+          var_name = "x"
+        )
+
         ### transform to Optimization Space
         out <- numeric(private$.o_space_length())
         i2o_parts <- list()
         for (i in seq_along(private$.parameter_names)) {
           par_name <- private$.parameter_names[i]
           part <- private$.i2o[[par_name]](x[[par_name]])
-          if (!oeli::test_numeric_vector(
-            part, len = private$.parameter_lengths_in_o_space[i],
-            any.missing = FALSE
-          )) {
-
-            # TODO
-            stop()
-          }
+          oeli::input_check_response(
+            check = oeli::check_numeric_vector(
+              part, len = private$.parameter_lengths_in_o_space[i],
+              any.missing = FALSE, null.ok = TRUE
+            ),
+            var_name = paste0("x[[\"", par_name, "\"]]"),
+            prefix = "Transforming {.var {var_name}} is bad:"
+          )
           i2o_parts[[i]] <- part
         }
         return(unlist(i2o_parts))
@@ -217,11 +276,15 @@ ParameterSpaces <- R6::R6Class(
     o2i = function(...) {
       input <- list(...)
       oeli::input_check_response(
+        check = checkmate::check_list(input, types = "function")
+      )
+      oeli::input_check_response(
         check = checkmate::check_names(
           names(input), subset.of = private$.parameter_names
         )
       )
       private$.o2i <- oeli::merge_lists(input, private$.o2i)[private$.parameter_names]
+      invisible(self)
     },
 
     #' @description
@@ -237,11 +300,15 @@ ParameterSpaces <- R6::R6Class(
     i2o = function(...) {
       input <- list(...)
       oeli::input_check_response(
+        check = checkmate::check_list(input, types = "function")
+      )
+      oeli::input_check_response(
         check = checkmate::check_names(
           names(input), subset.of = private$.parameter_names
         )
       )
       private$.i2o <- oeli::merge_lists(input, private$.i2o)[private$.parameter_names]
+      invisible(self)
     }
 
   ),

@@ -20,7 +20,56 @@ switch between these two spaces via the \code{$o2i()} and \code{$i2o()}
 methods.
 }
 \examples{
-# TODO
+### Log-likelihood function of two-class Gaussian mixture model with
+### parameter vector `theta` that consists of
+### - `mu`, mean vector of length 2
+### - `sd`, standard deviation vector of length 2, must be positive
+### - `lambda`, class probability of length 1, must be between 0 and 1
+
+normal_mixture_llk <- function(theta, data) {
+  mu <- theta[1:2]
+  sd <- exp(theta[3:4])
+  lambda <- plogis(theta[5])
+  c1 <- lambda * dnorm(data, mu[1], sd[1])
+  c2 <- (1 - lambda) * dnorm(data, mu[2], sd[2])
+  sum(log(c1 + c2))
+}
+
+### define parameter spaces
+### - `mu` needs no transformation
+### - `sd` needs to be real in optimization space and positive in
+###    interpretation space
+### - `lambda` needs to be real and of length `1` in optimization space, and
+###    a probability vector of length `2` in interpretation space
+
+normal_mixture_spaces <- ParameterSpaces$
+  new(
+    parameter_names = c("mu", "sd", "lambda"),
+    parameter_lengths_in_o_space = c(2, 2, 1)
+  )$
+  o2i(
+    "mu" = function(x) x,
+    "sd" = function(x) exp(x),
+    "lambda" = function(x) c(plogis(x), 1 - plogis(x))
+  )$
+  i2o(
+    "mu" = function(x) x,
+    "sd" = function(x) log(x),
+    "lambda" = function(x) qlogis(x[1])
+  )
+
+### switch between parameter spaces
+
+par <- list(                             # parameters in interpretation space
+  "mu" = c(2, 4),
+  "sd" = c(0.5, 1),
+  "lambda" = c(0.4, 0.6)
+)
+(x <- normal_mixture_spaces$switch(par)) # switch to optimization space
+normal_mixture_llk(
+  theta = x, data = datasets::faithful$eruptions
+)
+normal_mixture_spaces$switch(x)          # switch back
 
 }
 \section{Methods}{

@@ -1,6 +1,6 @@
 Package: optimizeR
 Title: Unified Framework for Numerical Optimizers
-Version: 1.1.1
+Version: 1.1.1.9000
 Authors@R: c(
     person("Lennart", "Oelschl\u00e4ger", 
            email = "oelschlaeger.lennart@gmail.com", 
@@ -21,6 +21,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Suggests:
     knitr,
+    ggplot2,
     pracma,
     rmarkdown,
     testthat
