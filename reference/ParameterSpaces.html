@@ -27,7 +27,7 @@ methods."><meta property="og:image" content="https://loelschlaeger.de/optimizeR/
 
     <a class="navbar-brand me-2" href="../index.html">optimizeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -203,9 +203,68 @@ One or more transformers functions, named according to the parameters.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># TODO</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">### Log-likelihood function of two-class Gaussian mixture model with</span></span></span>
+<span class="r-in"><span><span class="co">### parameter vector `theta` that consists of</span></span></span>
+<span class="r-in"><span><span class="co">### - `mu`, mean vector of length 2</span></span></span>
+<span class="r-in"><span><span class="co">### - `sd`, standard deviation vector of length 2, must be positive</span></span></span>
+<span class="r-in"><span><span class="co">### - `lambda`, class probability of length 1, must be between 0 and 1</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"></span>
+<span class="r-in"><span><span class="va">normal_mixture_llk</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">theta</span>, <span class="va">data</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">mu</span> <span class="op">&lt;-</span> <span class="va">theta</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span></span></span>
+<span class="r-in"><span>  <span class="va">sd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">theta</span><span class="op">[</span><span class="fl">3</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">lambda</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="va">theta</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">c1</span> <span class="op">&lt;-</span> <span class="va">lambda</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">mu</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="va">sd</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">c2</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">lambda</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">mu</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="va">sd</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">c1</span> <span class="op">+</span> <span class="va">c2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">### define parameter spaces</span></span></span>
+<span class="r-in"><span><span class="co">### - `mu` needs no transformation</span></span></span>
+<span class="r-in"><span><span class="co">### - `sd` needs to be real in optimization space and positive in</span></span></span>
+<span class="r-in"><span><span class="co">###    interpretation space</span></span></span>
+<span class="r-in"><span><span class="co">### - `lambda` needs to be real and of length `1` in optimization space, and</span></span></span>
+<span class="r-in"><span><span class="co">###    a probability vector of length `2` in interpretation space</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">normal_mixture_spaces</span> <span class="op">&lt;-</span> <span class="va">ParameterSpaces</span><span class="op">$</span></span></span>
+<span class="r-in"><span>  <span class="fu">new</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    parameter_names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"mu"</span>, <span class="st">"sd"</span>, <span class="st">"lambda"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    parameter_lengths_in_o_space <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span><span class="op">$</span></span></span>
+<span class="r-in"><span>  <span class="fu">o2i</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"mu"</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"sd"</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"lambda"</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fl">1</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span><span class="op">$</span></span></span>
+<span class="r-in"><span>  <span class="fu">i2o</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="st">"mu"</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="va">x</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"sd"</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"lambda"</span> <span class="op">=</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">qlogis</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">### switch between parameter spaces</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">par</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>                             <span class="co"># parameters in interpretation space</span></span></span>
+<span class="r-in"><span>  <span class="st">"mu"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"sd"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"lambda"</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.6</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">normal_mixture_spaces</span><span class="op">$</span><span class="kw">switch</span><span class="op">(</span><span class="va">par</span><span class="op">)</span><span class="op">)</span> <span class="co"># switch to optimization space</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1]  2.0000000  4.0000000 -0.6931472  0.0000000 -0.4054651</span>
+<span class="r-in"><span><span class="fu">normal_mixture_llk</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  theta <span class="op">=</span> <span class="va">x</span>, data <span class="op">=</span> <span class="fu">datasets</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/r/datasets/faithful.html" class="external-link">faithful</a></span><span class="op">$</span><span class="va">eruptions</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -382.1072</span>
+<span class="r-in"><span><span class="va">normal_mixture_spaces</span><span class="op">$</span><span class="kw">switch</span><span class="op">(</span><span class="va">x</span><span class="op">)</span>          <span class="co"># switch back</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $mu</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $sd</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.5 1.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $lambda</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4 0.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
@@ -217,7 +276,7 @@ One or more transformers functions, named according to the parameters.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer></div>
