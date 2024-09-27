@@ -40,3 +40,4 @@ Imports:
     TestFunctions,
     ucminf,
     utils
+VignetteBuilder: knitr

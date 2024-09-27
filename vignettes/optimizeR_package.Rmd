@@ -1,0 +1,106 @@
+---
+title: "How to use the optimizeR package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to use the optimizeR package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+library(optimizeR)
+#devtools::load_all() # TODO
+```
+
+# Numerical optimization
+
+## Example 1: Himmelblau's function
+
+The following is an implementation of the [Himmelblau's function](https://en.wikipedia.org/wiki/Himmelblau%27s_function) $$f(x, y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2:$$
+
+```{r, himmelblau}
+himmelblau <- function(x) (x[1]^2 + x[2] - 11)^2 + (x[1] + x[2]^2 - 7)^2
+```
+
+This function has four identical local minima, for example in $x = 3$ and $y = 2$:
+
+```{r, himmelblau evaluate}
+himmelblau(c(3, 2))
+```
+
+```{r, visualize_himmelblau, echo = FALSE, message = FALSE, warning = FALSE, fig.align = 'center', out.width = "80%", fig.dim = c(8, 6)}
+library("ggplot2")
+x <- y <- seq(-5, 5, 0.1)
+grid <- expand.grid(x, y)
+grid$z <- apply(grid, 1, himmelblau)
+ggplot(grid, aes(x = Var1, y = Var2, z = z)) +
+  geom_raster(aes(fill = z)) +
+  geom_contour(colour = "white", bins = 40) +
+  scale_fill_gradient(low = "blue", high = "red") +
+  theme_linedraw() +
+  labs(
+    x = "x",
+    y = "y",
+    fill = "value",
+    title = "Himmelblau function",
+    subtitle = "the four local minima are marked in green"
+  ) +
+  coord_fixed() +
+  annotate(
+    "Text",
+    x = c(3, -2.8, -3.78, 3.58),
+    y = c(2, 3.13, -3.28, -1.85),
+    label = "X", size = 6, color = "green"
+  )
+```
+
+For the Himmelblau's function, it is straightforward to define the analytical gradient as follows:
+
+```{r, himmelblau gradient}
+gradient <- function(x) {
+  c(
+    4 * x[1] * (x[1]^2 + x[2] - 11) + 2 * (x[1] + x[2]^2 - 7),
+    2 * (x[1]^2 + x[2] - 11) + 4 * x[2] * (x[1] + x[2]^2 - 7)
+  )
+}
+```
+
+## Example 2: Log-likelihood function of two-class Gaussian mixture model
+
+Consider fitting a two-class Gaussian mixture model via maximizing the model's log-likelihood function
+
+$$\ell(\boldsymbol{\theta}) = \sum_{i=1}^n \log\Big( \lambda \phi_{\mu_1, \sigma_1^2}(x_i) + (1-\lambda)\phi_{\mu_2,\sigma_2^2} (x_i) \Big),$$
+
+where the sum goes over all observations $1, \dots, n$, $\phi_{\mu_1, \sigma_1^2}$ and $\phi_{\mu_2, \sigma_2^2}$ denote the normal density for the first and second cluster, respectively, and $\lambda$ is the mixing proportion. The parameter vector to be estimated is thus $\boldsymbol{\theta} = (\mu_1, \mu_2, \sigma_1, \sigma_2, \lambda)$. As there exists no closed-form solution for the maximum likelihood estimator $\boldsymbol{\theta}^* = \arg\max_{\boldsymbol{\theta}} \ell(\boldsymbol{\theta})$, we need numerical optimization for finding the function optimum. The model is fitted to the following data:^[The `faithful` data set contains information about eruption times (`eruptions`) of the Old Faithful geyser in Yellowstone National Park, Wyoming, USA. The data histogram hints at two clusters with short and long eruption times, respectively. For both clusters, we assume a normal distribution, such that we consider a mixture of two Gaussian densities for modeling the overall eruption times.]
+
+```{r, visualize_faithful, echo = FALSE, message = FALSE, warning = FALSE, fig.align = 'center', out.width = "80%", fig.dim = c(8, 6)}
+library("ggplot2")
+ggplot(datasets::faithful, aes(x = eruptions)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 30) +
+  xlab("eruption time (min)")
+```
+
+The following function calculates the log-likelihood value given the parameter vector `theta` and the observation vector `data`:^[We restrict the standard deviations `sd` to be positive (via the exponential transformation) and `lambda` to be between 0 and 1 (via the logit transformation).]
+
+```{r, normal mixture}
+normal_mixture_llk <- function(theta, data) {
+  mu <- theta[1:2]
+  sd <- exp(theta[3:4])
+  lambda <- plogis(theta[5])
+  c1 <- lambda * dnorm(data, mu[1], sd[1])
+  c2 <- (1 - lambda) * dnorm(data, mu[2], sd[2])
+  sum(log(c1 + c2))
+}
+```
+
+# Optimizer objects
+
+# Parameter spaces
+
+
+ 
