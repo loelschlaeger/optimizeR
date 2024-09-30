@@ -17,13 +17,35 @@ knitr::opts_chunk$set(
 devtools::load_all() # TODO
 ```
 
-# Numerical optimization
+# Introduction
+
+The `{optimizeR}` package offers an object-oriented solution for numerical optimization in R, addressing the inconsistency in how optimization algorithms are implemented across different R packages. By providing a unified API, `{optimizeR}` streamlines interactions with various optimizers, which traditionally differ in their argument names, function call structures, and output formats. For instance, the `{stats}` package functions `nlm()` and `optim()` have distinct argument names for the objective function and initial parameter vector, with these elements positioned differently in the function call, and their output values, such as the estimated minimum and parameter vector, labeled inconsistently.
+
+Beyond unifying optimizers, the object-oriented framework of `{optimizeR}` offers additional convenience over directly using individual algorithms. With `{optimizeR}`, any optimizer can be employed for both minimization and maximization tasks, functions can be optimized over multiple arguments, and computation time can be measured or limited for prolonged tasks.
+
+The `{optimizeR}` package itself does not introduce new optimizers but instead provides a flexible framework to standardize the usage of existing ones and accommodate future implementations. The key design principle of `{optimizeR}` is flexibility -- ensuring compatibility with nearly any optimization algorithm in R -- while maintaining ease of use.
+
+This vignette introduces the three main objects in `{optimizeR}`: the `Objective` object for defining objective functions, the `Optimizer` object for specifying numerical optimizers, and the `ParameterSpaces` object for transforming parameters across different spaces.
 
 # Objective function
 
+An objective function defines the goal of an optimization problem, representing the mathematical expression that an algorithm seeks to minimize or maximize. In numerical optimization, the algorithm adjusts input variables (parameters) to find the optimal solution, yielding either the minimum (for minimization) or maximum (for maximization) value of the function.
+
+The `Objective` object encapsulates an objective function and is instantiated as follows:
+
+```{r, define Objective demo, eval = FALSE}
+objective_function <- Objective$new(f, target, npar, ...)
+```
+
+Here, `f` represents the function to be optimized, `target` specifies the `numeric` `vector` arguments over which the function `f` will be optimized (the so-called target arguments), `npar` defines the length of the target arguments, and `...` allows for additional arguments to be passed to `f` that are fixed during the optimization process.
+
+Once the `Objective` object is created, you can evaluate the objective function at a given point using `objective_function$evaluate(at)`. Fixed arguments can be accessed with `$get_argument()`, modified using `$set_argument()`, or removed via `$remove_argument()`. The `$validate()` method ensures that the object is properly configured.
+
+The following two examples illustrate how to create and use the `Objective` object.
+
 ## Example 1: Himmelblau's function
 
-The following is an implementation of the [Himmelblau's function](https://en.wikipedia.org/wiki/Himmelblau%27s_function) $$f(x, y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2:$$
+Here is an implementation of the [Himmelblau's function](https://en.wikipedia.org/wiki/Himmelblau%27s_function) $$f(x, y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2:$$
 
 ```{r, himmelblau}
 himmelblau <- function(x) (x[1]^2 + x[2] - 11)^2 + (x[1] + x[2]^2 - 7)^2
@@ -61,18 +83,9 @@ ggplot(grid, aes(x = Var1, y = Var2, z = z)) +
   )
 ```
 
-For the Himmelblau's function, it is straightforward to define the analytical gradient as follows:
+The Himmelblau's function is two-dimensional, but only has a single vector input `x` of length 2. The following creates the `Objective` object:
 
-```{r, himmelblau gradient}
-gradient <- function(x) {
-  c(
-    4 * x[1] * (x[1]^2 + x[2] - 11) + 2 * (x[1] + x[2]^2 - 7),
-    2 * (x[1]^2 + x[2] - 11) + 4 * x[2] * (x[1] + x[2]^2 - 7)
-  )
-}
-```
-
-## Example 2: Log-likelihood function of two-class Gaussian mixture model
+## Example 2: Log-likelihood function of two-class Gaussian mixture
 
 Consider fitting a two-class Gaussian mixture model via maximizing the model's log-likelihood function
 
@@ -101,6 +114,21 @@ normal_mixture_llk <- function(theta, data) {
 ```
 
 # Optimizer objects
+
+## Example 1 (cont.)
+
+For the Himmelblau's function, it is straightforward to define the analytical gradient as follows:
+
+```{r, himmelblau gradient}
+gradient <- function(x) {
+  c(
+    4 * x[1] * (x[1]^2 + x[2] - 11) + 2 * (x[1] + x[2]^2 - 7),
+    2 * (x[1]^2 + x[2] - 11) + 4 * x[2] * (x[1] + x[2]^2 - 7)
+  )
+}
+```
+
+## Example 2 (cont.)
 
 ## Optimizer dictionary
 

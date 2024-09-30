@@ -4,7 +4,7 @@
 #' The \code{Objective} object specifies the framework for an objective function
 #' for numerical optimization.
 #'
-#' @param f
+#' @param f \[`function`\]\cr
 #' A \code{function} to be optimized.
 #'
 #' It is expected that \code{f} has at least one \code{numeric} argument.
@@ -13,38 +13,36 @@
 #' structure \code{numeric(1)}, i.e. a single \code{numeric} value (although
 #' this can be altered via the \code{output_template} field).
 #'
-#' @param target
-#' A \code{character}, the argument name(s) of \code{f} that get optimized.
+#' @param target \[`character()`\]\cr
+#' The argument name(s) of \code{f} that get optimized.
 #'
 #' All target arguments must receive a \code{numeric} \code{vector}.
 #'
 #' Can be \code{NULL} (default), then it is the first argument of \code{f}.
 #'
-#' @param npar
-#' A \code{integer} of the same length as \code{target}, defining the length
-#' of the respective \code{numeric} \code{vector} argument.
+#' @param npar \[`integer()`\]\cr
+#' The length of each target arguments, i.e., the length(s) of the
+#' \code{numeric} \code{vector} argument(s) specified by \code{target}.
 #'
 #' @param ...
 #' Optionally additional arguments to \code{f} that are fixed during
 #' the optimization.
 #'
-#' @param overwrite
-#' Either \code{TRUE} (default) to allow overwriting, or \code{FALSE} if not.
+#' @param overwrite \[`logical(1)`\]\cr
+#' Allow overwriting?
 #'
-#' @param verbose
-#' Either \code{TRUE} (default) to print status messages, or \code{FALSE}
-#' to hide those.
+#' @param verbose \[`logical(1)`\]\cr
+#' Print status messages?
 #'
-#' @param argument_name
-#' A \code{character}, a name of an argument for \code{f}.
+#' @param argument_name \[`character(1)`\]\cr
+#' A name of an argument for \code{f}.
 #'
-#' @param .at
-#' A \code{numeric} of length \code{sum(self$npar)}, the values for the target
-#' arguments written in a single vector.
+#' @param .at \[`numeric()`\]\cr
+#' The values for the target argument(s), written in a single vector (hence must
+#' be of length \code{sum(self$npar)}).
 #'
-#' @param .negate
-#' Either \code{TRUE} to negate the \code{numeric} return value of
-#' \code{f}, or \code{FALSE} (default) else.
+#' @param .negate \[`logical(1)`\]\cr
+#' Negate the \code{numeric} return value of \code{f}?
 #'
 #' @return
 #' An \code{Objective} object.
@@ -80,8 +78,7 @@ Objective <- R6::R6Class(
 
     #' @description
     #' Creates a new \code{Objective} object.
-    #' @return
-    #' A new \code{Objective} object.
+
     initialize = function(f, target = NULL, npar, ...) {
 
       ### input checks
@@ -110,8 +107,7 @@ Objective <- R6::R6Class(
 
     #' @description
     #' Set a fixed function argument.
-    #' @return
-    #' Invisibly the \code{Objective} object.
+
     set_argument = function(..., overwrite = TRUE, verbose = self$verbose) {
       checkmate::assert_flag(overwrite)
       checkmate::assert_flag(verbose)
@@ -143,8 +139,7 @@ Objective <- R6::R6Class(
 
     #' @description
     #' Get a fixed function argument.
-    #' @return
-    #' The argument value.
+
     get_argument = function(argument_name, verbose = self$verbose) {
       private$.check_argument_specified(argument_name, verbose = verbose)
       checkmate::assert_flag(verbose)
@@ -156,8 +151,7 @@ Objective <- R6::R6Class(
 
     #' @description
     #' Remove a fixed function argument.
-    #' @return
-    #' Invisibly the \code{Objective} object.
+
     remove_argument = function(argument_name, verbose = self$verbose) {
       private$.check_argument_specified(argument_name, verbose = verbose)
       checkmate::assert_flag(verbose)
@@ -170,8 +164,7 @@ Objective <- R6::R6Class(
 
     #' @description
     #' Validate an \code{Objective} object.
-    #' @return
-    #' Invisibly the \code{Objective} object.
+
     validate = function(.at) {
       if (missing(.at)) {
         cli::cli_abort(
@@ -199,14 +192,15 @@ Objective <- R6::R6Class(
 
     #' @description
     #' Evaluate the objective function.
-    #' @return
-    #' The objective value.
+
     evaluate = function(.at, .negate = FALSE, ...) {
       private$.check_target(.at, verbose = FALSE)
       checkmate::assert_flag(.negate)
       splits <- c(0, cumsum(private$.npar))
       .at <- structure(
-        lapply(seq_along(splits)[-1], function(i) .at[(splits[i - 1] + 1):(splits[i])]),
+        lapply(seq_along(splits)[-1], function(i) {
+          .at[(splits[i - 1] + 1):(splits[i])]
+        }),
         names = private$.target
       )
       setTimeLimit(cpu = self$seconds, elapsed = self$seconds, transient = TRUE)
@@ -238,14 +232,25 @@ Objective <- R6::R6Class(
 
     #' @description
     #' Print details of the \code{Objective} object.
-    #' @return
-    #' Invisibly the \code{Objective} object.
+
     print = function() {
       cli::cat_bullet(c(
-        paste("Function:", private$.objective_name),
-        paste("Definition:", oeli::function_body(private$.f, nchar = 40)),
-        paste("Targets (length):", paste(paste0(private$.target, " (", private$.npar, ")"), collapse = ", ")),
-        paste("Fixed arguments specified:", paste(names(private$.arguments), collapse = ", "))
+        paste(
+          "Function:", private$.objective_name
+        ),
+        paste(
+          "Definition:", oeli::function_body(private$.f, nchar = 40)
+        ),
+        paste(
+          "Targets (length):",
+          paste(
+            paste0(private$.target, " (", private$.npar, ")"), collapse = ", "
+          )
+        ),
+        paste(
+          "Fixed arguments specified:",
+          paste(names(private$.arguments), collapse = ", ")
+        )
       ))
       invisible(self)
     }
@@ -254,8 +259,9 @@ Objective <- R6::R6Class(
 
   active = list(
 
-    #' @field objective_name
-    #' A \code{character}, a label for the objective function.
+    #' @field objective_name \[`character(1)`\]\cr
+    #' The label for the objective function.
+
     objective_name = function(value) {
       if (missing(value)) {
         return(private$.objective_name)
@@ -265,8 +271,8 @@ Objective <- R6::R6Class(
       }
     },
 
-    #' @field fixed_arguments
-    #' A \code{character}, the names of the fixed arguments (if any).
+    #' @field fixed_arguments \[`character()`\]\cr
+    #' The name(s) of the fixed argument(s) (if any).
     fixed_arguments = function(value) {
       if (missing(value)) {
         names(private$.arguments)
@@ -278,13 +284,14 @@ Objective <- R6::R6Class(
       }
     },
 
-    #' @field seconds
-    #' A \code{numeric}, a time limit in seconds. Computations are interrupted
+    #' @field seconds \[`numeric(1)`\]\cr
+    #' A time limit in seconds. Computations are interrupted
     #' prematurely if \code{seconds} is exceeded.
     #'
     #' No time limit if \code{seconds = Inf} (the default).
     #'
     #' Note the limitations documented in \code{\link[base]{setTimeLimit}}.
+
     seconds = function(value) {
       if (missing(value)) {
         return(private$.seconds)
@@ -294,9 +301,9 @@ Objective <- R6::R6Class(
       }
     },
 
-    #' @field hide_warnings
-    #' Either \code{TRUE} to hide warnings when evaluating the objective function,
-    #' or \code{FALSE} (default) if not.
+    #' @field hide_warnings \[`logical(1)`\]\cr
+    #' Hide warnings when evaluating the objective function?
+
     hide_warnings = function(value) {
       if (missing(value)) {
         return(private$.hide_warnings)
@@ -306,9 +313,9 @@ Objective <- R6::R6Class(
       }
     },
 
-    #' @field verbose
-    #' Either \code{TRUE} (default) to print status messages, or \code{FALSE}
-    #' to hide those.
+    #' @field verbose \[`logical(1)`\]\cr
+    #' Print status messages?
+
     verbose = function(value) {
       if (missing(value)) {
         return(private$.verbose)
@@ -318,8 +325,9 @@ Objective <- R6::R6Class(
       }
     },
 
-    #' @field npar
-    #' An \code{integer} vector, defining the length of each target argument.
+    #' @field npar \[`integer()`\]\cr
+    #' The length of each target argument.
+
     npar = function(value) {
       if (missing(value)) {
         structure(private$.npar, names = private$.target)
@@ -331,9 +339,10 @@ Objective <- R6::R6Class(
       }
     },
 
-    #' @field output_template
+    #' @field output_template \[`any`\]\cr
     #' A template of the expected output value, used for the \code{validate}
     #' method.
+
     output_template = function(value) {
       if (missing(value)) {
         private$.output_template
@@ -370,14 +379,17 @@ Objective <- R6::R6Class(
       }
       if (verbose) {
         cli::cli_alert_success(
-          "The value{?s} for the {length(private$.npar)} target argument{?s} {?is/are} correctly specified."
+          "The value{?s} for the {length(private$.npar)} target argument{?s}
+          {?is/are} correctly specified."
         )
       }
       invisible(TRUE)
     },
 
     ### helper function that checks if a function argument is specified
-    .check_argument_specified = function(argument_name, verbose = self$verbose) {
+    .check_argument_specified = function(
+      argument_name, verbose = self$verbose
+    ) {
       checkmate::assert_string(argument_name)
       if (!argument_name %in% names(private$.arguments)) {
         cli::cli_abort(

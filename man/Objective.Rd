@@ -34,26 +34,31 @@ objective$evaluate(1:5)
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{objective_name}}{A \code{character}, a label for the objective function.}
+\item{\code{objective_name}}{[\code{character(1)}]\cr
+The label for the objective function.}
 
-\item{\code{fixed_arguments}}{A \code{character}, the names of the fixed arguments (if any).}
+\item{\code{fixed_arguments}}{[\code{character()}]\cr
+The name(s) of the fixed argument(s) (if any).}
 
-\item{\code{seconds}}{A \code{numeric}, a time limit in seconds. Computations are interrupted
+\item{\code{seconds}}{[\code{numeric(1)}]\cr
+A time limit in seconds. Computations are interrupted
 prematurely if \code{seconds} is exceeded.
 
 No time limit if \code{seconds = Inf} (the default).
 
 Note the limitations documented in \code{\link[base]{setTimeLimit}}.}
 
-\item{\code{hide_warnings}}{Either \code{TRUE} to hide warnings when evaluating the objective function,
-or \code{FALSE} (default) if not.}
+\item{\code{hide_warnings}}{[\code{logical(1)}]\cr
+Hide warnings when evaluating the objective function?}
 
-\item{\code{verbose}}{Either \code{TRUE} (default) to print status messages, or \code{FALSE}
-to hide those.}
+\item{\code{verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
 
-\item{\code{npar}}{An \code{integer} vector, defining the length of each target argument.}
+\item{\code{npar}}{[\code{integer()}]\cr
+The length of each target argument.}
 
-\item{\code{output_template}}{A template of the expected output value, used for the \code{validate}
+\item{\code{output_template}}{[\code{any}]\cr
+A template of the expected output value, used for the \code{validate}
 method.}
 }
 \if{html}{\out{</div>}}
@@ -83,7 +88,8 @@ Creates a new \code{Objective} object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{f}}{A \code{function} to be optimized.
+\item{\code{f}}{[\code{function}]\cr
+A \code{function} to be optimized.
 
 It is expected that \code{f} has at least one \code{numeric} argument.
 
@@ -91,22 +97,21 @@ Further, it is expected that the return value of \code{f} is of the
 structure \code{numeric(1)}, i.e. a single \code{numeric} value (although
 this can be altered via the \code{output_template} field).}
 
-\item{\code{target}}{A \code{character}, the argument name(s) of \code{f} that get optimized.
+\item{\code{target}}{[\code{character()}]\cr
+The argument name(s) of \code{f} that get optimized.
 
 All target arguments must receive a \code{numeric} \code{vector}.
 
 Can be \code{NULL} (default), then it is the first argument of \code{f}.}
 
-\item{\code{npar}}{A \code{integer} of the same length as \code{target}, defining the length
-of the respective \code{numeric} \code{vector} argument.}
+\item{\code{npar}}{[\code{integer()}]\cr
+The length of each target arguments, i.e., the length(s) of the
+\code{numeric} \code{vector} argument(s) specified by \code{target}.}
 
 \item{\code{...}}{Optionally additional arguments to \code{f} that are fixed during
 the optimization.}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A new \code{Objective} object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -124,15 +129,13 @@ Set a fixed function argument.
 \item{\code{...}}{Optionally additional arguments to \code{f} that are fixed during
 the optimization.}
 
-\item{\code{overwrite}}{Either \code{TRUE} (default) to allow overwriting, or \code{FALSE} if not.}
+\item{\code{overwrite}}{[\code{logical(1)}]\cr
+Allow overwriting?}
 
-\item{\code{verbose}}{Either \code{TRUE} (default) to print status messages, or \code{FALSE}
-to hide those.}
+\item{\code{verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Invisibly the \code{Objective} object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -147,15 +150,13 @@ Get a fixed function argument.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{argument_name}}{A \code{character}, a name of an argument for \code{f}.}
+\item{\code{argument_name}}{[\code{character(1)}]\cr
+A name of an argument for \code{f}.}
 
-\item{\code{verbose}}{Either \code{TRUE} (default) to print status messages, or \code{FALSE}
-to hide those.}
+\item{\code{verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-The argument value.
 }
 }
 \if{html}{\out{<hr>}}
@@ -170,15 +171,13 @@ Remove a fixed function argument.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{argument_name}}{A \code{character}, a name of an argument for \code{f}.}
+\item{\code{argument_name}}{[\code{character(1)}]\cr
+A name of an argument for \code{f}.}
 
-\item{\code{verbose}}{Either \code{TRUE} (default) to print status messages, or \code{FALSE}
-to hide those.}
+\item{\code{verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Invisibly the \code{Objective} object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -193,13 +192,11 @@ Validate an \code{Objective} object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{.at}}{A \code{numeric} of length \code{sum(self$npar)}, the values for the target
-arguments written in a single vector.}
+\item{\code{.at}}{[\code{numeric()}]\cr
+The values for the target argument(s), written in a single vector (hence must
+be of length \code{sum(self$npar)}).}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Invisibly the \code{Objective} object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -214,19 +211,17 @@ Evaluate the objective function.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{.at}}{A \code{numeric} of length \code{sum(self$npar)}, the values for the target
-arguments written in a single vector.}
+\item{\code{.at}}{[\code{numeric()}]\cr
+The values for the target argument(s), written in a single vector (hence must
+be of length \code{sum(self$npar)}).}
 
-\item{\code{.negate}}{Either \code{TRUE} to negate the \code{numeric} return value of
-\code{f}, or \code{FALSE} (default) else.}
+\item{\code{.negate}}{[\code{logical(1)}]\cr
+Negate the \code{numeric} return value of \code{f}?}
 
 \item{\code{...}}{Optionally additional arguments to \code{f} that are fixed during
 the optimization.}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-The objective value.
 }
 }
 \if{html}{\out{<hr>}}
@@ -238,9 +233,6 @@ Print details of the \code{Objective} object.
 \if{html}{\out{<div class="r">}}\preformatted{Objective$print()}\if{html}{\out{</div>}}
 }
 
-\subsection{Returns}{
-Invisibly the \code{Objective} object.
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Objective-clone"></a>}}
