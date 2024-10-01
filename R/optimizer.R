@@ -1,8 +1,8 @@
-#' Specify numerical optimizer as R6 object
+#' Specify numerical optimizer object
 #'
 #' @description
-#' A \code{Optimizer} R6 object defines a numerical optimizer based on an
-#' optimization function implemented in R.
+#' The \code{Optimizer} object defines a numerical optimizer based on an
+#' optimization algorithm implemented in R.
 #'
 #' The main advantage of working with an \code{Optimizer} object instead of
 #' using the optimization function directly lies in the standardized inputs and
@@ -19,7 +19,7 @@
 #' 4. The output must be a named \code{list}, including the optimal function
 #'    value and the optimal parameter vector.
 #'
-#' @param objective
+#' @param objective \[`function` | `Objective`\]\cr
 #' A \code{function} to be optimized that
 #'
 #' 1. has at least one argument that receives a \code{numeric} \code{vector}
@@ -28,15 +28,18 @@
 #' Alternatively, it can also be a \code{\link{Objective}} object for more
 #' flexibility.
 #'
-#' @param initial
-#' A \code{numeric} vector with starting parameter values for the optimization.
+#' @param initial \[`numeric()`\]\cr
+#' Starting parameter values for the optimization.
 #'
-#' @param ...
-#' Optionally additional arguments to be passed to the optimizer algorithm.
-#' Without specifications, default values are used.
+#' @param ... \[`any`\]\cr
+#' Optionally additional named arguments to be passed to the optimizer
+#' algorithm. Without specifications, default values are used.
 #'
-#' @param direction
+#' @param direction \[`character(1)`\]\cr
 #' Either \code{"min"} for minimization or \code{"max"} for maximization.
+#'
+#' @param .verbose \[`logical(1)`\]\cr
+#' Print status messages?
 #'
 #' @examples
 #' ### Task: compare minimization with 'stats::nlm' and 'pracma::nelder_mead'
@@ -76,18 +79,34 @@ Optimizer <- R6::R6Class(
 
     #' @description
     #' Initializes a new \code{Optimizer} object.
+    #'
     #' @param which
     #' A \code{character}, either one of \code{optimizer_dictionary$keys} or
     #' \code{"custom"} (in which case \code{$definition()} must be used to
     #' define the optimizer details).
+    #'
     #' @return
     #' A new \code{Optimizer} object.
 
-    initialize = function(which, ...) {
+    initialize = function(which, ..., .verbose = TRUE) {
+
+      ### input checks
+      oeli::input_check_response(
+        check = checkmate::check_string(which),
+        var_name = "which"
+      )
+      oeli::input_check_response(
+        check = checkmate::check_flag(.verbose),
+        var_name = ".verbose"
+      )
+
+      ### initialize optimizer
       if (identical(which, "custom")) {
-        cli::cli_inform(
-          "Please use method {.fun $definition} next to define a custom optimizer."
-        )
+        if (.verbose) {
+          cli::cli_inform(
+            "Use method {.fun $definition} next to define a custom optimizer."
+          )
+        }
       } else {
         checkmate::assert_choice(which, choices = optimizer_dictionary$keys)
         if (which %in% optimizer_dictionary$keys) {
@@ -107,25 +126,29 @@ Optimizer <- R6::R6Class(
 
     #' @description
     #' Defines an optimizer.
+    #'
     #' @param algorithm
     #' A \code{function}, the optimization algorithm.
+    #'
     #' @param arg_objective
     #' A \code{character}, the argument name for the objective function in
     #' \code{algorithm}.
+    #'
     #' @param arg_initial
     #' A \code{character}, the argument name for the initial values in
     #' \code{algorithm}.
+    #'
     #' @param out_value
     #' A \code{character}, the element name for the optimal function value in
     #' the output \code{list} of \code{algorithm}.
+    #'
     #' @param out_parameter
     #' A \code{character}, the element name for the optimal parameters in the
     #' output \code{list} of \code{algorithm}.
+    #'
     #' @param direction
     #' Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
     #' (if the optimizer maximizes).
-    #' @return
-    #' Invisibly the \code{Optimizer} object.
 
     definition = function(
       algorithm, arg_objective, arg_initial, out_value, out_parameter, direction
@@ -307,6 +330,7 @@ Optimizer <- R6::R6Class(
 
     #' @description
     #' Performing maximization.
+    #'
     #' @return
     #' A named \code{list}, containing at least these five elements:
     #' \describe{
@@ -324,6 +348,7 @@ Optimizer <- R6::R6Class(
     #'
     #' If the time limit was exceeded, this also counts as an error. In addition,
     #' the flag \code{time_out = TRUE} is appended.
+    #'
     #' @examples
     #' Optimizer$new("stats::nlm")$
     #'   maximize(objective = function(x) -x^4 + 3*x - 5, initial = 2)
@@ -337,6 +362,7 @@ Optimizer <- R6::R6Class(
 
     #' @description
     #' Performing minimization or maximization.
+    #'
     #' @return
     #' A named \code{list}, containing at least these five elements:
     #' \describe{
@@ -354,6 +380,7 @@ Optimizer <- R6::R6Class(
     #'
     #' If the time limit was exceeded, this also counts as an error. In addition,
     #' the flag \code{time_out = TRUE} is appended.
+    #'
     #' @examples
     #' objective <- function(x) -x^4 + 3*x - 5
     #' optimizer <- Optimizer$new("stats::nlm")
@@ -501,83 +528,93 @@ Optimizer <- R6::R6Class(
 
   active = list(
 
-    #' @field label
-    #' A \code{character}, the label for the optimizer.
+    #' @field label \[`character(1)`\]\cr
+    #' The label for the optimizer.
 
     label = function(value) {
       if (missing(value)) {
         private$.label
       } else {
-        checkmate::assert_string(value)
+        oeli::input_check_response(
+          check = checkmate::check_string(value)
+        )
         private$.label <- value
       }
     },
 
-    #' @field algorithm
-    #' A \code{function}, the optimization algorithm.
+    #' @field algorithm \[`function`\]\cr
+    #' The optimization algorithm.
 
     algorithm = function(value) {
       if (missing(value)) {
         private$.algorithm
       } else {
-        checkmate::assert_function(value)
+        oeli::input_check_response(
+          check = checkmate::check_function(value)
+        )
         private$.algorithm <- value
       }
     },
 
-    #' @field arg_objective
-    #' A \code{character}, the argument name for the objective function in
-    #' \code{algorithm}.
+    #' @field arg_objective \[`character(1)`\]\cr
+    #' The argument name for the objective function in \code{algorithm}.
 
     arg_objective = function(value) {
       if (missing(value)) {
         private$.arg_objective
       } else {
-        checkmate::assert_string(value)
+        oeli::input_check_response(
+          check = checkmate::check_string(value)
+        )
         private$.arg_objective <- value
       }
     },
 
-    #' @field arg_initial
-    #' A \code{character}, the argument name for the initial values in
-    #' \code{algorithm}.
+    #' @field arg_initial \[`character(1)`\]\cr
+    #' The argument name for the initial values in \code{algorithm}.
 
     arg_initial = function(value) {
       if (missing(value)) {
         private$.arg_initial
       } else {
-        checkmate::assert_string(value)
+        oeli::input_check_response(
+          check = checkmate::check_string(value)
+        )
         private$.arg_initial <- value
       }
     },
 
-    #' @field out_value
-    #' A \code{character}, the element name for the optimal function value in
-    #' the output \code{list} of \code{algorithm}.
+    #' @field out_value \[`character(1)`\]\cr
+    #' The element name for the optimal function value in the output \code{list}
+    #' of \code{algorithm}.
 
     out_value = function(value) {
       if (missing(value)) {
         private$.out_value
       } else {
-        checkmate::assert_string(value)
+        oeli::input_check_response(
+          check = checkmate::check_string(value)
+        )
         private$.out_value <- value
       }
     },
 
-    #' @field out_parameter
-    #' A \code{character}, the element name for the optimal parameters in the
-    #' output \code{list} of \code{algorithm}.
+    #' @field out_parameter \[`character(1)`\]\cr
+    #' The element name for the optimal parameters in the output \code{list} of
+    #' \code{algorithm}.
 
     out_parameter = function(value) {
       if (missing(value)) {
         private$.out_parameter
       } else {
-        checkmate::assert_string(value)
+        oeli::input_check_response(
+          check = checkmate::check_string(value)
+        )
         private$.out_parameter <- value
       }
     },
 
-    #' @field direction
+    #' @field direction \[`character(1)`\]\cr
     #' Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
     #' (if the optimizer maximizes).
 
@@ -585,27 +622,33 @@ Optimizer <- R6::R6Class(
       if (missing(value)) {
         private$.direction
       } else {
-        checkmate::assert_choice(value, c("min", "max"))
+        oeli::input_check_response(
+          check = checkmate::check_choice(value, c("min", "max"))
+        )
         private$.direction <- value
       }
     },
 
-    #' @field arguments
-    #' A named \code{list} of custom arguments for \code{algorithm}. Defaults
-    #' are used for arguments that are not specified.
+    #' @field arguments \[`list()`\]\cr
+    #' Custom arguments for \code{algorithm}.
+    #'
+    #' Defaults are used for arguments that are not specified.
 
     arguments = function(value) {
       if (missing(value)) {
         private$.arguments
       } else {
-        checkmate::assert_list(value, names = "unique")
+        oeli::input_check_response(
+          check = checkmate::check_list(value, names = "unique")
+        )
         private$.arguments <- value
       }
     },
 
-    #' @field seconds
-    #' A \code{numeric}, a time limit in seconds. Optimization is interrupted
-    #' prematurely if \code{seconds} is exceeded.
+    #' @field seconds \[`numeric(1)`\]\cr
+    #' A time limit in seconds.
+    #'
+    #' Optimization is interrupted prematurely if \code{seconds} is exceeded.
     #'
     #' No time limit if \code{seconds = Inf} (the default).
     #'
@@ -615,33 +658,37 @@ Optimizer <- R6::R6Class(
       if (missing(value)) {
         private$.seconds
       } else {
-        checkmate::assert_number(value, lower = 0, finite = FALSE)
+        oeli::input_check_response(
+          check = checkmate::check_number(value, lower = 0, finite = FALSE)
+        )
         private$.seconds <- value
       }
     },
 
-    #' @field hide_warnings
-    #' Either \code{TRUE} to hide warnings during optimization, or \code{FALSE}
-    #' (default) else.
+    #' @field hide_warnings \[`logical(1)`\]\cr
+    #' Hide warnings during optimization?
 
     hide_warnings = function(value) {
       if (missing(value)) {
         private$.hide_warnings
       } else {
-        checkmate::assert_flag(value)
+        oeli::input_check_response(
+          check = checkmate::check_flag(value)
+        )
         private$.hide_warnings <- value
       }
     },
 
-    #' @field output_ignore
-    #' A \code{character} \code{vector} of elements to ignore in the
-    #' optimization output.
+    #' @field output_ignore \[`character()`\]\cr
+    #' Elements to ignore (not include) in the optimization output.
 
     output_ignore = function(value) {
       if (missing(value)) {
         private$.output_ignore
       } else {
-        checkmate::assert_names(value)
+        oeli::input_check_response(
+          check = checkmate::check_names(value)
+        )
         private$.output_ignore <- value
       }
     }

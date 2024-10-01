@@ -1,6 +1,6 @@
 test_that("objective with one target argument can be evaluated", {
   f <- function(x, a, b = 0) (x + a)^2 + b
-  objective <- Objective$new(f = f, target = "x", npar = 1, a = -2)
+  objective <- Objective$new(f = f, npar = 1, a = -2)
   objective$verbose <- FALSE
   expect_equal(
     objective$get_argument("b"),
@@ -21,11 +21,11 @@ test_that("objective with one target argument can be evaluated", {
     objective$set_argument("a" = -2)
   )
   expect_error(
-    objective$set_argument("a" = -2, overwrite = FALSE),
+    objective$set_argument("a" = -2, .overwrite = FALSE),
     "already exists"
   )
   expect_silent(
-    objective$set_argument("a" = -2, overwrite = TRUE)
+    objective$set_argument("a" = -2, .overwrite = TRUE)
   )
   expect_equal(
     objective$evaluate(2),
@@ -37,6 +37,14 @@ test_that("objective with one target argument can be evaluated", {
   expect_equal(
     objective$fixed_arguments,
     c("b", "a")
+  )
+  expect_error(
+    objective$evaluate_gradient(2),
+    "Gradient function is required"
+  )
+  expect_error(
+    objective$evaluate_hessian(2),
+    "Hessian function is required"
   )
 })
 
@@ -89,5 +97,38 @@ test_that("objective with NULL argument can be evaluated", {
   obj$set_argument("a" = -11, "b" = -7, "ind" = NULL)
   checkmate::expect_number(
     obj$evaluate(.at = c(0, 0, 0))
+  )
+})
+
+test_that("gradient and hessian can be specified and evaluated", {
+  himmelblau <- function(x) (x[1]^2 + x[2] - 11)^2 + (x[1] + x[2]^2 - 7)^2
+  himmelblau_objective <- Objective$new(f = himmelblau, npar = 2)
+  himmelblau_gradient <- function(x) {
+    c(
+      4 * x[1] * (x[1]^2 + x[2] - 11) + 2 * (x[1] + x[2]^2 - 7),
+      2 * (x[1]^2 + x[2] - 11) + 4 * x[2] * (x[1] + x[2]^2 - 7)
+    )
+  }
+  himmelblau_objective$set_gradient(himmelblau_gradient)
+  expect_equal(
+    himmelblau_objective$evaluate_gradient(c(3, 2)),
+    himmelblau_gradient(c(3, 2))
+  )
+  himmelblau_hessian <- function(x) {
+    matrix(
+      c(
+        12 * x[1]^2 + 4 * x[2] - 42, 4 * x[1] + 4 * x[2],
+        4 * x[1] + 4 * x[2], 12 * x[2]^2 + 4 * x[1] - 26
+      ),
+      nrow = 2
+    )
+  }
+  himmelblau_objective$set_hessian(himmelblau_hessian)
+  expect_equal(
+    himmelblau_objective$evaluate_hessian(c(3, 2)),
+    himmelblau_hessian(c(3, 2))
+  )
+  expect_silent(
+    himmelblau_objective$validate(c(3, 2), .verbose = FALSE)
   )
 })

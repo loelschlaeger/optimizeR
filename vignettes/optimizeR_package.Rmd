@@ -39,7 +39,12 @@ objective_function <- Objective$new(f, target, npar, ...)
 
 Here, `f` represents the function to be optimized, `target` specifies the `numeric` `vector` arguments over which the function `f` will be optimized (the so-called target arguments), `npar` defines the length of the target arguments, and `...` allows for additional arguments to be passed to `f` that are fixed during the optimization process.
 
-Once the `Objective` object is created, you can evaluate the objective function at a given point using `objective_function$evaluate(at)`. Fixed arguments can be accessed with `$get_argument()`, modified using `$set_argument()`, or removed via `$remove_argument()`. The `$validate()` method ensures that the object is properly configured.
+Once the `Objective` object is created, 
+
+- the objective function can be evaluated at a given point `at` using `objective_function$evaluate(at)`,
+- a gradient and a Hessian function can be defined and evaluated via `$set_gradient()`, `$set_hessian()`, `$evaluate_gradient(at)`, and `$evaluate_hessian(at)`, respectively (see Example 1 below)
+- fixed arguments can be accessed with `$get_argument()`, modified using `$set_argument()`, or removed via `$remove_argument()`,
+- the `$validate()` method ensures that the object is properly configure (see Example 2).
 
 The following two examples illustrate how to create and use the `Objective` object.
 
@@ -47,7 +52,7 @@ The following two examples illustrate how to create and use the `Objective` obje
 
 Here is an implementation of the [Himmelblau's function](https://en.wikipedia.org/wiki/Himmelblau%27s_function) $$f(x, y) = (x^2 + y - 11)^2 + (x + y^2 - 7)^2:$$
 
-```{r, himmelblau}
+```{r, himmelblau definition}
 himmelblau <- function(x) (x[1]^2 + x[2] - 11)^2 + (x[1] + x[2]^2 - 7)^2
 ```
 
@@ -83,15 +88,56 @@ ggplot(grid, aes(x = Var1, y = Var2, z = z)) +
   )
 ```
 
-The Himmelblau's function is two-dimensional, but only has a single vector input `x` of length 2. The following creates the `Objective` object:
+The `himmelblau(x)` function is a two-dimensional function that accepts a single vector input `x` of length 2, with no additional parameters. To create the corresponding `Objective` object, use the following:^[The `target` argument is not required in this case. If not provided, it will automatically be set to the first argument of `f`.]
+
+```{r, define Objective himmelblau}
+himmelblau_objective <- Objective$new(
+  f = himmelblau,
+  target = "x",
+  npar = 2
+)
+
+himmelblau_objective$evaluate(c(3, 2))
+```
+
+For the Himmelblau's function, it is straightforward to define the analytical gradient and Hessian as follows:
+
+```{r, himmelblau gradient and hessian}
+himmelblau_gradient <- function(x) {
+  c(
+    4 * x[1] * (x[1]^2 + x[2] - 11) + 2 * (x[1] + x[2]^2 - 7),
+    2 * (x[1]^2 + x[2] - 11) + 4 * x[2] * (x[1] + x[2]^2 - 7)
+  )
+}
+
+himmelblau_hessian <- function(x) {
+  matrix(
+    c(
+      12 * x[1]^2 + 4 * x[2] - 42, 4 * x[1] + 4 * x[2],
+      4 * x[1] + 4 * x[2], 12 * x[2]^2 + 4 * x[1] - 26
+    ),
+    nrow = 2
+  )
+}
+```
+
+They can be used for optimization (see below) by including them into the `himmelblau_objective` object:
+
+```{r, gradient and hessian to himmelblau objective}
+himmelblau_objective$set_gradient(himmelblau_gradient)
+himmelblau_objective$set_hessian(himmelblau_hessian)
+
+himmelblau_objective$evaluate_gradient(c(3, 2))
+himmelblau_objective$evaluate_hessian(c(3, 2))
+```
 
 ## Example 2: Log-likelihood function of two-class Gaussian mixture
 
 Consider fitting a two-class Gaussian mixture model via maximizing the model's log-likelihood function
 
-$$\ell(\boldsymbol{\theta}) = \sum_{i=1}^n \log\Big( \lambda \phi_{\mu_1, \sigma_1^2}(x_i) + (1-\lambda)\phi_{\mu_2,\sigma_2^2} (x_i) \Big),$$
+$$\ell(\mu_1, \mu_2, \sigma_1, \sigma_2, \lambda) = \sum_{i=1}^n \log\Big( \lambda \phi_{\mu_1, \sigma_1^2}(x_i) + (1-\lambda)\phi_{\mu_2,\sigma_2^2} (x_i) \Big),$$
 
-where the sum goes over all observations $1, \dots, n$, $\phi_{\mu_1, \sigma_1^2}$ and $\phi_{\mu_2, \sigma_2^2}$ denote the normal density for the first and second cluster, respectively, and $\lambda$ is the mixing proportion. The parameter vector to be estimated is thus $\boldsymbol{\theta} = (\mu_1, \mu_2, \sigma_1, \sigma_2, \lambda)$. As there exists no closed-form solution for the maximum likelihood estimator $\boldsymbol{\theta}^* = \arg\max_{\boldsymbol{\theta}} \ell(\boldsymbol{\theta})$, we need numerical optimization for finding the function optimum. The model is fitted to the following data:^[The `faithful` data set contains information about eruption times (`eruptions`) of the Old Faithful geyser in Yellowstone National Park, Wyoming, USA. The data histogram hints at two clusters with short and long eruption times, respectively. For both clusters, we assume a normal distribution, such that we consider a mixture of two Gaussian densities for modeling the overall eruption times.]
+where the sum goes over all observations $1, \dots, n$, $\phi_{\mu_1, \sigma_1^2}$ and $\phi_{\mu_2, \sigma_2^2}$ denote the normal density for the first and second cluster, respectively, and $\lambda$ is the mixing proportion. As there exists no closed-form solution for the maximum likelihood estimator, we need numerical optimization for finding the function optimum. The model is fitted to the following data:^[The `faithful` data set contains information about eruption times (`eruptions`) of the Old Faithful geyser in Yellowstone National Park, Wyoming, USA. The data histogram hints at two clusters with short and long eruption times, respectively. For both clusters, we assume a normal distribution, such that we consider a mixture of two Gaussian densities for modeling the overall eruption times.]
 
 ```{r, visualize_faithful, echo = FALSE, message = FALSE, warning = FALSE, fig.align = 'center', out.width = "80%", fig.dim = c(8, 6)}
 library("ggplot2")
@@ -100,37 +146,44 @@ ggplot(datasets::faithful, aes(x = eruptions)) +
   xlab("eruption time (min)")
 ```
 
-The following function calculates the log-likelihood value given the parameter vector `theta` and the observation vector `data`:^[We restrict the standard deviations `sd` to be positive (via the exponential transformation) and `lambda` to be between 0 and 1 (via the logit transformation).]
+The following function calculates the log-likelihood value given the parameters `mu`, `sd`, and `lambda`, and the observation vector `data`:^[We restrict the standard deviations `sd` to be positive (via the exponential transformation) and `lambda` to be between 0 and 1 (via the logit transformation).]
 
 ```{r, normal mixture}
-normal_mixture_llk <- function(theta, data) {
-  mu <- theta[1:2]
-  sd <- exp(theta[3:4])
-  lambda <- plogis(theta[5])
+normal_mixture_llk <- function(mu, sd, lambda, data) {
+  sd <- exp(sd)
+  lambda <- plogis(lambda)
   c1 <- lambda * dnorm(data, mu[1], sd[1])
   c2 <- (1 - lambda) * dnorm(data, mu[2], sd[2])
   sum(log(c1 + c2))
 }
 ```
 
+The corresponding `Objective` object is defined as follows:
+
+```{r, define Objective mixture}
+mixture_objective <- Objective$new(
+  f = normal_mixture_llk,
+  target = c("mu", "sd", "lambda"),
+  npar = c(2, 2, 1),
+  data = datasets::faithful$eruptions
+)
+
+mixture_objective$evaluate(1:5)
+```
+
+The `$validate()` method can be used to verify that the `mixture_objective` object has been correctly specified:
+
+```{r, validate Objective mixture}
+mixture_objective$validate(1:5, .verbose = FALSE)
+```
+
 # Optimizer objects
+
+## Optimizer dictionary
 
 ## Example 1 (cont.)
 
-For the Himmelblau's function, it is straightforward to define the analytical gradient as follows:
-
-```{r, himmelblau gradient}
-gradient <- function(x) {
-  c(
-    4 * x[1] * (x[1]^2 + x[2] - 11) + 2 * (x[1] + x[2]^2 - 7),
-    2 * (x[1]^2 + x[2] - 11) + 4 * x[2] * (x[1] + x[2]^2 - 7)
-  )
-}
-```
-
 ## Example 2 (cont.)
-
-## Optimizer dictionary
 
 ## Custom optimizers
 
