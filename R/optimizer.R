@@ -127,31 +127,72 @@ Optimizer <- R6::R6Class(
     #' @description
     #' Defines an optimizer.
     #'
-    #' @param algorithm
-    #' A \code{function}, the optimization algorithm.
+    #' @param algorithm \[`function`\]\cr
+    #' The optimization algorithm.
     #'
-    #' @param arg_objective
-    #' A \code{character}, the argument name for the objective function in
+    #' @param arg_objective \[`character(1)`\]\cr
+    #' The argument name for the objective function in \code{algorithm}.
+    #'
+    #' @param arg_initial \[`character(1)`\]\cr
+    #' The argument name for the initial values in \code{algorithm}.
+    #'
+    #' @param arg_lower \[`character(1)` | `NA`\]\cr
+    #' Optionally the argument name for the lower parameter bound in
     #' \code{algorithm}.
     #'
-    #' @param arg_initial
-    #' A \code{character}, the argument name for the initial values in
+    #' Can be `NA` if not available.
+    #'
+    #' @param arg_upper \[`character(1)` | `NA`\]\cr
+    #' Optionally the argument name for the upper parameter bound in
     #' \code{algorithm}.
     #'
-    #' @param out_value
-    #' A \code{character}, the element name for the optimal function value in
-    #' the output \code{list} of \code{algorithm}.
+    #' Can be `NA` if not available.
     #'
-    #' @param out_parameter
-    #' A \code{character}, the element name for the optimal parameters in the
-    #' output \code{list} of \code{algorithm}.
+    #' @param arg_gradient \[`character(1)` | `NA`\]\cr
+    #' Optionally the argument name for the gradient function in
+    #' \code{algorithm}.
     #'
-    #' @param direction
+    #' Can be `NA` if not available.
+    #'
+    #' @param arg_hessian \[`character(1)` | `NA`\]\cr
+    #' Optionally the argument name for the Hessian function in
+    #' \code{algorithm}.
+    #'
+    #' Can be `NA` if not available.
+    #'
+    #' @param gradient_as_attribute \[`logical(1)`\]\cr
+    #' Only relevant if `arg_gradient` is not `NA`.
+    #'
+    #' In that case, does `algorithm` expect that the gradient is an attribute
+    #' of the objective function output (as for example in
+    #' \code{\link[stats]{nlm}})? In that case, `arg_gradient` defines the
+    #' attribute name.
+    #'
+    #' @param out_value \[`character(1)`\]\cr
+    #' The element name for the optimal function value in the output \code{list}
+    #' of \code{algorithm}.
+    #'
+    #' @param out_parameter \[`character(1)`\]\cr
+    #' The element name for the optimal parameters in the output \code{list} of
+    #' \code{algorithm}.
+    #'
+    #' @param direction \[`character(1)`\]\cr
     #' Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
     #' (if the optimizer maximizes).
 
     definition = function(
-      algorithm, arg_objective, arg_initial, out_value, out_parameter, direction
+      algorithm,
+      arg_objective,
+      arg_initial,
+      arg_lower = NA_character_,
+      arg_upper = NA_character_,
+      arg_gradient = NA_character_,
+      arg_hessian = NA_character_,
+      gradient_as_attribute = FALSE,
+      hessian_as_attribute = TRUE,
+      out_value,
+      out_parameter,
+      direction
     ) {
       if (missing(algorithm)) {
         cli::cli_abort(c(

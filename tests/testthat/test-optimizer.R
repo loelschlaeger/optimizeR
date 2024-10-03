@@ -93,3 +93,23 @@ test_that("fixed argument that is NULL can be passed", {
     )$error
   )
 })
+
+test_that("gradient and hessian can be used", {
+  himmelblau <- function(x) (x[1]^2 + x[2] - 11)^2 + (x[1] + x[2]^2 - 7)^2
+  himmelblau_gradient <- function(x) {
+    c(
+      4 * x[1] * (x[1]^2 + x[2] - 11) + 2 * (x[1] + x[2]^2 - 7),
+      2 * (x[1]^2 + x[2] - 11) + 4 * x[2] * (x[1] + x[2]^2 - 7)
+    )
+  }
+  himmelblau_hessian <- function(x) {
+    matrix(
+      c(
+        12 * x[1]^2 + 4 * x[2] - 42, 4 * x[1] + 4 * x[2],
+        4 * x[1] + 4 * x[2], 12 * x[2]^2 + 4 * x[1] - 26
+      ),
+      nrow = 2
+    )
+  }
+})
+
