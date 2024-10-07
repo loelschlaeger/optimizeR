@@ -94,6 +94,30 @@ test_that("fixed argument that is NULL can be passed", {
   )
 })
 
+test_that("parameter bounds can be used", {
+  himmelblau <- function(x) (x[1]^2 + x[2] - 11)^2 + (x[1] + x[2]^2 - 7)^2
+  lower <- -5
+  upper <- 5
+
+  rm(list=ls())
+  load_all()
+
+
+  nlm_opt <- Optimizer$new("stats::optim")
+
+  self <- nlm_opt
+  private <- self$.__enclos_env__$private
+
+  nlm_opt$optimize(
+    objective = himmelblau,
+    initial = c(1, 2),
+    lower = -5,
+    upper = 5
+  )
+
+
+})
+
 test_that("gradient and hessian can be used", {
   himmelblau <- function(x) (x[1]^2 + x[2] - 11)^2 + (x[1] + x[2]^2 - 7)^2
   himmelblau_gradient <- function(x) {
@@ -111,5 +135,23 @@ test_that("gradient and hessian can be used", {
       nrow = 2
     )
   }
+
+  rm(list=ls())
+  load_all()
+
+
+  nlm_opt <- Optimizer$new("stats::nlm")
+
+  self <- nlm_opt
+  private <- self$.__enclos_env__$private
+
+  nlm_opt$optimize(
+    objective = himmelblau,
+    initial = c(1, 2),
+    lower = -5,
+    upper = 5
+  )
+
+
 })
 

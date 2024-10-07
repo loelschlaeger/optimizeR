@@ -33,7 +33,7 @@
 #'
 #' @param ... \[`any`\]\cr
 #' Optionally additional named arguments to be passed to the optimizer
-#' algorithm. Without specifications, default values are used.
+#' algorithm. Without specifications, default values of the optimizer are used.
 #'
 #' @param direction \[`character(1)`\]\cr
 #' Either \code{"min"} for minimization or \code{"max"} for maximization.
@@ -184,16 +184,17 @@ Optimizer <- R6::R6Class(
       algorithm,
       arg_objective,
       arg_initial,
-      arg_lower = NA_character_,
-      arg_upper = NA_character_,
-      arg_gradient = NA_character_,
-      arg_hessian = NA_character_,
+      arg_lower = NA,
+      arg_upper = NA,
+      arg_gradient = NA,
+      arg_hessian = NA,
       gradient_as_attribute = FALSE,
-      hessian_as_attribute = TRUE,
+      hessian_as_attribute = FALSE,
       out_value,
       out_parameter,
       direction
     ) {
+
       if (missing(algorithm)) {
         cli::cli_abort(c(
           "x" = "Please specify argument {.var algorithm}.",
@@ -203,6 +204,7 @@ Optimizer <- R6::R6Class(
       }
       self$algorithm <- algorithm
       self$label <- oeli::variable_name(algorithm)
+
       if (missing(arg_objective)) {
         cli::cli_abort(c(
           "x" = "Please specify argument {.var arg_objective}.",
@@ -211,6 +213,7 @@ Optimizer <- R6::R6Class(
         ), call = NULL)
       }
       self$arg_objective <- arg_objective
+
       if (missing(arg_initial)) {
         cli::cli_abort(c(
           "x" = "Please specify argument {.var arg_initial}.",
@@ -219,6 +222,14 @@ Optimizer <- R6::R6Class(
         ), call = NULL)
       }
       self$arg_initial <- arg_initial
+
+      self$arg_lower <- arg_lower
+      self$arg_upper <- arg_upper
+      self$arg_gradient <- arg_gradient
+      self$arg_hessian <- arg_hessian
+      self$gradient_as_attribute <- gradient_as_attribute
+      self$hessian_as_attribute <- hessian_as_attribute
+
       if (missing(out_value)) {
         cli::cli_abort(c(
           "x" = "Please specify argument {.var out_value}.",
@@ -227,6 +238,7 @@ Optimizer <- R6::R6Class(
         ), call = NULL)
       }
       self$out_value <- out_value
+
       if (missing(out_parameter)) {
         cli::cli_abort(c(
           "x" = "Please specify argument {.var out_parameter}.",
@@ -235,6 +247,7 @@ Optimizer <- R6::R6Class(
         ), call = NULL)
       }
       self$out_parameter <- out_parameter
+
       if (missing(direction)) {
         cli::cli_abort(c(
           "x" = "Please specify argument {.var direction}.",
@@ -243,9 +256,11 @@ Optimizer <- R6::R6Class(
         ), call = NULL)
       }
       self$direction <- direction
+
       args_available <- oeli::function_arguments(
         self$algorithm, with_default = TRUE, with_ellipsis = TRUE
       )
+
       if (!self$arg_objective %in% args_available) {
         cli::cli_warn(
           "The optimizer needs to have the argument {.val {self$arg_objective}}."
@@ -256,11 +271,40 @@ Optimizer <- R6::R6Class(
           "The optimizer needs to have the argument {.val {self$arg_initial}}."
         )
       }
+      if (!is.na(arg_lower)) {
+        if (!self$arg_lower %in% args_available) {
+          cli::cli_warn(
+            "The optimizer needs to have the argument {.val {self$arg_lower}}."
+          )
+        }
+      }
+      if (!is.na(arg_upper)) {
+        if (!self$arg_upper %in% args_available) {
+          cli::cli_warn(
+            "The optimizer needs to have the argument {.val {self$arg_upper}}."
+          )
+        }
+      }
+      if (!is.na(arg_gradient) && isFALSE(gradient_as_attribute)) {
+        if (!self$arg_gradient %in% args_available) {
+          cli::cli_warn(
+            "The optimizer needs to have the argument {.val {self$arg_gradient}}."
+          )
+        }
+      }
+      if (!is.na(arg_hessian) && isFALSE(hessian_as_attribute)) {
+        if (!self$arg_hessian %in% args_available) {
+          cli::cli_warn(
+            "The optimizer needs to have the argument {.val {self$arg_hessian}}."
+          )
+        }
+      }
       if (!"..." %in% args_available) {
         cli::cli_warn(
-          "The optimizer needs to have an ellipsis argument."
+          "The optimizer needs to have an ellipsis (...) argument."
         )
       }
+
       invisible(self)
     },
 
@@ -362,10 +406,20 @@ Optimizer <- R6::R6Class(
     #' Optimizer$new("stats::nlm")$
     #'   minimize(objective = function(x) x^4 + 3*x - 5, initial = 2)
 
-    minimize = function(objective, initial, ...) {
+    minimize = function(
+      objective,
+      initial,
+      lower = NA,
+      upper = NA,
+      ...
+    ) {
       private$.optimize(
-        objective = objective, initial = initial,
-        additional_arguments = list(...), direction = "min"
+        objective = objective,
+        initial = initial,
+        lower = lower,
+        upper = upper,
+        additional_arguments = list(...),
+        direction = "min"
       )
     },
 
@@ -394,10 +448,20 @@ Optimizer <- R6::R6Class(
     #' Optimizer$new("stats::nlm")$
     #'   maximize(objective = function(x) -x^4 + 3*x - 5, initial = 2)
 
-    maximize = function(objective, initial, ...) {
+    maximize = function(
+      objective,
+      initial,
+      lower = NA,
+      upper = NA,
+      ...
+    ) {
       private$.optimize(
-        objective = objective, initial = initial,
-        additional_arguments = list(...), direction = "max"
+        objective = objective,
+        initial = initial,
+        lower = lower,
+        upper = upper,
+        additional_arguments = list(...),
+        direction = "max"
       )
     },
 
@@ -428,10 +492,21 @@ Optimizer <- R6::R6Class(
     #' optimizer$optimize(objective = objective, initial = 2, direction = "min")
     #' optimizer$optimize(objective = objective, initial = 2, direction = "max")
 
-    optimize = function(objective, initial, direction = "min", ...) {
+    optimize = function(
+      objective,
+      initial,
+      lower = NA,
+      upper = NA,
+      direction = "min",
+      ...
+    ) {
       private$.optimize(
-        objective = objective, initial = initial,
-        additional_arguments = list(...), direction = direction
+        objective = objective,
+        initial = initial,
+        lower = lower,
+        upper = upper,
+        additional_arguments = list(...),
+        direction = direction
       )
     },
 
@@ -453,6 +528,12 @@ Optimizer <- R6::R6Class(
     .algorithm = NULL,
     .arg_objective = NULL,
     .arg_initial = NULL,
+    .arg_lower = NULL,
+    .arg_upper = NULL,
+    .arg_gradient = NULL,
+    .arg_hessian = NULL,
+    .gradient_as_attribute = NULL,
+    .hessian_as_attribute = NULL,
     .out_value = NULL,
     .out_parameter = NULL,
     .direction = NULL,
@@ -509,11 +590,22 @@ Optimizer <- R6::R6Class(
     },
 
     ### helper function that performs optimization
-    .optimize = function(objective, initial, additional_arguments, direction) {
+    .optimize = function(
+      objective,
+      initial,
+      lower = lower,
+      upper = upper,
+      additional_arguments,
+      direction
+    ) {
+
+      ### input checks
       checkmate::assert_choice(direction, c("min", "max"))
       checkmate::assert_list(additional_arguments)
       checkmate::assert_atomic_vector(initial, any.missing = FALSE)
       checkmate::assert_numeric(initial)
+
+      ### build objective function
       objective <- private$.build_objective(objective, initial)
       checkmate::assert_numeric(initial, len = sum(objective$npar))
       invert_objective <- !identical(private$.direction, direction)
@@ -529,6 +621,8 @@ Optimizer <- R6::R6Class(
         oeli::merge_lists(additional_arguments, private$.arguments)
       )
       checkmate::assert_list(args, names = "unique")
+
+      ### optimize
       result <- tryCatch(
         {
           suppressWarnings(
@@ -622,6 +716,112 @@ Optimizer <- R6::R6Class(
           check = checkmate::check_string(value)
         )
         private$.arg_initial <- value
+      }
+    },
+
+    #' @field arg_lower \[`character(1)` | `NA`\]\cr
+    #' Optionally the argument name for the lower parameter bound in
+    #' \code{algorithm}.
+    #'
+    #' Can be `NA` if not available.
+
+    arg_lower = function(value) {
+      if (missing(value)) {
+        private$.arg_lower
+      } else {
+        oeli::input_check_response(
+          check = checkmate::check_string(value, na.ok = TRUE)
+        )
+        private$.arg_lower <- value
+      }
+    },
+
+    #' @field arg_upper \[`character(1)` | `NA`\]\cr
+    #' Optionally the argument name for the upper parameter bound in
+    #' \code{algorithm}.
+    #'
+    #' Can be `NA` if not available.
+
+    arg_upper = function(value) {
+      if (missing(value)) {
+        private$.arg_upper
+      } else {
+        oeli::input_check_response(
+          check = checkmate::check_string(value, na.ok = TRUE)
+        )
+        private$.arg_upper <- value
+      }
+    },
+
+    #' @field arg_gradient \[`character(1)` | `NA`\]\cr
+    #' Optionally the argument name for the gradient function in
+    #' \code{algorithm}.
+    #'
+    #' Can be `NA` if not available.
+
+    arg_gradient = function(value) {
+      if (missing(value)) {
+        private$.arg_gradient
+      } else {
+        oeli::input_check_response(
+          check = checkmate::check_string(value, na.ok = TRUE)
+        )
+        private$.arg_gradient <- value
+      }
+    },
+
+    #' @field arg_hessian \[`character(1)` | `NA`\]\cr
+    #' Optionally the argument name for the Hessian function in
+    #' \code{algorithm}.
+    #'
+    #' Can be `NA` if not available.
+
+    arg_hessian = function(value) {
+      if (missing(value)) {
+        private$.arg_hessian
+      } else {
+        oeli::input_check_response(
+          check = checkmate::check_string(value, na.ok = TRUE)
+        )
+        private$.arg_hessian <- value
+      }
+    },
+
+    #' @field gradient_as_attribute \[`logical(1)`\]\cr
+    #' Only relevant if `arg_gradient` is not `NA`.
+    #'
+    #' In that case, does `algorithm` expect that the gradient is an attribute
+    #' of the objective function output (as for example in
+    #' \code{\link[stats]{nlm}})? In that case, `arg_gradient` defines the
+    #' attribute name.
+
+    gradient_as_attribute = function(value) {
+      if (missing(value)) {
+        private$.gradient_as_attribute
+      } else {
+        oeli::input_check_response(
+          check = checkmate::check_flag(value)
+        )
+        private$.gradient_as_attribute <- value
+      }
+    },
+
+    #' @field hessian_as_attribute \[`logical(1)`\]\cr
+    #' Only relevant if `arg_hessian` is not `NA`.
+    #'
+    #' In that case, does `algorithm` expect that the Hessian is an attribute
+    #' of the objective function output (as for example in
+    #' \code{\link[stats]{nlm}})? In that case, `arg_hessian` defines the
+    #' attribute name.
+
+    hessian_as_attribute = function(value) {
+      if (missing(value)) {
+        private$.hessian_as_attribute
+      } else {
+        oeli::input_check_response(
+          check = checkmate::check_flag(value)
+        )
+        private$.hessian_as_attribute <- value
       }
     },
 
