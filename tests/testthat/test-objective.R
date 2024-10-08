@@ -128,6 +128,24 @@ test_that("objective fields can be accessed", {
     "read-only"
   )
 
+  ### gradient specified
+  expect_true(
+    objective$gradient_specified
+  )
+  expect_error(
+    objective$gradient_specified <- FALSE,
+    "read-only"
+  )
+
+  ### hessian specified
+  expect_true(
+    objective$hessian_specified
+  )
+  expect_error(
+    objective$hessian_specified <- FALSE,
+    "read-only"
+  )
+
 })
 
 test_that("objective with one target argument can be evaluated", {
@@ -185,7 +203,7 @@ test_that("objective with one target argument can be evaluated", {
 })
 
 test_that("objective can be evaluated with a time limit", {
-  skip_on_os("windows") # time limit not reliable on Windows OS
+  skip_if_not(.Platform$OS.type %in% c("unix", "windows"))
   f <- function(x, a, b = 0) {
     Sys.sleep(1)
     (x + a)^2 + b
@@ -255,6 +273,8 @@ test_that("objective with NULL argument can be evaluated", {
 })
 
 test_that("gradient and hessian can be specified and evaluated", {
+
+  ### define objective
   himmelblau <- function(x) (x[1]^2 + x[2] - 11)^2 + (x[1] + x[2]^2 - 7)^2
   himmelblau_objective <- Objective$new(f = himmelblau, npar = 2)
   himmelblau_objective$verbose <- FALSE
@@ -265,6 +285,8 @@ test_that("gradient and hessian can be specified and evaluated", {
     )
   }
   himmelblau_objective$set_gradient(himmelblau_gradient)
+
+  ### evaluate
   expect_equal(
     himmelblau_objective$evaluate_gradient(c(3, 2)),
     himmelblau_gradient(c(3, 2))
@@ -286,4 +308,22 @@ test_that("gradient and hessian can be specified and evaluated", {
   expect_silent(
     himmelblau_objective$validate(c(3, 2), .verbose = FALSE)
   )
+
+  ### values as attributes
+  expect_identical(
+    himmelblau_objective$evaluate(
+      .at = c(1, 2),
+      .negate = TRUE,
+      .gradient_as_attribute = TRUE,
+      .gradient_attribute_name = "gradient",
+      .hessian_as_attribute = TRUE,
+      .hessian_attribute_name = "hessian"
+    ),
+    structure(
+      -68,
+      gradient = c(36, 32),
+      hessian = structure(c(22, -12, -12, -26), dim = c(2L, 2L))
+    )
+  )
+
 })

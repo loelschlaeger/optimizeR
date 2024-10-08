@@ -31,6 +31,20 @@
 #' @param initial \[`numeric()`\]\cr
 #' Starting parameter values for the optimization.
 #'
+#' @param lower \[`NA` | `numeric()` | `numeric(1)`\]\cr
+#' Lower bounds on the parameters.
+#'
+#' If a single number, this will be applied to all parameters.
+#'
+#' Can be `NA` to not define any bounds.
+#'
+#' @param upper \[`NA` | `numeric()` | `numeric(1)`\]\cr
+#' Upper bounds on the parameters.
+#'
+#' If a single number, this will be applied to all parameters.
+#'
+#' Can be `NA` to not define any bounds.
+#'
 #' @param ... \[`any`\]\cr
 #' Optionally additional named arguments to be passed to the optimizer
 #' algorithm. Without specifications, default values of the optimizer are used.
@@ -108,18 +122,51 @@ Optimizer <- R6::R6Class(
           )
         }
       } else {
-        checkmate::assert_choice(which, choices = optimizer_dictionary$keys)
-        if (which %in% optimizer_dictionary$keys) {
-          self$definition(
-            algorithm = optimizer_dictionary$get(key = which, value = "algorithm"),
-            arg_objective = optimizer_dictionary$get(key = which, value = "arg_objective"),
-            arg_initial = optimizer_dictionary$get(key = which, value = "arg_initial"),
-            out_value = optimizer_dictionary$get(key = which, value = "out_value"),
-            out_parameter = optimizer_dictionary$get(key = which, value = "out_parameter"),
-            direction = optimizer_dictionary$get(key = which, value = "direction")
+        oeli::input_check_response(
+          check = checkmate::check_choice(
+            which, choices = optimizer_dictionary$keys
+          ),
+          var_name = "which"
+        )
+        self$definition(
+          algorithm = optimizer_dictionary$get(
+            key = which, value = "algorithm"
+          ),
+          arg_objective = optimizer_dictionary$get(
+            key = which, value = "arg_objective"
+          ),
+          arg_initial = optimizer_dictionary$get(
+            key = which, value = "arg_initial"
+          ),
+          arg_lower = optimizer_dictionary$get(
+            key = which, value = "arg_lower"
+          ),
+          arg_upper = optimizer_dictionary$get(
+            key = which, value = "arg_upper"
+          ),
+          arg_gradient = optimizer_dictionary$get(
+            key = which, value = "arg_gradient"
+          ),
+          arg_hessian = optimizer_dictionary$get(
+            key = which, value = "arg_hessian"
+          ),
+          gradient_as_attribute = optimizer_dictionary$get(
+            key = which, value = "gradient_as_attribute"
+          ),
+          hessian_as_attribute = optimizer_dictionary$get(
+            key = which, value = "hessian_as_attribute"
+          ),
+          out_value = optimizer_dictionary$get(
+            key = which, value = "out_value"
+          ),
+          out_parameter = optimizer_dictionary$get(
+            key = which, value = "out_parameter"
+          ),
+          direction = optimizer_dictionary$get(
+            key = which, value = "direction"
           )
-          self$label <- which
-        }
+        )
+        self$label <- which
         self$set_arguments(...)
       }
     },
@@ -166,6 +213,14 @@ Optimizer <- R6::R6Class(
     #' In that case, does `algorithm` expect that the gradient is an attribute
     #' of the objective function output (as for example in
     #' \code{\link[stats]{nlm}})? In that case, `arg_gradient` defines the
+    #' attribute name.
+    #'
+    #' @param hessian_as_attribute \[`logical(1)`\]\cr
+    #' Only relevant if `arg_hessian` is not `NA`.
+    #'
+    #' In that case, does `algorithm` expect that the Hessian is an attribute
+    #' of the objective function output (as for example in
+    #' \code{\link[stats]{nlm}})? In that case, `arg_hessian` defines the
     #' attribute name.
     #'
     #' @param out_value \[`character(1)`\]\cr
@@ -325,24 +380,26 @@ Optimizer <- R6::R6Class(
     #' The \code{Optimizer} object.
 
     validate = function(
-      objective = optimizeR::test_objective, initial = round(stats::rnorm(2)),
-      ..., direction = "min"
+      objective = optimizeR::test_objective,
+      initial = round(stats::rnorm(2)),
+      ...,
+      direction = "min"
     ) {
 
       ### test objective
-      objective <- private$.build_objective(objective, initial)
+      objective_object <- private$.build_objective_object(objective, initial)
       cli::cli_progress_step(
         "Checking the objective.",
         msg_done = "The objective is fine."
       )
-      objective$validate(.at = initial)
+      objective_object$validate(.at = initial)
 
       ### test optimization
       cli::cli_progress_step(
         paste0("Trying to ", direction, "imize.")
       )
       out <- private$.optimize(
-        objective = objective,
+        objective = objective_object,
         initial = initial,
         additional_arguments = list(...),
         direction = direction
@@ -385,6 +442,7 @@ Optimizer <- R6::R6Class(
 
     #' @description
     #' Performing minimization.
+    #'
     #' @return
     #' A named \code{list}, containing at least these five elements:
     #' \describe{
@@ -402,6 +460,7 @@ Optimizer <- R6::R6Class(
     #'
     #' If the time limit was exceeded, this also counts as an error. In addition,
     #' the flag \code{time_out = TRUE} is appended.
+    #'
     #' @examples
     #' Optimizer$new("stats::nlm")$
     #'   minimize(objective = function(x) x^4 + 3*x - 5, initial = 2)
@@ -578,8 +637,9 @@ Optimizer <- R6::R6Class(
     },
 
     ### helper function that build an 'Objective' object from a function
-    .build_objective = function(objective, initial) {
+    .build_objective_object = function(objective, initial) {
       if (!checkmate::test_r6(objective, "Objective")) {
+        oeli::assert_numeric_vector(initial)
         objective <- Objective$new(
           f = objective,
           target = names(formals(objective))[1],
@@ -593,32 +653,144 @@ Optimizer <- R6::R6Class(
     .optimize = function(
       objective,
       initial,
-      lower = lower,
-      upper = upper,
+      lower,
+      upper,
       additional_arguments,
       direction
     ) {
 
       ### input checks
-      checkmate::assert_choice(direction, c("min", "max"))
+      oeli::input_check_response(
+        check = checkmate::check_choice(direction, c("min", "max")),
+        "direction"
+      )
       checkmate::assert_list(additional_arguments)
-      checkmate::assert_atomic_vector(initial, any.missing = FALSE)
-      checkmate::assert_numeric(initial)
 
       ### build objective function
-      objective <- private$.build_objective(objective, initial)
-      checkmate::assert_numeric(initial, len = sum(objective$npar))
+      objective_object <- private$.build_objective_object(objective, initial)
+
+      ### check initial values and parameter bounds
+      oeli::input_check_response(
+        check = oeli::check_numeric_vector(
+          initial, len = sum(objective_object$npar)
+        ),
+        "initial"
+      )
+      parameter_bounds_arguments <- list()
+      if (!checkmate::test_scalar_na(lower)) {
+        if (!is.na(self$arg_lower)) {
+          if (checkmate::test_number(lower)) {
+            lower <- rep(lower, length(initial))
+          }
+          oeli::input_check_response(
+            check = oeli::check_numeric_vector(
+              lower, len = length(initial), any.missing = FALSE
+            ),
+            "lower"
+          )
+          parameter_bounds_arguments <- c(
+            parameter_bounds_arguments,
+            structure(
+              list(lower), names = self$arg_lower
+            )
+          )
+        } else {
+          if (!self$hide_warnings) {
+            cli::cli_warn(
+              "The optimizer does not support lower parameter bounds."
+            )
+          }
+          lower <- NA
+        }
+      }
+      if (!checkmate::test_scalar_na(upper)) {
+        if (!is.na(self$arg_upper)) {
+          if (checkmate::test_number(upper)) {
+            upper <- rep(upper, length(initial))
+          }
+          oeli::input_check_response(
+            check = oeli::check_numeric_vector(
+              upper, len = length(initial), any.missing = FALSE
+            ),
+            "upper"
+          )
+          parameter_bounds_arguments <- c(
+            parameter_bounds_arguments,
+            structure(
+              list(upper), names = self$arg_upper
+            )
+          )
+        } else {
+          if (!self$hide_warnings) {
+            cli::cli_warn(
+              "The optimizer does not support upper parameter bounds."
+            )
+          }
+          upper <- NA
+        }
+      }
+
+      ### build gradient and hessian arguments
+      gradient_hessian_arguments <- list()
+      if (objective_object$gradient_specified && !self$gradient_as_attribute) {
+        if (!is.na(self$arg_gradient)) {
+          gradient_hessian_arguments <- c(
+            gradient_hessian_arguments,
+            structure(
+              list(objective_object$evaluate_gradient),
+              names = self$arg_gradient
+            )
+          )
+        } else {
+          if (!self$hide_warnings) {
+            cli::cli_warn(
+              "The optimizer does not support custom gradient function."
+            )
+          }
+        }
+      }
+      if (objective_object$hessian_specified && !self$hessian_as_attribute) {
+        if (!is.na(self$arg_hessian)) {
+          gradient_hessian_arguments <- c(
+            gradient_hessian_arguments,
+            structure(
+              list(objective_object$evaluate_hessian),
+              names = self$arg_hessian
+            )
+          )
+        } else {
+          if (!self$hide_warnings) {
+            cli::cli_warn(
+              "The optimizer does not support custom Hessian function."
+            )
+          }
+        }
+      }
+
+      ### build optimizer arguments
       invert_objective <- !identical(private$.direction, direction)
       args <- c(
         ### defines objective and initial argument for optimizer
         structure(
-          list(objective$evaluate, initial),
+          list(objective_object$evaluate, initial),
           names = c(private$.arg_objective, private$.arg_initial)
         ),
         ### ensures that optimizer minimizes
-        list(".negate" = invert_objective),
+        list(
+          ".negate" = invert_objective,
+          ".gradient_as_attribute" = self$gradient_as_attribute,
+          ".gradient_attribute_name" = self$arg_gradient,
+          ".hessian_as_attribute" = self$hessian_as_attribute,
+          ".hessian_attribute_name" = self$arg_hessian
+        ),
+
         ### arguments via ... have priority over previously specified arguments
-        oeli::merge_lists(additional_arguments, private$.arguments)
+        oeli::merge_lists(
+          parameter_bounds_arguments,
+          gradient_hessian_arguments,
+          additional_arguments,
+          private$.arguments
+        )
       )
       checkmate::assert_list(args, names = "unique")
 
@@ -643,7 +815,10 @@ Optimizer <- R6::R6Class(
           time_out <- grepl("time limit exceeded", error_message)
           if (time_out) {
             list(
-              "result" = list("error_message" = error_message, "time_out" = TRUE),
+              "result" = list(
+                "error_message" = error_message,
+                "time_out" = TRUE
+              ),
               "error" = TRUE,
               "time" = NA_real_
             )

@@ -274,6 +274,14 @@ of the objective function output (as for example in
 \code{\link[stats]{nlm}})? In that case, \code{arg_gradient} defines the
 attribute name.}
 
+\item{\code{hessian_as_attribute}}{[\code{logical(1)}]\cr
+Only relevant if \code{arg_hessian} is not \code{NA}.
+
+In that case, does \code{algorithm} expect that the Hessian is an attribute
+of the objective function output (as for example in
+\code{\link[stats]{nlm}})? In that case, \code{arg_hessian} defines the
+attribute name.}
+
 \item{\code{out_value}}{[\code{character(1)}]\cr
 The element name for the optimal function value in the output \code{list}
 of \code{algorithm}.}
@@ -380,6 +388,20 @@ flexibility.}
 \item{\code{initial}}{[\code{numeric()}]\cr
 Starting parameter values for the optimization.}
 
+\item{\code{lower}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
+Lower bounds on the parameters.
+
+If a single number, this will be applied to all parameters.
+
+Can be \code{NA} to not define any bounds.}
+
+\item{\code{upper}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
+Upper bounds on the parameters.
+
+If a single number, this will be applied to all parameters.
+
+Can be \code{NA} to not define any bounds.}
+
 \item{\code{...}}{[\code{any}]\cr
 Optionally additional named arguments to be passed to the optimizer
 algorithm. Without specifications, default values of the optimizer are used.}
@@ -438,6 +460,20 @@ flexibility.}
 
 \item{\code{initial}}{[\code{numeric()}]\cr
 Starting parameter values for the optimization.}
+
+\item{\code{lower}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
+Lower bounds on the parameters.
+
+If a single number, this will be applied to all parameters.
+
+Can be \code{NA} to not define any bounds.}
+
+\item{\code{upper}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
+Upper bounds on the parameters.
+
+If a single number, this will be applied to all parameters.
+
+Can be \code{NA} to not define any bounds.}
 
 \item{\code{...}}{[\code{any}]\cr
 Optionally additional named arguments to be passed to the optimizer
@@ -504,6 +540,20 @@ flexibility.}
 
 \item{\code{initial}}{[\code{numeric()}]\cr
 Starting parameter values for the optimization.}
+
+\item{\code{lower}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
+Lower bounds on the parameters.
+
+If a single number, this will be applied to all parameters.
+
+Can be \code{NA} to not define any bounds.}
+
+\item{\code{upper}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
+Upper bounds on the parameters.
+
+If a single number, this will be applied to all parameters.
+
+Can be \code{NA} to not define any bounds.}
 
 \item{\code{direction}}{[\code{character(1)}]\cr
 Either \code{"min"} for minimization or \code{"max"} for maximization.}

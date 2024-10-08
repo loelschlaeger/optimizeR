@@ -287,8 +287,42 @@ Objective <- R6::R6Class(
 
     #' @description
     #' Evaluate the objective function.
+    #'
+    #' @param .gradient_as_attribute \[`logical(1)\]\cr
+    #' Add the value of the gradient function as an attribute to the output?
+    #'
+    #' The attribute name is defined via the `.gradient_attribute_name`
+    #' argument.
+    #'
+    #' Ignored if `$gradient_specified` is `FALSE`.
+    #'
+    #' @param .gradient_attribute_name \[`character(1)\]\cr
+    #' Only relevant if `.gradient_as_attribute = TRUE`.
+    #'
+    #' In that case, the attribute name for the gradient (if available).
+    #'
+    #' @param .hessian_as_attribute \[`logical(1)\]\cr
+    #' Add the value of the Hessian function as an attribute to the output?
+    #'
+    #' The attribute name is defined via the `.hessian_attribute_name`
+    #' argument.
+    #'
+    #' Ignored if `$hessian_specified` is `FALSE`.
+    #'
+    #' @param .hessian_attribute_name \[`character(1)\]\cr
+    #' Only relevant if `.hessian_as_attribute = TRUE`.
+    #'
+    #' In that case, the attribute name for the Hessian (if available).
 
-    evaluate = function(.at, .negate = FALSE, ...) {
+    evaluate = function(
+      .at,
+      .negate = FALSE,
+      .gradient_as_attribute = FALSE,
+      .gradient_attribute_name = "gradient",
+      .hessian_as_attribute = FALSE,
+      .hessian_attribute_name = "hessian",
+      ...
+    ) {
 
       ### input checks
       private$.check_target(.at, .verbose = FALSE)
@@ -296,10 +330,30 @@ Objective <- R6::R6Class(
         check = checkmate::check_flag(.negate),
         var_name = ".negate"
       )
+      oeli::input_check_response(
+        check = checkmate::check_flag(.gradient_as_attribute),
+        var_name = ".gradient_as_attribute"
+      )
+      oeli::input_check_response(
+        check = checkmate::check_string(
+          .gradient_attribute_name, na.ok = !.gradient_as_attribute
+        ),
+        var_name = ".gradient_attribute_name"
+      )
+      oeli::input_check_response(
+        check = checkmate::check_flag(.hessian_as_attribute),
+        var_name = ".hessian_as_attribute"
+      )
+      oeli::input_check_response(
+        check = checkmate::check_string(
+          .hessian_attribute_name, na.ok = !.hessian_as_attribute
+        ),
+        var_name = ".hessian_attribute_name"
+      )
 
       ### evaluation
       splits <- c(0, cumsum(private$.npar))
-      .at <- structure(
+      .at_split <- structure(
         lapply(seq_along(splits)[-1], function(i) {
           .at[(splits[i - 1] + 1):(splits[i])]
         }),
@@ -309,8 +363,8 @@ Objective <- R6::R6Class(
       on.exit({
         setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE)
       })
-      args <- c(.at, oeli::merge_lists(list(...), private$.arguments))
-      tryCatch(
+      args <- c(.at_split, oeli::merge_lists(list(...), private$.arguments))
+      out <- tryCatch(
         {
           suppressWarnings(
             value <- do.call(what = private$.f, args = args),
@@ -331,20 +385,35 @@ Objective <- R6::R6Class(
         }
       )
 
+      ### add gradient and Hessian
+      if (isTRUE(.gradient_as_attribute) && self$gradient_specified) {
+        attr(out, .gradient_attribute_name) <- self$evaluate_gradient(
+          .at = .at, .negate = .negate, ...
+        )
+      }
+      if (isTRUE(.hessian_as_attribute) && self$hessian_specified) {
+        attr(out, .hessian_attribute_name) <- self$evaluate_hessian(
+          .at = .at, .negate = .negate, ...
+        )
+      }
+
+      ### return
+      return(out)
+
     },
 
     #' @description
     #' Evaluate the gradient function.
 
     evaluate_gradient = function(.at, .negate = FALSE, ...) {
-      if (is.null(private$.gradient)) {
+      if (self$gradient_specified) {
+        private$.gradient$evaluate(.at = .at, .negate = .negate, ...)
+      } else {
         cli::cli_abort(
           "Gradient function is required but not specified, please call
           {.var $set_gradient()} first.",
           call = NULL
         )
-      } else {
-        private$.gradient$evaluate(.at = .at, .negate = .negate, ...)
       }
     },
 
@@ -352,14 +421,14 @@ Objective <- R6::R6Class(
     #' Evaluate the Hessian function.
 
     evaluate_hessian = function(.at, .negate = FALSE, ...) {
-      if (is.null(private$.hessian)) {
+      if (self$hessian_specified) {
+        private$.hessian$evaluate(.at = .at, .negate = .negate, ...)
+      } else {
         cli::cli_abort(
           "Hessian function is required but not specified, please call
           {.var $set_hessian()} first.",
           call = NULL
         )
-      } else {
-        private$.hessian$evaluate(.at = .at, .negate = .negate, ...)
       }
     },
 
@@ -551,10 +620,38 @@ Objective <- R6::R6Class(
 
     target = function(value) {
       if (missing(value)) {
-        structure(private$.target)
+        private$.target
       } else {
         cli::cli_abort(
           "Field {.var target} is read-only.",
+          call = NULL
+        )
+      }
+    },
+
+    #' @field gradient_specified \[`logical(1)`\]\cr
+    #' Whether a gradient function has been specified via `$set_gradient()`.
+
+    gradient_specified = function(value) {
+      if (missing(value)) {
+        !is.null(private$.gradient)
+      } else {
+        cli::cli_abort(
+          "Field {.var gradient_specified} is read-only.",
+          call = NULL
+        )
+      }
+    },
+
+    #' @field hessian_specified \[`logical(1)`\]\cr
+    #' Whether a Hessian function has been specified via `$set_hessian()`.
+
+    hessian_specified = function(value) {
+      if (missing(value)) {
+        !is.null(private$.hessian)
+      } else {
+        cli::cli_abort(
+          "Field {.var hessian_specified} is read-only.",
           call = NULL
         )
       }

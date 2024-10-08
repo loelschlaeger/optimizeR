@@ -59,6 +59,12 @@ The length of each target argument.}
 
 \item{\code{target}}{[\code{character()}]\cr
 The argument name(s) that get optimized.}
+
+\item{\code{gradient_specified}}{[\code{logical(1)}]\cr
+Whether a gradient function has been specified via \verb{$set_gradient()}.}
+
+\item{\code{hessian_specified}}{[\code{logical(1)}]\cr
+Whether a Hessian function has been specified via \verb{$set_hessian()}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -280,7 +286,15 @@ Print status messages?}
 \subsection{Method \code{evaluate()}}{
 Evaluate the objective function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$evaluate(.at, .negate = FALSE, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Objective$evaluate(
+  .at,
+  .negate = FALSE,
+  .gradient_as_attribute = FALSE,
+  .gradient_attribute_name = "gradient",
+  .hessian_as_attribute = FALSE,
+  .hessian_attribute_name = "hessian",
+  ...
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -292,6 +306,30 @@ be of length \code{sum(self$npar)}).}
 
 \item{\code{.negate}}{[\code{logical(1)}]\cr
 Negate the function return value?}
+
+\item{\code{.gradient_as_attribute}}{[`logical(1)]\cr
+Add the value of the gradient function as an attribute to the output?
+
+The attribute name is defined via the \code{.gradient_attribute_name}
+argument.
+
+Ignored if \verb{$gradient_specified} is \code{FALSE}.}
+
+\item{\code{.gradient_attribute_name}}{[\verb{character(1)\]\\cr Only relevant if }.gradient_as_attribute = TRUE`.
+
+In that case, the attribute name for the gradient (if available).}
+
+\item{\code{.hessian_as_attribute}}{[`logical(1)]\cr
+Add the value of the Hessian function as an attribute to the output?
+
+The attribute name is defined via the \code{.hessian_attribute_name}
+argument.
+
+Ignored if \verb{$hessian_specified} is \code{FALSE}.}
+
+\item{\code{.hessian_attribute_name}}{[\verb{character(1)\]\\cr Only relevant if }.hessian_as_attribute = TRUE`.
+
+In that case, the attribute name for the Hessian (if available).}
 
 \item{\code{...}}{Optionally additional function arguments that are fixed during the
 optimization.}

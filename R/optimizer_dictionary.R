@@ -150,7 +150,7 @@ optimizer_dictionary$add(
   "arg_initial" = "par",
   "arg_lower" = "lower",
   "arg_upper" = "upper",
-  "arg_gradient" = "gradient",
+  "arg_gradient" = "gr",
   "arg_hessian" = NA,
   "gradient_as_attribute" = FALSE,
   "hessian_as_attribute" = FALSE,
