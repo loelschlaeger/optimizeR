@@ -164,6 +164,10 @@ Objective <- R6::R6Class(
         }
         private$.arguments[argument_names[i]] <- arguments[i]
       }
+
+      ### synchronize with gradient and Hessian (if available)
+      private$.sync_arguments(.verbose = .verbose)
+
       invisible(self)
 
     },
@@ -205,6 +209,10 @@ Objective <- R6::R6Class(
         cli::cli_alert("Removing argument {.val {argument_name}}.")
       }
       private$.arguments[[argument_name]] <- NULL
+
+      ### synchronize with gradient and Hessian (if available)
+      private$.sync_arguments(.verbose = .verbose)
+
       invisible(self)
 
     },
@@ -221,11 +229,26 @@ Objective <- R6::R6Class(
     #' \code{self$npar}.
 
     set_gradient = function(
-      gradient, target = self$target, npar = self$npar, ...
+      gradient, target = self$target, npar = self$npar, ...,
+      .verbose = self$verbose
     ) {
-      private$.gradient <- Objective$new(
-        f = gradient, target = target, npar = npar, ...
+
+      ### determine arguments
+      arguments <- oeli::merge_lists(list(...), private$.arguments)
+
+      ### setting gradient
+      private$.gradient <- do.call(
+        Objective$new,
+        c(list(f = gradient, target = target, npar = npar), arguments)
       )
+      private$.gradient$objective_name <- oeli::variable_name(
+        gradient, fallback = "gradient"
+      )
+      if (.verbose) {
+        cli::cli_alert("Setting gradient function.")
+      }
+
+      invisible(self)
     },
 
     #' @description
@@ -240,11 +263,26 @@ Objective <- R6::R6Class(
     #' \code{self$npar} times \code{self$npar}.
 
     set_hessian = function(
-      hessian, target = self$target, npar = self$npar, ...
+      hessian, target = self$target, npar = self$npar, ...,
+      .verbose = self$verbose
     ) {
-      private$.hessian <- Objective$new(
-        f = hessian, target = target, npar = npar, ...
+
+      ### determine arguments
+      arguments <- oeli::merge_lists(list(...), private$.arguments)
+
+      ### setting Hessian
+      private$.hessian <- do.call(
+        Objective$new,
+        c(list(f = hessian, target = target, npar = npar), arguments)
       )
+      private$.hessian$objective_name <- oeli::variable_name(
+        hessian, fallback = "hessian"
+      )
+      if (.verbose) {
+        cli::cli_alert("Setting Hessian function.")
+      }
+
+      invisible(self)
     },
 
     #' @description
@@ -614,6 +652,28 @@ Objective <- R6::R6Class(
           call = NULL
         )
       }
+    },
+
+    ### helper function to synchronize arguments with gradient and Hessian
+    ### function (if specified)
+    .sync_arguments = function(.verbose = self$verbose) {
+
+        if (!is.null(private$.gradient)) {
+          private$.gradient$.__enclos_env__$private$.arguments <-
+            private$.arguments
+          if (.verbose) {
+            cli::cli_alert("Synchronized arguments with gradient function.")
+          }
+        }
+
+        if (!is.null(private$.gradient)) {
+          private$.hessian$.__enclos_env__$private$.arguments <-
+            private$.arguments
+          if (.verbose) {
+            cli::cli_alert("Synchronized arguments with Hessian function.")
+          }
+        }
+
     }
 
   )

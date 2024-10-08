@@ -2,7 +2,7 @@
 % Please edit documentation in R/objective.R
 \name{Objective}
 \alias{Objective}
-\title{Specify objective function}
+\title{Specify objective function object}
 \value{
 An \code{Objective} object.
 }
@@ -188,7 +188,13 @@ Print status messages?}
 \subsection{Method \code{set_gradient()}}{
 Set a gradient function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$set_gradient(gradient, target = self$target, npar = self$npar, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Objective$set_gradient(
+  gradient,
+  target = self$target,
+  npar = self$npar,
+  ...,
+  .verbose = self$verbose
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -215,6 +221,9 @@ The length of each target arguments, i.e., the length(s) of the
 
 \item{\code{...}}{Optionally additional function arguments that are fixed during the
 optimization.}
+
+\item{\code{.verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
 }
 \if{html}{\out{</div>}}
 }
@@ -225,7 +234,13 @@ optimization.}
 \subsection{Method \code{set_hessian()}}{
 Set a Hessian function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$set_hessian(hessian, target = self$target, npar = self$npar, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Objective$set_hessian(
+  hessian,
+  target = self$target,
+  npar = self$npar,
+  ...,
+  .verbose = self$verbose
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -252,6 +267,9 @@ The length of each target arguments, i.e., the length(s) of the
 
 \item{\code{...}}{Optionally additional function arguments that are fixed during the
 optimization.}
+
+\item{\code{.verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
 }
 \if{html}{\out{</div>}}
 }
@@ -342,7 +360,8 @@ Validate an \code{Objective} object.
   output_template_f = numeric(1),
   output_template_gradient = numeric(sum(self$npar)),
   output_template_hessian = matrix(numeric(), nrow = sum(self$npar), ncol =
-    sum(self$npar))
+    sum(self$npar)),
+  .verbose = TRUE
 )}\if{html}{\out{</div>}}
 }
 
@@ -361,6 +380,9 @@ A template of the expected gradient output value.}
 
 \item{\code{output_template_hessian}}{[\code{any}]\cr
 A template of the expected hessian output value.}
+
+\item{\code{.verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
 }
 \if{html}{\out{</div>}}
 }
