@@ -11,7 +11,10 @@ An \code{R6} object of class \code{\link[oeli]{Dictionary}}.
 optimizer_dictionary
 }
 \description{
-The \code{optimizer_dictionary} object is a dictionary of currently implemented
-numerical optimizer functions.
+A dictionary of currently included numerical optimizer functions in the
+\code{{optimizeR}} package.
+}
+\examples{
+print(optimizer_dictionary)
 }
 \keyword{datasets}
