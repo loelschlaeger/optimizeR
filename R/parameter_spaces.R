@@ -194,8 +194,21 @@ ParameterSpaces <- R6::R6Class(
     #' The parameters, either as a `numeric vector` (will be switched to
     #' Interpretation Space), or as a `list()` (will be switched to Optimization
     #' Space).
+    #'
+    #' @param to \[`character(1)` | `NULL`\]\cr
+    #' Explicitly switch to a specific space, either
+    #'
+    #' - `"o"`: Optimization Space
+    #' - `"i"`: Interpretation Space
+    #'
+    #' If `NULL`, the function will switch to the other space.
 
-    switch = function(x) {
+    switch = function(x, to = NULL) {
+
+      oeli::input_check_response(
+        check = checkmate::check_choice(to, c("o", "i"), null.ok = TRUE),
+        var_name = "to"
+      )
 
       if (oeli::test_numeric_vector(x)) {
 
@@ -206,6 +219,11 @@ ParameterSpaces <- R6::R6Class(
           ),
           var_name = "x"
         )
+
+        ### stay in Optimization Space?
+        if (checkmate::test_choice(to, c("o"), null.ok = FALSE)) {
+          return(x)
+        }
 
         ### transform to Interpretation Space
         out <-  setNames(vector("list", private$.number_parameters()), private$.parameter_names)
@@ -232,6 +250,11 @@ ParameterSpaces <- R6::R6Class(
           ),
           var_name = "x"
         )
+
+        ### stay in Interpretation Space?
+        if (checkmate::test_choice(to, c("i"), null.ok = FALSE)) {
+          return(x)
+        }
 
         ### transform to Optimization Space
         out <- numeric(private$.o_space_length())

@@ -1,4 +1,4 @@
-# optimizer development
+# optimizer 1.1.2
 
 * New `ParameterSpaces` R6 object to transform parameters between optimization and interpretation space.
 
