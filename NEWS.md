@@ -1,12 +1,16 @@
-# optimizer 1.1.2
+# optimizeR 1.1.3
+
+* The `ParameterSpaces` allows to specify parameters that are not used for transformations. This could be useful if a general `ParameterSpaces` object is defined for nested sets of parameters.
+
+# optimizeR 1.1.2
 
 * New `ParameterSpaces` R6 object to transform parameters between optimization and interpretation space.
 
-# optimizerR 1.1.1
+# optimizeR 1.1.1
 
 * The `Objective` object now allows for different types of output structures of the objective function, for which a template can be provided via the `$output_template` field.
 
-# optimizerR 1.1.0
+# optimizeR 1.1.0
 
 * The `Optimizer` object has a new method `optimize` which can be used for minimization and maximization by setting the argument `direction`.
 

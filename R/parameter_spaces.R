@@ -246,7 +246,7 @@ ParameterSpaces <- R6::R6Class(
         ### input check
         oeli::input_check_response(
           check = checkmate::check_names(
-            names(x), permutation.of = private$.parameter_names
+            names(x), subset.of = private$.parameter_names, type = "strict"
           ),
           var_name = "x"
         )

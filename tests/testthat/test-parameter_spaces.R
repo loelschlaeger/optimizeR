@@ -25,14 +25,12 @@ test_that("Gaussian mixture model parameter spaces work", {
     "sd" = c(0.5, 1),
     "lambda" = c(0.4, 0.6)
   )
-  x <- normal_mixture_spaces$switch(par
-  ) # switch to optimization space
+  x <- normal_mixture_spaces$switch(par) # switch to optimization space
   expect_equal(
     round(x, 2), c(2, 4, -0.69, 0, -0.41)
   )
   expect_equal(
-    normal_mixture_spaces$switch(x
-    ), # switch back
+    normal_mixture_spaces$switch(x), # switch back
     par
   )
 })
@@ -63,11 +61,9 @@ test_that("Probit parameter spaces work", {
     Omega = oeli::sample_covariance_matrix(dim = 3),
     Sigma = oeli::sample_covariance_matrix(dim = 3)
   )
-  x <- probit_parameter$switch(x = par
-  )
+  x <- probit_parameter$switch(x = par)
   checkmate::expect_numeric(x, len = 12)
-  par2 <- probit_parameter$switch(x = x
-  )
+  par2 <- probit_parameter$switch(x = x)
   checkmate::expect_list(par2, len = 3)
   expect_identical(par$b, par2$b)
   expect_identical(round(par$Omega, 2), round(par2$Omega, 2))
@@ -75,32 +71,23 @@ test_that("Probit parameter spaces work", {
 
   ### catch errors
   expect_error(
-    probit_parameter$switch(rnorm(13)
-    ),
+    probit_parameter$switch(rnorm(13)),
     "Input `x` is bad: Must have length 12, but has length 13"
   )
   expect_error(
-    probit_parameter$switch(c(par, list("bad" = 1))
-    ),
-    "Input `x` is bad: Names must be a permutation of"
-  )
-  expect_error(
-    probit_parameter$switch(par[c(1, 2)]
-    ),
-    "Input `x` is bad: Names must be a set equal to"
+    probit_parameter$switch(c(par, list("bad" = 1))),
+    "Input `x` is bad: Names must be a subset of"
   )
   expect_error(
     probit_parameter$switch(list(
       b = 1,
       Omega = oeli::sample_covariance_matrix(dim = 3),
       Sigma = oeli::sample_covariance_matrix(dim = 3)
-    )
-    ),
+    )),
     "Must have length 3, but has length 1"
   )
   expect_error(
-    probit_parameter$switch("bad"
-    ),
+    probit_parameter$switch("bad"),
     "Input `x` must be"
   )
 })
@@ -124,12 +111,31 @@ test_that("Parameter spaces with zero length parameter work", {
 
   ### switch between parameter spaces
   par <- list("x" = 1, "y" = c("A", "B"), "z" = 2)
-  x <- zero_parameter_spaces$switch(par
-  ) # switch to optimization space
+  x <- zero_parameter_spaces$switch(par) # switch to optimization space
   expect_equal(x, c(1, 2))
   expect_equal(
-    zero_parameter_spaces$switch(x
-    ), # switch back
+    zero_parameter_spaces$switch(x), # switch back
+    par
+  )
+})
+
+test_that("Parameter spaces with a subset of parameters work", {
+  ### define parameter spaces
+  subset_parameter_spaces <- ParameterSpaces$
+    new(
+      parameter_names = c("x", "y", "z"),
+      parameter_lengths_in_o_space = c(1, 0, 1)
+    )
+
+  self <- subset_parameter_spaces
+  private <- self$.__enclos_env__$private
+
+  ### switch between parameter spaces
+  par <- list("x" = 1, "z" = 3)
+  x <- subset_parameter_spaces$switch(par) # switch to optimization space
+  expect_equal(x, c(1, 3))
+  expect_equal(
+    subset_parameter_spaces$switch(x), # switch back
     par
   )
 })
