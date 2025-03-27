@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 [![CRAN status](https://www.r-pkg.org/badges/version/optimizeR)](https://CRAN.R-project.org/package=optimizeR)
 [![metacran downloads](https://cranlogs.r-pkg.org/badges/last-month/optimizeR)](https://cran.r-project.org/package=optimizeR)
 [![R-CMD-check](https://github.com/loelschlaeger/optimizeR/workflows/R-CMD-check/badge.svg)](https://github.com/loelschlaeger/optimizeR/actions)
-[![Codecov test coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/loelschlaeger/optimizeR?branch=master)
+[![Codecov test coverage](https://codecov.io/gh/loelschlaeger/optimizeR/graph/badge.svg)](https://app.codecov.io/gh/loelschlaeger/optimizeR)
 <!-- badges: end -->
 
 The `{optimizeR}` package 
