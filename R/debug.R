@@ -1,49 +1,101 @@
-#' Test optimization function
+#' Test functions
+#'
+#' @name debug
 #'
 #' @description
-#' This function is useful for testing or debugging the behavior of optimization
-#' functions. It can throw a warning and / or an error on purpose.
+#' These functions are useful for testing or debugging the behavior of objective
+#' and optimization functions.
 #'
-#' @param objective
-#' An objective \code{function}.
-#' @param initial
+#' They can throw warnings or errors on purpose.
+#'
+#' @param objective \[`function`\]\cr
+#' The objective function.
+#'
+#' @param initial \[`numeric()`\]\cr
 #' The initial parameter vector.
-#' @param ...
+#'
+#' @param ... \[any\]\cr
 #' Optionally additional arguments to be passed to \code{objective}.
-#' @param parameter
-#' Defines the output \code{parameter}.
-#' @param value
-#' Defines the output \code{value}.
-#' @param seconds
+#'
+#' @param parameter \[any\]\cr
+#' Defines the output parameter.
+#'
+#' @param x \[any\]\cr
+#' Defines the input.
+#'
+#' @param value \[any\]\cr
+#' Defines the output function value.
+#'
+#' @param seconds \[`numeric(1)`\]\cr
 #' A delay in number of seconds.
-#' @param warning_prob
+#'
+#' @param warning_prob \[`numeric(1)`\]\cr
 #' The probability for throwing a warning.
-#' @param error_prob
+#'
+#' @param error_prob \[`numeric(1)`\]\cr
 #' The probability for throwing an error.
-#' @param warning_msg
+#'
+#' @param warning_msg \[`character(1)`\]\cr
 #' The warning message.
-#' @param error_msg
+#'
+#' @param error_msg \[`character(1)`\]\cr
 #' The error message.
-#' @param call.
+#'
+#' @param call. \[`logical(1)`\]\cr
 #' Passed to \code{\link[base]{warning}} or \code{\link[base]{stop}},
 #' respectively.
 #'
 #' @return
 #' A \code{list} with elements \code{parameter} and \code{value}.
-#'
-#' @export
+NULL
+
+#' @rdname debug
 
 test_optimizer <- function(
-    objective = test_objective, initial = 1, ..., parameter = 1,
-    value = objective(parameter), seconds = 0, warning_prob = 0, error_prob = 0,
-    warning_msg = "warning", error_msg = "error", call. = TRUE) {
-  checkmate::assert_function(objective)
-  checkmate::assert_number(seconds, lower = 0)
-  checkmate::assert_number(warning_prob, lower = 0, upper = 1)
-  checkmate::assert_number(error_prob, lower = 0, upper = 1)
-  checkmate::assert_string(warning_msg)
-  checkmate::assert_string(error_msg)
-  checkmate::assert_flag(call.)
+    objective = test_objective,
+    initial = 1,
+    ...,
+    parameter = 1,
+    value = objective(parameter),
+    seconds = 0,
+    warning_prob = 0,
+    error_prob = 0,
+    warning_msg = "warning",
+    error_msg = "error",
+    call. = TRUE
+  ) {
+
+  ### input checks
+  oeli::input_check_response(
+    check = checkmate::check_function(objective),
+    "objective"
+  )
+  oeli::input_check_response(
+    check = checkmate::check_number(seconds, lower = 0),
+    "seconds"
+  )
+  oeli::input_check_response(
+    check = checkmate::check_number(warning_prob, lower = 0, upper = 1),
+    "warning_prob"
+  )
+  oeli::input_check_response(
+    check = checkmate::check_number(error_prob, lower = 0, upper = 1),
+    "error_prob"
+  )
+  oeli::input_check_response(
+    check = checkmate::check_string(warning_msg),
+    "warning_msg"
+  )
+  oeli::input_check_response(
+    check = checkmate::check_string(error_msg),
+    "error_msg"
+  )
+  oeli::input_check_response(
+    check = checkmate::check_flag(call.),
+    "call."
+  )
+
+  ### simulate optimizer function
   Sys.sleep(seconds)
   if (sample(c(TRUE, FALSE), 1, prob = c(warning_prob, 1 - warning_prob))) {
     warning(warning_msg, call. = call.)
@@ -54,41 +106,41 @@ test_optimizer <- function(
   list("parameter" = parameter, "value" = value)
 }
 
-#' Test objective function
-#'
-#' @description
-#' This function is useful for testing or debugging the behavior of objective
-#' functions. It can throw a warning and / or an error on purpose.
-#'
-#' @param x
-#' Any input.
-#' @param value
-#' The return value, any object.
-#' @param warning_prob
-#' The probability for throwing a warning.
-#' @param error_prob
-#' The probability for throwing an error.
-#' @param warning_msg
-#' The warning message.
-#' @param error_msg
-#' The error message.
-#' @param call.
-#' Passed to \code{\link[base]{warning}} or \code{\link[base]{stop}},
-#' respectively.
-#'
-#' @return
-#' The argument \code{value}.
-#'
-#' @export
+#' @rdname debug
 
 test_objective <- function(
-    x, value = x, warning_prob = 0, error_prob = 0, warning_msg = "warning",
-    error_msg = "error", call. = TRUE) {
-  checkmate::assert_number(warning_prob, lower = 0, upper = 1)
-  checkmate::assert_number(error_prob, lower = 0, upper = 1)
-  checkmate::assert_string(warning_msg)
-  checkmate::assert_string(error_msg)
-  checkmate::assert_flag(call.)
+    x,
+    value = x,
+    warning_prob = 0,
+    error_prob = 0,
+    warning_msg = "warning",
+    error_msg = "error",
+    call. = TRUE
+  ) {
+
+  ### input checks
+  oeli::input_check_response(
+    check = checkmate::check_number(warning_prob, lower = 0, upper = 1),
+    "warning_prob"
+  )
+  oeli::input_check_response(
+    check = checkmate::check_number(error_prob, lower = 0, upper = 1),
+    "error_prob"
+  )
+  oeli::input_check_response(
+    check = checkmate::check_string(warning_msg),
+    "warning_msg"
+  )
+  oeli::input_check_response(
+    check = checkmate::check_string(error_msg),
+    "error_msg"
+  )
+  oeli::input_check_response(
+    check = checkmate::check_flag(call.),
+    "call."
+  )
+
+  ### simulate objective function
   if (sample(c(TRUE, FALSE), 1, prob = c(warning_prob, 1 - warning_prob))) {
     warning(warning_msg, call. = call.)
   }

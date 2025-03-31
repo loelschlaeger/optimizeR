@@ -1,50 +1,39 @@
-#' Specify objective function
+#' Specify objective function object
 #'
 #' @description
 #' The \code{Objective} object specifies the framework for an objective function
 #' for numerical optimization.
 #'
-#' @param f
-#' A \code{function} to be optimized.
-#'
-#' It is expected that \code{f} has at least one \code{numeric} argument.
-#'
-#' Further, it is expected that the return value of \code{f} is of the
-#' structure \code{numeric(1)}, i.e. a single \code{numeric} value (although
-#' this can be altered via the \code{output_template} field).
-#'
-#' @param target
-#' A \code{character}, the argument name(s) of \code{f} that get optimized.
+#' @param target \[`character()`\]\cr
+#' The argument name(s) that get optimized.
 #'
 #' All target arguments must receive a \code{numeric} \code{vector}.
 #'
-#' Can be \code{NULL} (default), then it is the first argument of \code{f}.
+#' Can be \code{NULL} (default), then it is the first function argument.
 #'
-#' @param npar
-#' A \code{integer} of the same length as \code{target}, defining the length
-#' of the respective \code{numeric} \code{vector} argument.
+#' @param npar \[`integer()`\]\cr
+#' The length of each target arguments, i.e., the length(s) of the
+#' \code{numeric} \code{vector} argument(s) specified by \code{target}.
 #'
 #' @param ...
-#' Optionally additional arguments to \code{f} that are fixed during
-#' the optimization.
+#' Optionally additional function arguments that are fixed during the
+#' optimization.
 #'
-#' @param overwrite
-#' Either \code{TRUE} (default) to allow overwriting, or \code{FALSE} if not.
+#' @param .overwrite \[`logical(1)`\]\cr
+#' Allow overwriting?
 #'
-#' @param verbose
-#' Either \code{TRUE} (default) to print status messages, or \code{FALSE}
-#' to hide those.
+#' @param .verbose \[`logical(1)`\]\cr
+#' Print status messages?
 #'
-#' @param argument_name
-#' A \code{character}, a name of an argument for \code{f}.
+#' @param argument_name \[`character(1)`\]\cr
+#' A name of a function argument.
 #'
-#' @param .at
-#' A \code{numeric} of length \code{sum(self$npar)}, the values for the target
-#' arguments written in a single vector.
+#' @param .at \[`numeric()`\]\cr
+#' The values for the target argument(s), written in a single vector (hence must
+#' be of length \code{sum(self$npar)}).
 #'
-#' @param .negate
-#' Either \code{TRUE} to negate the \code{numeric} return value of
-#' \code{f}, or \code{FALSE} (default) else.
+#' @param .negate \[`logical(1)`\]\cr
+#' Negate the function return value?
 #'
 #' @return
 #' An \code{Objective} object.
@@ -80,19 +69,40 @@ Objective <- R6::R6Class(
 
     #' @description
     #' Creates a new \code{Objective} object.
-    #' @return
-    #' A new \code{Objective} object.
+    #'
+    #' @param f \[`function`\]\cr
+    #' A \code{function} to be optimized.
+    #'
+    #' It is expected that \code{f} has at least one \code{numeric} argument.
+    #'
+    #' Further, it is expected that the return value of \code{f} is of the
+    #' structure \code{numeric(1)}, i.e. a single \code{numeric} value.
+
     initialize = function(f, target = NULL, npar, ...) {
 
       ### input checks
-      checkmate::assert_function(f)
+      oeli::input_check_response(
+        check = checkmate::check_function(f),
+        var_name = "f"
+      )
       if (is.null(target)) {
         target <- oeli::function_arguments(f, with_ellipsis = FALSE)[1]
       }
-      checkmate::assert_character(target, any.missing = FALSE, min.len = 1)
-      checkmate::assert_function(f, args = target)
-      checkmate::assert_integerish(
-        npar, lower = 1, any.missing = FALSE, len = length(target)
+      oeli::input_check_response(
+        check = checkmate::check_character(
+          target, any.missing = FALSE, min.len = 1
+        ),
+        var_name = "target"
+      )
+      oeli::input_check_response(
+        check = checkmate::check_function(f, args = target),
+        var_name = "f"
+      )
+      oeli::input_check_response(
+        check = checkmate::check_integerish(
+          npar, lower = 1, any.missing = FALSE, len = length(target)
+        ),
+        var_name = "f"
       )
       arguments <- list(...)
       arguments <- c(
@@ -101,120 +111,260 @@ Objective <- R6::R6Class(
       )
 
       ### define objective
-      do.call(self$set_argument, c(arguments, list(verbose = FALSE)))
+      do.call(self$set_argument, c(arguments, list(.verbose = FALSE)))
       self$objective_name <- oeli::variable_name(f)
       private$.f <- f
       private$.target <- target
       private$.npar <- npar
+
     },
 
     #' @description
     #' Set a fixed function argument.
-    #' @return
-    #' Invisibly the \code{Objective} object.
-    set_argument = function(..., overwrite = TRUE, verbose = self$verbose) {
-      checkmate::assert_flag(overwrite)
-      checkmate::assert_flag(verbose)
+
+    set_argument = function(..., .overwrite = TRUE, .verbose = self$verbose) {
+
+      ### input checks
+      oeli::input_check_response(
+        check = checkmate::check_flag(.overwrite),
+        var_name = ".overwrite"
+      )
+      oeli::input_check_response(
+        check = checkmate::check_flag(.verbose),
+        var_name = ".verbose"
+      )
       arguments <- list(...)
-      checkmate::check_names(arguments, type = "strict")
+      if (length(arguments) > 0) {
+        oeli::input_check_response(
+          check = checkmate::check_names(names(arguments), type = "strict"),
+          var_name = "..."
+        )
+      }
+
+      ### set arguments
       argument_names <- names(arguments)
       for (i in seq_along(arguments)) {
         if (argument_names[i] %in% names(private$.arguments)) {
-          if (!overwrite) {
+          if (!.overwrite) {
             cli::cli_abort(
               "Argument {.var {argument_names[i]}} already exists, call
-               {.var $set_argument(..., {.val overwrite = TRUE})} to overwrite.",
+               {.var $set_argument(..., {.val .overwrite = TRUE})} to
+              overwrite.",
               call = NULL
             )
           } else {
-            if (verbose) {
+            if (.verbose) {
               cli::cli_alert("Overwriting argument {.val {argument_names[i]}}.")
             }
           }
         } else {
-          if (verbose) {
+          if (.verbose) {
             cli::cli_alert("Setting argument {.val {argument_names[i]}}.")
           }
         }
         private$.arguments[argument_names[i]] <- arguments[i]
       }
+
+      ### synchronize with gradient and Hessian (if available)
+      private$.sync_arguments(.verbose = .verbose)
+
       invisible(self)
+
     },
 
     #' @description
     #' Get a fixed function argument.
-    #' @return
-    #' The argument value.
-    get_argument = function(argument_name, verbose = self$verbose) {
-      private$.check_argument_specified(argument_name, verbose = verbose)
-      checkmate::assert_flag(verbose)
-      if (verbose) {
+
+    get_argument = function(argument_name, .verbose = self$verbose) {
+
+      ### input checks
+      private$.check_argument_specified(argument_name, .verbose = .verbose)
+      oeli::input_check_response(
+        check = checkmate::check_flag(.verbose),
+        var_name = ".verbose"
+      )
+
+      ### get argument
+      if (.verbose) {
         cli::cli_alert("Returning argument {.val {argument_name}}.")
       }
       private$.arguments[[argument_name]]
+
     },
 
     #' @description
     #' Remove a fixed function argument.
-    #' @return
-    #' Invisibly the \code{Objective} object.
-    remove_argument = function(argument_name, verbose = self$verbose) {
-      private$.check_argument_specified(argument_name, verbose = verbose)
-      checkmate::assert_flag(verbose)
-      if (verbose) {
+
+    remove_argument = function(argument_name, .verbose = self$verbose) {
+
+      ### input checks
+      private$.check_argument_specified(argument_name, .verbose = .verbose)
+      oeli::input_check_response(
+        check = checkmate::check_flag(.verbose),
+        var_name = ".verbose"
+      )
+
+      ### remove argument
+      if (.verbose) {
         cli::cli_alert("Removing argument {.val {argument_name}}.")
       }
       private$.arguments[[argument_name]] <- NULL
+
+      ### synchronize with gradient and Hessian (if available)
+      private$.sync_arguments(.verbose = .verbose)
+
+      invisible(self)
+
+    },
+
+    #' @description
+    #' Set a gradient function.
+    #'
+    #' @param gradient \[`function`\]\cr
+    #' A \code{function} that computes the gradient of the objective function
+    #' \code{f}.
+    #'
+    #' It is expected that \code{gradient} has the same call as \code{f}, and
+    #' that \code{gradient} returns a \code{numeric} \code{vector} of length
+    #' \code{self$npar}.
+
+    set_gradient = function(
+      gradient, target = self$target, npar = self$npar, ...,
+      .verbose = self$verbose
+    ) {
+
+      ### determine arguments
+      arguments <- oeli::merge_lists(list(...), private$.arguments)
+
+      ### setting gradient
+      private$.gradient <- do.call(
+        Objective$new,
+        c(list(f = gradient, target = target, npar = npar), arguments)
+      )
+      private$.gradient$objective_name <- oeli::variable_name(
+        gradient, fallback = "gradient"
+      )
+      if (.verbose) {
+        cli::cli_alert("Setting gradient function.")
+      }
+
       invisible(self)
     },
 
     #' @description
-    #' Validate an \code{Objective} object.
-    #' @return
-    #' Invisibly the \code{Objective} object.
-    validate = function(.at) {
-      if (missing(.at)) {
-        cli::cli_abort(
-          "Please specify the argument {.var .at}",
-          call = NULL
-        )
-      }
-      private$.check_target(.at, verbose = TRUE)
-      private$.check_arguments_complete(verbose = TRUE)
-      cli::cli_progress_step(
-        "Evaluating the function.",
-        msg_done = "The function output has the expected structure, great!",
-        msg_failed = "Test evaluation failed."
+    #' Set a Hessian function.
+    #'
+    #' @param hessian \[`function`\]\cr
+    #' A \code{function} that computes the Hessian of the objective function
+    #' \code{f}.
+    #'
+    #' It is expected that \code{hessian} has the same call as \code{f}, and
+    #' that \code{hessian} returns a \code{numeric} \code{matrix} of dimension
+    #' \code{self$npar} times \code{self$npar}.
+
+    set_hessian = function(
+      hessian, target = self$target, npar = self$npar, ...,
+      .verbose = self$verbose
+    ) {
+
+      ### determine arguments
+      arguments <- oeli::merge_lists(list(...), private$.arguments)
+
+      ### setting Hessian
+      private$.hessian <- do.call(
+        Objective$new,
+        c(list(f = hessian, target = target, npar = npar), arguments)
       )
-      output <- self$evaluate(.at = .at)
-      if (!oeli::identical_structure(output, private$.output_template)) {
-        stop(
-          "The function output does not have the expected structure.",
-          call. = FALSE
-        )
+      private$.hessian$objective_name <- oeli::variable_name(
+        hessian, fallback = "hessian"
+      )
+      if (.verbose) {
+        cli::cli_alert("Setting Hessian function.")
       }
-      cli::cli_progress_done()
+
       invisible(self)
     },
 
     #' @description
     #' Evaluate the objective function.
-    #' @return
-    #' The objective value.
-    evaluate = function(.at, .negate = FALSE, ...) {
-      private$.check_target(.at, verbose = FALSE)
-      checkmate::assert_flag(.negate)
+    #'
+    #' @param .gradient_as_attribute \[`logical(1)\]\cr
+    #' Add the value of the gradient function as an attribute to the output?
+    #'
+    #' The attribute name is defined via the `.gradient_attribute_name`
+    #' argument.
+    #'
+    #' Ignored if `$gradient_specified` is `FALSE`.
+    #'
+    #' @param .gradient_attribute_name \[`character(1)\]\cr
+    #' Only relevant if `.gradient_as_attribute = TRUE`.
+    #'
+    #' In that case, the attribute name for the gradient (if available).
+    #'
+    #' @param .hessian_as_attribute \[`logical(1)\]\cr
+    #' Add the value of the Hessian function as an attribute to the output?
+    #'
+    #' The attribute name is defined via the `.hessian_attribute_name`
+    #' argument.
+    #'
+    #' Ignored if `$hessian_specified` is `FALSE`.
+    #'
+    #' @param .hessian_attribute_name \[`character(1)\]\cr
+    #' Only relevant if `.hessian_as_attribute = TRUE`.
+    #'
+    #' In that case, the attribute name for the Hessian (if available).
+
+    evaluate = function(
+      .at,
+      .negate = FALSE,
+      .gradient_as_attribute = FALSE,
+      .gradient_attribute_name = "gradient",
+      .hessian_as_attribute = FALSE,
+      .hessian_attribute_name = "hessian",
+      ...
+    ) {
+
+      ### input checks
+      private$.check_target(.at, .verbose = FALSE)
+      oeli::input_check_response(
+        check = checkmate::check_flag(.negate),
+        var_name = ".negate"
+      )
+      oeli::input_check_response(
+        check = checkmate::check_flag(.gradient_as_attribute),
+        var_name = ".gradient_as_attribute"
+      )
+      oeli::input_check_response(
+        check = checkmate::check_string(
+          .gradient_attribute_name, na.ok = !.gradient_as_attribute
+        ),
+        var_name = ".gradient_attribute_name"
+      )
+      oeli::input_check_response(
+        check = checkmate::check_flag(.hessian_as_attribute),
+        var_name = ".hessian_as_attribute"
+      )
+      oeli::input_check_response(
+        check = checkmate::check_string(
+          .hessian_attribute_name, na.ok = !.hessian_as_attribute
+        ),
+        var_name = ".hessian_attribute_name"
+      )
+
+      ### evaluation
       splits <- c(0, cumsum(private$.npar))
-      .at <- structure(
-        lapply(seq_along(splits)[-1], function(i) .at[(splits[i - 1] + 1):(splits[i])]),
+      .at_split <- structure(
+        lapply(seq_along(splits)[-1], function(i) {
+          .at[(splits[i - 1] + 1):(splits[i])]
+        }),
         names = private$.target
       )
       setTimeLimit(cpu = self$seconds, elapsed = self$seconds, transient = TRUE)
       on.exit({
         setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE)
       })
-      args <- c(.at, oeli::merge_lists(list(...), private$.arguments))
-      tryCatch(
+      args <- c(.at_split, oeli::merge_lists(list(...), private$.arguments))
+      out <- tryCatch(
         {
           suppressWarnings(
             value <- do.call(what = private$.f, args = args),
@@ -234,18 +384,141 @@ Objective <- R6::R6Class(
           }
         }
       )
+
+      ### add gradient and Hessian
+      if (isTRUE(.gradient_as_attribute) && self$gradient_specified) {
+        attr(out, .gradient_attribute_name) <- self$evaluate_gradient(
+          .at = .at, .negate = .negate, ...
+        )
+      }
+      if (isTRUE(.hessian_as_attribute) && self$hessian_specified) {
+        attr(out, .hessian_attribute_name) <- self$evaluate_hessian(
+          .at = .at, .negate = .negate, ...
+        )
+      }
+
+      ### return
+      return(out)
+
+    },
+
+    #' @description
+    #' Evaluate the gradient function.
+
+    evaluate_gradient = function(.at, .negate = FALSE, ...) {
+      if (self$gradient_specified) {
+        private$.gradient$evaluate(.at = .at, .negate = .negate, ...)
+      } else {
+        cli::cli_abort(
+          "Gradient function is required but not specified, please call
+          {.var $set_gradient()} first.",
+          call = NULL
+        )
+      }
+    },
+
+    #' @description
+    #' Evaluate the Hessian function.
+
+    evaluate_hessian = function(.at, .negate = FALSE, ...) {
+      if (self$hessian_specified) {
+        private$.hessian$evaluate(.at = .at, .negate = .negate, ...)
+      } else {
+        cli::cli_abort(
+          "Hessian function is required but not specified, please call
+          {.var $set_hessian()} first.",
+          call = NULL
+        )
+      }
+    },
+
+    #' @description
+    #' Validate an \code{Objective} object.
+    #'
+    #' @param output_template_f \[`any`\]\cr
+    #' A template of the expected function output value.
+    #'
+    #' @param output_template_gradient \[`any`\]\cr
+    #' A template of the expected gradient output value.
+    #'
+    #' @param output_template_hessian \[`any`\]\cr
+    #' A template of the expected hessian output value.
+
+    validate = function(
+      .at,
+      output_template_f = numeric(1),
+      output_template_gradient = numeric(sum(self$npar)),
+      output_template_hessian = matrix(
+        numeric(), nrow = sum(self$npar), ncol = sum(self$npar)
+      ),
+      .verbose = TRUE
+    ) {
+
+      ### input checks
+      if (missing(.at)) {
+        cli::cli_abort(
+          "Please specify the argument {.var .at}",
+          call = NULL
+        )
+      }
+      oeli::input_check_response(
+        check = checkmate::check_flag(.verbose),
+        var_name = ".verbose"
+      )
+
+      ### validation
+      if (.verbose) {
+        cli::cli_progress_step(
+          "Validating the {.code {private$.objective_name}} function."
+        )
+      }
+      private$.check_target(.at, .verbose = .verbose)
+      private$.check_arguments_complete(.verbose = .verbose)
+      private$.check_output_template(
+        .at, output_template_f = output_template_f, .verbose = .verbose
+      )
+      if (!is.null(private$.gradient)) {
+        private$.gradient$validate(
+          .at = .at, output_template_f = output_template_gradient,
+          .verbose = .verbose
+        )
+      }
+      if (!is.null(private$.hessian)) {
+        private$.hessian$validate(
+          .at = .at, output_template_f = output_template_hessian,
+          .verbose = .verbose
+        )
+      }
+      invisible(self)
+
     },
 
     #' @description
     #' Print details of the \code{Objective} object.
-    #' @return
-    #' Invisibly the \code{Objective} object.
+
     print = function() {
       cli::cat_bullet(c(
-        paste("Function:", private$.objective_name),
-        paste("Definition:", oeli::function_body(private$.f, nchar = 40)),
-        paste("Targets (length):", paste(paste0(private$.target, " (", private$.npar, ")"), collapse = ", ")),
-        paste("Fixed arguments specified:", paste(names(private$.arguments), collapse = ", "))
+        paste(
+          "Function:", private$.objective_name
+        ),
+        paste(
+          "Definition:", oeli::function_body(private$.f, nchar = 40)
+        ),
+        paste(
+          "Targets (length):",
+          paste(
+            paste0(private$.target, " (", private$.npar, ")"), collapse = ", "
+          )
+        ),
+        paste(
+          "Fixed arguments specified:",
+          if(length(private$.arguments) == 0) {
+            "none"
+          } else {
+            paste(names(private$.arguments), collapse = ", ")
+          },
+          collapse = ", "
+        )
       ))
       invisible(self)
     }
@@ -254,19 +527,22 @@ Objective <- R6::R6Class(
 
   active = list(
 
-    #' @field objective_name
-    #' A \code{character}, a label for the objective function.
+    #' @field objective_name \[`character(1)`\]\cr
+    #' The label for the objective function.
+
     objective_name = function(value) {
       if (missing(value)) {
         return(private$.objective_name)
       } else {
-        checkmate::assert_string(value)
+        oeli::input_check_response(
+          check = checkmate::check_string(value),
+        )
         private$.objective_name <- value
       }
     },
 
-    #' @field fixed_arguments
-    #' A \code{character}, the names of the fixed arguments (if any).
+    #' @field fixed_arguments \[`character()`\]\cr
+    #' The name(s) of the fixed argument(s) (if any).
     fixed_arguments = function(value) {
       if (missing(value)) {
         names(private$.arguments)
@@ -278,48 +554,56 @@ Objective <- R6::R6Class(
       }
     },
 
-    #' @field seconds
-    #' A \code{numeric}, a time limit in seconds. Computations are interrupted
+    #' @field seconds \[`numeric(1)`\]\cr
+    #' A time limit in seconds. Computations are interrupted
     #' prematurely if \code{seconds} is exceeded.
     #'
     #' No time limit if \code{seconds = Inf} (the default).
     #'
     #' Note the limitations documented in \code{\link[base]{setTimeLimit}}.
+
     seconds = function(value) {
       if (missing(value)) {
         return(private$.seconds)
       } else {
-        checkmate::assert_number(value, lower = 0, finite = FALSE)
+        oeli::input_check_response(
+          check = checkmate::check_number(value, lower = 0, finite = FALSE)
+        )
         private$.seconds <- value
       }
     },
 
-    #' @field hide_warnings
-    #' Either \code{TRUE} to hide warnings when evaluating the objective function,
-    #' or \code{FALSE} (default) if not.
+    #' @field hide_warnings \[`logical(1)`\]\cr
+    #' Hide warnings when evaluating the objective function?
+
     hide_warnings = function(value) {
       if (missing(value)) {
         return(private$.hide_warnings)
       } else {
-        checkmate::assert_flag(value)
+        oeli::input_check_response(
+          check = checkmate::check_flag(value)
+        )
         private$.hide_warnings <- value
       }
     },
 
-    #' @field verbose
-    #' Either \code{TRUE} (default) to print status messages, or \code{FALSE}
-    #' to hide those.
+    #' @field verbose \[`logical(1)`\]\cr
+    #' Print status messages?
+
     verbose = function(value) {
       if (missing(value)) {
         return(private$.verbose)
       } else {
-        checkmate::assert_flag(value)
+        oeli::input_check_response(
+          check = checkmate::check_flag(value)
+        )
         private$.verbose <- value
       }
     },
 
-    #' @field npar
-    #' An \code{integer} vector, defining the length of each target argument.
+    #' @field npar \[`integer()`\]\cr
+    #' The length of each target argument.
+
     npar = function(value) {
       if (missing(value)) {
         structure(private$.npar, names = private$.target)
@@ -331,14 +615,45 @@ Objective <- R6::R6Class(
       }
     },
 
-    #' @field output_template
-    #' A template of the expected output value, used for the \code{validate}
-    #' method.
-    output_template = function(value) {
+    #' @field target \[`character()`\]\cr
+    #' The argument name(s) that get optimized.
+
+    target = function(value) {
       if (missing(value)) {
-        private$.output_template
+        private$.target
       } else {
-        private$.output_template <- value
+        cli::cli_abort(
+          "Field {.var target} is read-only.",
+          call = NULL
+        )
+      }
+    },
+
+    #' @field gradient_specified \[`logical(1)`\]\cr
+    #' Whether a gradient function has been specified via `$set_gradient()`.
+
+    gradient_specified = function(value) {
+      if (missing(value)) {
+        !is.null(private$.gradient)
+      } else {
+        cli::cli_abort(
+          "Field {.var gradient_specified} is read-only.",
+          call = NULL
+        )
+      }
+    },
+
+    #' @field hessian_specified \[`logical(1)`\]\cr
+    #' Whether a Hessian function has been specified via `$set_hessian()`.
+
+    hessian_specified = function(value) {
+      if (missing(value)) {
+        !is.null(private$.hessian)
+      } else {
+        cli::cli_abort(
+          "Field {.var hessian_specified} is read-only.",
+          call = NULL
+        )
       }
     }
 
@@ -354,10 +669,11 @@ Objective <- R6::R6Class(
     .seconds = Inf,
     .hide_warnings = FALSE,
     .verbose = TRUE,
-    .output_template = numeric(1),
+    .gradient = NULL,
+    .hessian = NULL,
 
     ### helper function that checks the target argument
-    .check_target = function(.at, verbose = self$verbose) {
+    .check_target = function(.at, .verbose = self$verbose) {
       if (!checkmate::test_numeric(
         .at, any.missing = FALSE, len = sum(private$.npar)
       )) {
@@ -368,16 +684,20 @@ Objective <- R6::R6Class(
           call = NULL
         )
       }
-      if (verbose) {
+      if (.verbose) {
         cli::cli_alert_success(
-          "The value{?s} for the {length(private$.npar)} target argument{?s} {?is/are} correctly specified."
+          "The value{?s} for the {length(private$.npar)} target
+          argument{?s} {?is/are} correctly specified.",
+          wrap = TRUE
         )
       }
       invisible(TRUE)
     },
 
     ### helper function that checks if a function argument is specified
-    .check_argument_specified = function(argument_name, verbose = self$verbose) {
+    .check_argument_specified = function(
+      argument_name, .verbose = self$verbose
+    ) {
       checkmate::assert_string(argument_name)
       if (!argument_name %in% names(private$.arguments)) {
         cli::cli_abort(
@@ -387,7 +707,7 @@ Objective <- R6::R6Class(
           call = NULL
         )
       }
-      if (verbose) {
+      if (.verbose) {
         cli::cli_alert_success(
           "Required argument {.val {argument_name}} is specified."
         )
@@ -395,18 +715,62 @@ Objective <- R6::R6Class(
     },
 
     ### helper function that checks if all required arguments are specified
-    .check_arguments_complete = function(verbose = self$verbose) {
+    .check_arguments_complete = function(.verbose = self$verbose) {
       arguments_required <- oeli::function_arguments(
         private$.f, with_default = FALSE, with_ellipsis = FALSE
       )
       for (argument_name in setdiff(arguments_required, private$.target)) {
-        private$.check_argument_specified(argument_name, verbose = FALSE)
+        private$.check_argument_specified(argument_name, .verbose = FALSE)
       }
-      if (verbose) {
+      if (.verbose) {
         cli::cli_alert_success(
-          "All required fixed arguments are specified."
+          "All required fixed arguments for {.code {private$.objective_name}}
+          are specified.",
+          wrap = TRUE
         )
       }
+    },
+
+    ### helper function that checks if the output is as expected
+    .check_output_template = function(
+      .at, output_template_f, .verbose = self$verbose
+    ) {
+      if (.verbose) {
+        cli::cli_progress_step(
+          "Verifying the output structure of {.code {private$.objective_name}}
+          function."
+        )
+      }
+      output <- self$evaluate(.at = .at)
+      if (!oeli::identical_structure(output, output_template_f)) {
+        cli::cli_abort(
+          "The function output of {.code {private$.objective_name}} does not
+          have the expected structure.",
+          call = NULL
+        )
+      }
+    },
+
+    ### helper function to synchronize arguments with gradient and Hessian
+    ### function (if specified)
+    .sync_arguments = function(.verbose = self$verbose) {
+
+        if (!is.null(private$.gradient)) {
+          private$.gradient$.__enclos_env__$private$.arguments <-
+            private$.arguments
+          if (.verbose) {
+            cli::cli_alert("Synchronized arguments with gradient function.")
+          }
+        }
+
+        if (!is.null(private$.gradient)) {
+          private$.hessian$.__enclos_env__$private$.arguments <-
+            private$.arguments
+          if (.verbose) {
+            cli::cli_alert("Synchronized arguments with Hessian function.")
+          }
+        }
+
     }
 
   )
