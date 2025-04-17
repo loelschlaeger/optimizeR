@@ -2,7 +2,7 @@
 % Please edit documentation in R/objective.R
 \name{Objective}
 \alias{Objective}
-\title{Specify objective function}
+\title{Specify objective function object}
 \value{
 An \code{Objective} object.
 }
@@ -34,27 +34,37 @@ objective$evaluate(1:5)
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{objective_name}}{A \code{character}, a label for the objective function.}
+\item{\code{objective_name}}{[\code{character(1)}]\cr
+The label for the objective function.}
 
-\item{\code{fixed_arguments}}{A \code{character}, the names of the fixed arguments (if any).}
+\item{\code{fixed_arguments}}{[\code{character()}]\cr
+The name(s) of the fixed argument(s) (if any).}
 
-\item{\code{seconds}}{A \code{numeric}, a time limit in seconds. Computations are interrupted
+\item{\code{seconds}}{[\code{numeric(1)}]\cr
+A time limit in seconds. Computations are interrupted
 prematurely if \code{seconds} is exceeded.
 
 No time limit if \code{seconds = Inf} (the default).
 
 Note the limitations documented in \code{\link[base]{setTimeLimit}}.}
 
-\item{\code{hide_warnings}}{Either \code{TRUE} to hide warnings when evaluating the objective function,
-or \code{FALSE} (default) if not.}
+\item{\code{hide_warnings}}{[\code{logical(1)}]\cr
+Hide warnings when evaluating the objective function?}
 
-\item{\code{verbose}}{Either \code{TRUE} (default) to print status messages, or \code{FALSE}
-to hide those.}
+\item{\code{verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
 
-\item{\code{npar}}{An \code{integer} vector, defining the length of each target argument.}
+\item{\code{npar}}{[\code{integer()}]\cr
+The length of each target argument.}
 
-\item{\code{output_template}}{A template of the expected output value, used for the \code{validate}
-method.}
+\item{\code{target}}{[\code{character()}]\cr
+The argument name(s) that get optimized.}
+
+\item{\code{gradient_specified}}{[\code{logical(1)}]\cr
+Whether a gradient function has been specified via \verb{$set_gradient()}.}
+
+\item{\code{hessian_specified}}{[\code{logical(1)}]\cr
+Whether a Hessian function has been specified via \verb{$set_hessian()}.}
 }
 \if{html}{\out{</div>}}
 }
@@ -65,8 +75,12 @@ method.}
 \item \href{#method-Objective-set_argument}{\code{Objective$set_argument()}}
 \item \href{#method-Objective-get_argument}{\code{Objective$get_argument()}}
 \item \href{#method-Objective-remove_argument}{\code{Objective$remove_argument()}}
-\item \href{#method-Objective-validate}{\code{Objective$validate()}}
+\item \href{#method-Objective-set_gradient}{\code{Objective$set_gradient()}}
+\item \href{#method-Objective-set_hessian}{\code{Objective$set_hessian()}}
 \item \href{#method-Objective-evaluate}{\code{Objective$evaluate()}}
+\item \href{#method-Objective-evaluate_gradient}{\code{Objective$evaluate_gradient()}}
+\item \href{#method-Objective-evaluate_hessian}{\code{Objective$evaluate_hessian()}}
+\item \href{#method-Objective-validate}{\code{Objective$validate()}}
 \item \href{#method-Objective-print}{\code{Objective$print()}}
 \item \href{#method-Objective-clone}{\code{Objective$clone()}}
 }
@@ -83,30 +97,29 @@ Creates a new \code{Objective} object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{f}}{A \code{function} to be optimized.
+\item{\code{f}}{[\code{function}]\cr
+A \code{function} to be optimized.
 
 It is expected that \code{f} has at least one \code{numeric} argument.
 
 Further, it is expected that the return value of \code{f} is of the
-structure \code{numeric(1)}, i.e. a single \code{numeric} value (although
-this can be altered via the \code{output_template} field).}
+structure \code{numeric(1)}, i.e. a single \code{numeric} value.}
 
-\item{\code{target}}{A \code{character}, the argument name(s) of \code{f} that get optimized.
+\item{\code{target}}{[\code{character()}]\cr
+The argument name(s) that get optimized.
 
 All target arguments must receive a \code{numeric} \code{vector}.
 
-Can be \code{NULL} (default), then it is the first argument of \code{f}.}
+Can be \code{NULL} (default), then it is the first function argument.}
 
-\item{\code{npar}}{A \code{integer} of the same length as \code{target}, defining the length
-of the respective \code{numeric} \code{vector} argument.}
+\item{\code{npar}}{[\code{integer()}]\cr
+The length of each target arguments, i.e., the length(s) of the
+\code{numeric} \code{vector} argument(s) specified by \code{target}.}
 
-\item{\code{...}}{Optionally additional arguments to \code{f} that are fixed during
-the optimization.}
+\item{\code{...}}{Optionally additional function arguments that are fixed during the
+optimization.}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A new \code{Objective} object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -115,24 +128,22 @@ A new \code{Objective} object.
 \subsection{Method \code{set_argument()}}{
 Set a fixed function argument.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$set_argument(..., overwrite = TRUE, verbose = self$verbose)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Objective$set_argument(..., .overwrite = TRUE, .verbose = self$verbose)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{...}}{Optionally additional arguments to \code{f} that are fixed during
-the optimization.}
+\item{\code{...}}{Optionally additional function arguments that are fixed during the
+optimization.}
 
-\item{\code{overwrite}}{Either \code{TRUE} (default) to allow overwriting, or \code{FALSE} if not.}
+\item{\code{.overwrite}}{[\code{logical(1)}]\cr
+Allow overwriting?}
 
-\item{\code{verbose}}{Either \code{TRUE} (default) to print status messages, or \code{FALSE}
-to hide those.}
+\item{\code{.verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Invisibly the \code{Objective} object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -141,21 +152,19 @@ Invisibly the \code{Objective} object.
 \subsection{Method \code{get_argument()}}{
 Get a fixed function argument.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$get_argument(argument_name, verbose = self$verbose)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Objective$get_argument(argument_name, .verbose = self$verbose)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{argument_name}}{A \code{character}, a name of an argument for \code{f}.}
+\item{\code{argument_name}}{[\code{character(1)}]\cr
+A name of a function argument.}
 
-\item{\code{verbose}}{Either \code{TRUE} (default) to print status messages, or \code{FALSE}
-to hide those.}
+\item{\code{.verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-The argument value.
 }
 }
 \if{html}{\out{<hr>}}
@@ -164,42 +173,111 @@ The argument value.
 \subsection{Method \code{remove_argument()}}{
 Remove a fixed function argument.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$remove_argument(argument_name, verbose = self$verbose)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Objective$remove_argument(argument_name, .verbose = self$verbose)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{argument_name}}{A \code{character}, a name of an argument for \code{f}.}
+\item{\code{argument_name}}{[\code{character(1)}]\cr
+A name of a function argument.}
 
-\item{\code{verbose}}{Either \code{TRUE} (default) to print status messages, or \code{FALSE}
-to hide those.}
+\item{\code{.verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Invisibly the \code{Objective} object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Objective-validate"></a>}}
-\if{latex}{\out{\hypertarget{method-Objective-validate}{}}}
-\subsection{Method \code{validate()}}{
-Validate an \code{Objective} object.
+\if{html}{\out{<a id="method-Objective-set_gradient"></a>}}
+\if{latex}{\out{\hypertarget{method-Objective-set_gradient}{}}}
+\subsection{Method \code{set_gradient()}}{
+Set a gradient function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$validate(.at)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Objective$set_gradient(
+  gradient,
+  target = self$target,
+  npar = self$npar,
+  ...,
+  .verbose = self$verbose
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{.at}}{A \code{numeric} of length \code{sum(self$npar)}, the values for the target
-arguments written in a single vector.}
+\item{\code{gradient}}{[\code{function}]\cr
+A \code{function} that computes the gradient of the objective function
+\code{f}.
+
+It is expected that \code{gradient} has the same call as \code{f}, and
+that \code{gradient} returns a \code{numeric} \code{vector} of length
+\code{self$npar}.}
+
+\item{\code{target}}{[\code{character()}]\cr
+The argument name(s) that get optimized.
+
+All target arguments must receive a \code{numeric} \code{vector}.
+
+Can be \code{NULL} (default), then it is the first function argument.}
+
+\item{\code{npar}}{[\code{integer()}]\cr
+The length of each target arguments, i.e., the length(s) of the
+\code{numeric} \code{vector} argument(s) specified by \code{target}.}
+
+\item{\code{...}}{Optionally additional function arguments that are fixed during the
+optimization.}
+
+\item{\code{.verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Returns}{
-Invisibly the \code{Objective} object.
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Objective-set_hessian"></a>}}
+\if{latex}{\out{\hypertarget{method-Objective-set_hessian}{}}}
+\subsection{Method \code{set_hessian()}}{
+Set a Hessian function.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Objective$set_hessian(
+  hessian,
+  target = self$target,
+  npar = self$npar,
+  ...,
+  .verbose = self$verbose
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{hessian}}{[\code{function}]\cr
+A \code{function} that computes the Hessian of the objective function
+\code{f}.
+
+It is expected that \code{hessian} has the same call as \code{f}, and
+that \code{hessian} returns a \code{numeric} \code{matrix} of dimension
+\code{self$npar} times \code{self$npar}.}
+
+\item{\code{target}}{[\code{character()}]\cr
+The argument name(s) that get optimized.
+
+All target arguments must receive a \code{numeric} \code{vector}.
+
+Can be \code{NULL} (default), then it is the first function argument.}
+
+\item{\code{npar}}{[\code{integer()}]\cr
+The length of each target arguments, i.e., the length(s) of the
+\code{numeric} \code{vector} argument(s) specified by \code{target}.}
+
+\item{\code{...}}{Optionally additional function arguments that are fixed during the
+optimization.}
+
+\item{\code{.verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -208,25 +286,143 @@ Invisibly the \code{Objective} object.
 \subsection{Method \code{evaluate()}}{
 Evaluate the objective function.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$evaluate(.at, .negate = FALSE, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Objective$evaluate(
+  .at,
+  .negate = FALSE,
+  .gradient_as_attribute = FALSE,
+  .gradient_attribute_name = "gradient",
+  .hessian_as_attribute = FALSE,
+  .hessian_attribute_name = "hessian",
+  ...
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{.at}}{A \code{numeric} of length \code{sum(self$npar)}, the values for the target
-arguments written in a single vector.}
+\item{\code{.at}}{[\code{numeric()}]\cr
+The values for the target argument(s), written in a single vector (hence must
+be of length \code{sum(self$npar)}).}
 
-\item{\code{.negate}}{Either \code{TRUE} to negate the \code{numeric} return value of
-\code{f}, or \code{FALSE} (default) else.}
+\item{\code{.negate}}{[\code{logical(1)}]\cr
+Negate the function return value?}
 
-\item{\code{...}}{Optionally additional arguments to \code{f} that are fixed during
-the optimization.}
+\item{\code{.gradient_as_attribute}}{[`logical(1)]\cr
+Add the value of the gradient function as an attribute to the output?
+
+The attribute name is defined via the \code{.gradient_attribute_name}
+argument.
+
+Ignored if \verb{$gradient_specified} is \code{FALSE}.}
+
+\item{\code{.gradient_attribute_name}}{[\verb{character(1)\]\\cr Only relevant if }.gradient_as_attribute = TRUE`.
+
+In that case, the attribute name for the gradient (if available).}
+
+\item{\code{.hessian_as_attribute}}{[`logical(1)]\cr
+Add the value of the Hessian function as an attribute to the output?
+
+The attribute name is defined via the \code{.hessian_attribute_name}
+argument.
+
+Ignored if \verb{$hessian_specified} is \code{FALSE}.}
+
+\item{\code{.hessian_attribute_name}}{[\verb{character(1)\]\\cr Only relevant if }.hessian_as_attribute = TRUE`.
+
+In that case, the attribute name for the Hessian (if available).}
+
+\item{\code{...}}{Optionally additional function arguments that are fixed during the
+optimization.}
 }
 \if{html}{\out{</div>}}
 }
-\subsection{Returns}{
-The objective value.
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Objective-evaluate_gradient"></a>}}
+\if{latex}{\out{\hypertarget{method-Objective-evaluate_gradient}{}}}
+\subsection{Method \code{evaluate_gradient()}}{
+Evaluate the gradient function.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Objective$evaluate_gradient(.at, .negate = FALSE, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{.at}}{[\code{numeric()}]\cr
+The values for the target argument(s), written in a single vector (hence must
+be of length \code{sum(self$npar)}).}
+
+\item{\code{.negate}}{[\code{logical(1)}]\cr
+Negate the function return value?}
+
+\item{\code{...}}{Optionally additional function arguments that are fixed during the
+optimization.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Objective-evaluate_hessian"></a>}}
+\if{latex}{\out{\hypertarget{method-Objective-evaluate_hessian}{}}}
+\subsection{Method \code{evaluate_hessian()}}{
+Evaluate the Hessian function.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Objective$evaluate_hessian(.at, .negate = FALSE, ...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{.at}}{[\code{numeric()}]\cr
+The values for the target argument(s), written in a single vector (hence must
+be of length \code{sum(self$npar)}).}
+
+\item{\code{.negate}}{[\code{logical(1)}]\cr
+Negate the function return value?}
+
+\item{\code{...}}{Optionally additional function arguments that are fixed during the
+optimization.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Objective-validate"></a>}}
+\if{latex}{\out{\hypertarget{method-Objective-validate}{}}}
+\subsection{Method \code{validate()}}{
+Validate an \code{Objective} object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Objective$validate(
+  .at,
+  output_template_f = numeric(1),
+  output_template_gradient = numeric(sum(self$npar)),
+  output_template_hessian = matrix(numeric(), nrow = sum(self$npar), ncol =
+    sum(self$npar)),
+  .verbose = TRUE
+)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{.at}}{[\code{numeric()}]\cr
+The values for the target argument(s), written in a single vector (hence must
+be of length \code{sum(self$npar)}).}
+
+\item{\code{output_template_f}}{[\code{any}]\cr
+A template of the expected function output value.}
+
+\item{\code{output_template_gradient}}{[\code{any}]\cr
+A template of the expected gradient output value.}
+
+\item{\code{output_template_hessian}}{[\code{any}]\cr
+A template of the expected hessian output value.}
+
+\item{\code{.verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -238,9 +434,6 @@ Print details of the \code{Objective} object.
 \if{html}{\out{<div class="r">}}\preformatted{Objective$print()}\if{html}{\out{</div>}}
 }
 
-\subsection{Returns}{
-Invisibly the \code{Objective} object.
-}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-Objective-clone"></a>}}
