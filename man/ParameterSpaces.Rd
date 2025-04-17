@@ -131,7 +131,7 @@ Show transformer functions in the output?}
 \subsection{Method \code{switch()}}{
 Switch between Optimization Space and Interpretation Space.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ParameterSpaces$switch(x)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ParameterSpaces$switch(x, to = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -141,6 +141,15 @@ Switch between Optimization Space and Interpretation Space.
 The parameters, either as a \verb{numeric vector} (will be switched to
 Interpretation Space), or as a \code{list()} (will be switched to Optimization
 Space).}
+
+\item{\code{to}}{[\code{character(1)} | \code{NULL}]\cr
+Explicitly switch to a specific space, either
+\itemize{
+\item \code{"o"}: Optimization Space
+\item \code{"i"}: Interpretation Space
+}
+
+If \code{NULL}, the function will switch to the other space.}
 }
 \if{html}{\out{</div>}}
 }

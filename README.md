@@ -11,7 +11,7 @@ status](https://www.r-pkg.org/badges/version/optimizeR)](https://CRAN.R-project.
 downloads](https://cranlogs.r-pkg.org/badges/last-month/optimizeR)](https://cran.r-project.org/package=optimizeR)
 [![R-CMD-check](https://github.com/loelschlaeger/optimizeR/workflows/R-CMD-check/badge.svg)](https://github.com/loelschlaeger/optimizeR/actions)
 [![Codecov test
-coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/loelschlaeger/optimizeR?branch=master)
+coverage](https://codecov.io/gh/loelschlaeger/optimizeR/graph/badge.svg)](https://app.codecov.io/gh/loelschlaeger/optimizeR)
 <!-- badges: end -->
 
 The `{optimizeR}` package provides an object-oriented framework for
@@ -188,7 +188,7 @@ nlm$maximize(objective = objective, initial = c(3, 3))
 #> [1] 1.974451 1.974451
 #> 
 #> $seconds
-#> [1] 0.0156219
+#> [1] 0.01711607
 #> 
 #> $initial
 #> [1] 3 3
@@ -215,7 +215,7 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> [1] 0 0
 #> 
 #> $seconds
-#> [1] 0.008200884
+#> [1] 0.008198023
 #> 
 #> $initial
 #> [1] 3 3
