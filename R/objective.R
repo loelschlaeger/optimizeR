@@ -502,9 +502,6 @@ Objective <- R6::R6Class(
           "Function:", private$.objective_name
         ),
         paste(
-          "Definition:", oeli::function_body(private$.f, nchar = 40)
-        ),
-        paste(
           "Targets (length):",
           paste(
             paste0(private$.target, " (", private$.npar, ")"), collapse = ", "

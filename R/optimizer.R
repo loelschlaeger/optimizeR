@@ -106,6 +106,10 @@ Optimizer <- R6::R6Class(
 
       ### input checks
       oeli::input_check_response(
+        check = oeli::check_missing(which),
+        var_name = "which"
+      )
+      oeli::input_check_response(
         check = checkmate::check_string(which),
         var_name = "which"
       )
@@ -472,6 +476,14 @@ Optimizer <- R6::R6Class(
       upper = NA,
       ...
     ) {
+      oeli::input_check_response(
+        check = oeli::check_missing(objective),
+        var_name = "objective"
+      )
+      oeli::input_check_response(
+        check = oeli::check_missing(initial),
+        var_name = "initial"
+      )
       private$.optimize(
         objective = objective,
         initial = initial,
@@ -514,6 +526,14 @@ Optimizer <- R6::R6Class(
       upper = NA,
       ...
     ) {
+      oeli::input_check_response(
+        check = oeli::check_missing(objective),
+        var_name = "objective"
+      )
+      oeli::input_check_response(
+        check = oeli::check_missing(initial),
+        var_name = "initial"
+      )
       private$.optimize(
         objective = objective,
         initial = initial,
@@ -559,6 +579,14 @@ Optimizer <- R6::R6Class(
       direction = "min",
       ...
     ) {
+      oeli::input_check_response(
+        check = oeli::check_missing(objective),
+        var_name = "objective"
+      )
+      oeli::input_check_response(
+        check = oeli::check_missing(initial),
+        var_name = "initial"
+      )
       private$.optimize(
         objective = objective,
         initial = initial,

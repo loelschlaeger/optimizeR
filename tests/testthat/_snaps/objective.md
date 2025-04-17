@@ -252,7 +252,6 @@
       print(objective)
     Output
       * Function: f
-      * Definition: (x + a)^2 + b
       * Targets (length): x (1)
       * Fixed arguments specified: b, a
 
@@ -262,7 +261,6 @@
       print(objective)
     Output
       * Function: llk
-      * Definition: sd <- exp(sd) lambda <- plogis(lambda...
       * Targets (length): mu (2), sd (2), lambda (1)
       * Fixed arguments specified: data
 
@@ -272,7 +270,6 @@
       print(obj)
     Output
       * Function: f
-      * Definition: if (is.null(ind)) { (x[1]^2 + x[2] + ...
       * Targets (length): x (3)
       * Fixed arguments specified: none
 
