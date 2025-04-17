@@ -1,3 +1,4 @@
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # optimizeR <img src="man/figures/logo.png" align="right" height="139" />
@@ -13,20 +14,18 @@ downloads](https://cranlogs.r-pkg.org/badges/last-month/optimizeR)](https://cran
 coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/loelschlaeger/optimizeR?branch=master)
 <!-- badges: end -->
 
-The `{optimizeR}` package
+The `{optimizeR}` package provides an object-oriented framework for
+optimizer functions in R and offers some convenience when minimizing or
+maximizing.
 
-- provides an object-oriented framework for optimizer functions in R
-- and offers some convenience for useRs when minimizing or maximizing.
-
-❌ **You won’t need the package if you…**
+❌ **You won’t need this package if you…**
 
 - already know which optimizer you want to use and if you are happy with
   its constraints (e.g., only minimization over the first function
   argument possible),
 - want to compare optimizers that are already covered by
-  [`{optimx}`](https://CRAN.R-project.org/package=optimx) (Nash and
-  Varadhan 2011) (they provide a framework to compare about 30
-  optimizers),
+  [`{optimx}`](https://CRAN.R-project.org/package=optimx), a framework
+  to compare about 30 optimizers,
 - or search for new optimization algorithms (because this package does
   not implement any optimizer functions itself).
 
@@ -35,8 +34,8 @@ The `{optimizeR}` package
 - compare any optimizer function (also those not covered by `{optimx}`
   or other frameworks; see the [CRAN Task View: Optimization and
   Mathematical
-  Programming](https://CRAN.R-project.org/view=Optimization)
-  (Schwendinger and Borchers 2023) for an overview of R optimizers),
+  Programming](https://CRAN.R-project.org/view=Optimization) for an
+  overview),
 - have consistently named inputs and outputs across different optimizers
   (which is generally not the case),
 - view optimizers as objects (which can be helpful when implementing
@@ -56,11 +55,15 @@ purpose. Let’s assume we want to
 - and compare the performance between the optimizers `stats::nlm` and
   `pracma::nelder_mead`.
 
-We can easily do this task with `{optimizeR}`:
+We can do this task with `{optimizeR}`. You can install the released
+package version from [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
-library("optimizeR")
+install.packages("optimizeR")
 ```
+
+Then load the package via `library("optimizeR")` and you should be ready
+to go.
 
 **1. Define the objective function**
 
@@ -72,7 +75,7 @@ f <- function(a, b, x, y) {
 }
 ```
 
-For `a = b = 20`, this is the inverted [Ackley
+For `a = b = 20`, this is the negative [Ackley
 function](https://en.wikipedia.org/wiki/Ackley_function) with a global
 maximum in `x = y = 0`:
 
@@ -125,8 +128,8 @@ optimizer_dictionary
 #> - ucminf::ucminf
 ```
 
-But in fact any optimizer that is not contained in the dictionary can be
-put into the `{optimizeR}` framework by setting `which = "custom"`
+But in fact, any optimizer that is not contained in the dictionary can
+be put into the `{optimizeR}` framework by setting `which = "custom"`
 first…
 
 ``` r
@@ -185,7 +188,7 @@ nlm$maximize(objective = objective, initial = c(3, 3))
 #> [1] 1.974451 1.974451
 #> 
 #> $seconds
-#> [1] 0.01002908
+#> [1] 0.0156219
 #> 
 #> $initial
 #> [1] 3 3
@@ -212,7 +215,7 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> [1] 0 0
 #> 
 #> $seconds
-#> [1] 0.005402327
+#> [1] 0.008200884
 #> 
 #> $initial
 #> [1] 3 3
@@ -245,65 +248,8 @@ Note that
 - `pracma::nelder_mead` outperforms `stats::nlm` here both in terms of
   optimization time and convergence to the global maximum.
 
-## How to get the access?
-
-You can install the released package version from
-[CRAN](https://CRAN.R-project.org) with:
-
-``` r
-install.packages("optimizeR")
-```
-
-Then load the package via `library("optimizeR")` and you should be ready
-to go.
-
-## Roadmap
-
-The following steps to further improve the package are currently on our
-agenda:
-
-- [ ] The package already provides a dictionary that stores optimizers
-  together with information about names of their inputs and outputs (see
-  the `optimizer_dictionary` object). We want to extend this dictionary
-  with more optimizers that are commonly used.
-
-- [ ] We want to use alias for optimizers in the dictionary that group
-  optimizers into classes (such as “unconstrained optimization”,
-  “constrained Optimization”, “direct search”, “Newton-type” etc.). This
-  would help to find alternative optimizers for a given task.
-
-- [ ] We want to implement a `$summary()` method for an optimizer object
-  that gives an overview of the optimizer, its arguments, and its
-  properties.
-
 ## Getting in touch
 
-You have a question, found a bug, request a feature, want to give
-feedback, or like to contribute? It would be great to hear from you,
-[please file an issue on
+If you have any questions, found a bug, need a feature, [just file an
+issue on
 GitHub](https://github.com/loelschlaeger/optimizeR/issues/new/choose).
-😊
-
-## References
-
-<div id="refs" class="references csl-bib-body hanging-indent"
-entry-spacing="0">
-
-<div id="ref-optimx" class="csl-entry">
-
-Nash, John C., and Ravi Varadhan. 2011. “Unifying Optimization
-Algorithms to Aid Software System Users:
-<span class="nocase">optimx</span> for R.” *Journal of Statistical
-Software* 43 (9): 1–14. <https://doi.org/10.18637/jss.v043.i09>.
-
-</div>
-
-<div id="ref-taskview" class="csl-entry">
-
-Schwendinger, F., and H. W. Borchers. 2023. “CRAN Task View:
-Optimization and Mathematical Programming.”
-<https://CRAN.R-project.org/view=Optimization>.
-
-</div>
-
-</div>

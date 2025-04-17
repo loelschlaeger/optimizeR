@@ -1,8 +1,5 @@
 ---
-output:
-  md_document:
-    variant: gfm
-bibliography: bibliography.bib
+output: github_document
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -24,20 +21,17 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/loelschlaeger/optimizeR/branch/master/graph/badge.svg)](https://app.codecov.io/gh/loelschlaeger/optimizeR?branch=master)
 <!-- badges: end -->
 
-The `{optimizeR}` package 
+The `{optimizeR}` package provides an object-oriented framework for optimizer functions in R and offers some convenience when minimizing or maximizing.
 
-- provides an object-oriented framework for optimizer functions in R
-- and offers some convenience for useRs when minimizing or maximizing.
-
-❌ **You won't need the package if you...**
+❌ **You won't need this package if you...**
 
 - already know which optimizer you want to use and if you are happy with its constraints (e.g., only minimization over the first function argument possible),
-- want to compare optimizers that are already covered by [`{optimx}`](https://CRAN.R-project.org/package=optimx) [@optimx] (they provide a framework to compare about 30 optimizers),
+- want to compare optimizers that are already covered by [`{optimx}`](https://CRAN.R-project.org/package=optimx), a framework to compare about 30 optimizers,
 - or search for new optimization algorithms (because this package does not implement any optimizer functions itself).
 
 ✅ **But you might find the package useful if you want to...**
 
-- compare any optimizer function (also those not covered by `{optimx}` or other frameworks; see the [CRAN Task View: Optimization and Mathematical Programming](https://CRAN.R-project.org/view=Optimization) [@taskview] for an overview of R optimizers),
+- compare any optimizer function (also those not covered by `{optimx}` or other frameworks; see the [CRAN Task View: Optimization and Mathematical Programming](https://CRAN.R-project.org/view=Optimization) for an overview),
 - have consistently named inputs and outputs across different optimizers (which is generally not the case),
 - view optimizers as objects (which can be helpful when implementing packages that depend on optimization),
 - use optimizers for both minimization and maximization,
@@ -52,9 +46,15 @@ The following demo is a bit artificial but showcases the package purpose. Let's 
 - interrupt optimization if it exceeds 10 seconds,
 - and compare the performance between the optimizers `stats::nlm` and `pracma::nelder_mead`.
 
-We can easily do this task with `{optimizeR}`:
+We can do this task with `{optimizeR}`. You can install the released package version from [CRAN](https://CRAN.R-project.org) with:
 
-```{r, load optimizeR}
+```{r, install released version, eval = FALSE}
+install.packages("optimizeR")
+```
+
+Then load the package via `library("optimizeR")` and you should be ready to go.
+
+```{r, load optimizeR, include = FALSE}
 library("optimizeR")
 ```
 
@@ -68,7 +68,7 @@ f <- function(a, b, x, y) {
 }
 ```
 
-For `a = b = 20`, this is the inverted [Ackley function](https://en.wikipedia.org/wiki/Ackley_function) with a global maximum in `x = y = 0`:
+For `a = b = 20`, this is the negative [Ackley function](https://en.wikipedia.org/wiki/Ackley_function) with a global maximum in `x = y = 0`:
 
 ```{r, plot-ackley, echo = FALSE, out.width = "50%", warning = FALSE, fig.align = "center"}
 x <- y <- seq(-3, 3, length.out = 100)
@@ -115,7 +115,7 @@ The `{optimizeR}` package provides a dictionary of optimizers, that can be direc
 optimizer_dictionary
 ```
 
-But in fact any optimizer that is not contained in the dictionary can be put into the `{optimizeR}` framework by setting `which = "custom"` first...
+But in fact, any optimizer that is not contained in the dictionary can be put into the `{optimizeR}` framework by setting `which = "custom"` first...
 
 ```{r, define nelder mead 1}
 nelder_mead <- Optimizer$new(which = "custom")
@@ -172,28 +172,7 @@ Note that
 
 - `pracma::nelder_mead` outperforms `stats::nlm` here both in terms of optimization time and convergence to the global maximum.
 
-## How to get the access?
-
-You can install the released package version from [CRAN](https://CRAN.R-project.org) with:
-
-```{r, install released version, eval = FALSE}
-install.packages("optimizeR")
-```
-
-Then load the package via `library("optimizeR")` and you should be ready to go.
-
-## Roadmap
-
-The following steps to further improve the package are currently on our agenda:
-
-- [ ] The package already provides a dictionary that stores optimizers together with information about names of their inputs and outputs (see the `optimizer_dictionary` object). We want to extend this dictionary with more optimizers that are commonly used.
-
-- [ ] We want to use alias for optimizers in the dictionary that group optimizers into classes (such as "unconstrained optimization", "constrained Optimization", "direct search", "Newton-type" etc.). This would help to find alternative optimizers for a given task.
-
-- [ ] We want to implement a `$summary()` method for an optimizer object that gives an overview of the optimizer, its arguments, and its properties.
-
 ## Getting in touch
 
-You have a question, found a bug, request a feature, want to give feedback, or like to contribute? It would be great to hear from you, [please file an issue on GitHub](https://github.com/loelschlaeger/optimizeR/issues/new/choose). 😊
+If you have any questions, found a bug, need a feature, [just file an issue on GitHub](https://github.com/loelschlaeger/optimizeR/issues/new/choose). 
 
-## References
