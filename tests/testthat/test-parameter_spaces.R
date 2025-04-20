@@ -25,9 +25,17 @@ test_that("Gaussian mixture model parameter spaces work", {
     "sd" = c(0.5, 1),
     "lambda" = c(0.4, 0.6)
   )
+  expect_identical(
+    par,
+    normal_mixture_spaces$switch(par, to = "i")
+  )
   x <- normal_mixture_spaces$switch(par) # switch to optimization space
   expect_equal(
     round(x, 2), c(2, 4, -0.69, 0, -0.41)
+  )
+  expect_identical(
+    x,
+    normal_mixture_spaces$switch(x, to = "o")
   )
   expect_equal(
     normal_mixture_spaces$switch(x), # switch back

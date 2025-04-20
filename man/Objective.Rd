@@ -20,15 +20,13 @@ llk <- function(mu, sd, lambda, data) {
   sum(log(cluster_1 + cluster_2))
 }
 
-### the log-likelihood function is supposed to be optimized over the first
-### three arguments, the 'data' argument is constant
+### optimize over the first three arguments, the 'data' argument is constant
 objective <- Objective$new(
   f = llk, target = c("mu", "sd", "lambda"), npar = c(2, 2, 1),
   data = faithful$eruptions
 )
 
-### evaluate the objective function at 1:5 (1:2 is passed to mu, 3:4 to sd,
-### and 5 to lambda)
+### evaluate at 1:5 (1:2 is passed to mu, 3:4 to sd, and 5 to lambda)
 objective$evaluate(1:5)
 }
 \section{Active bindings}{
@@ -108,12 +106,12 @@ structure \code{numeric(1)}, i.e. a single \code{numeric} value.}
 \item{\code{target}}{[\code{character()}]\cr
 The argument name(s) that get optimized.
 
-All target arguments must receive a \code{numeric} \code{vector}.
+All target arguments must be \code{numeric}.
 
-Can be \code{NULL} (default), then it is the first function argument.}
+Can be \code{NULL} (default), then the first function argument is selected.}
 
 \item{\code{npar}}{[\code{integer()}]\cr
-The length of each target arguments, i.e., the length(s) of the
+The length of each target argument, i.e., the length(s) of the
 \code{numeric} \code{vector} argument(s) specified by \code{target}.}
 
 \item{\code{...}}{Optionally additional function arguments that are fixed during the
@@ -126,7 +124,7 @@ optimization.}
 \if{html}{\out{<a id="method-Objective-set_argument"></a>}}
 \if{latex}{\out{\hypertarget{method-Objective-set_argument}{}}}
 \subsection{Method \code{set_argument()}}{
-Set a fixed function argument.
+Set a function argument that remains fixed during optimization.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Objective$set_argument(..., .overwrite = TRUE, .verbose = self$verbose)}\if{html}{\out{</div>}}
 }
@@ -138,7 +136,7 @@ Set a fixed function argument.
 optimization.}
 
 \item{\code{.overwrite}}{[\code{logical(1)}]\cr
-Allow overwriting?}
+Overwrite existing values?}
 
 \item{\code{.verbose}}{[\code{logical(1)}]\cr
 Print status messages?}
@@ -159,7 +157,7 @@ Get a fixed function argument.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{argument_name}}{[\code{character(1)}]\cr
-A name of a function argument.}
+A function argument name.}
 
 \item{\code{.verbose}}{[\code{logical(1)}]\cr
 Print status messages?}
@@ -180,7 +178,7 @@ Remove a fixed function argument.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{argument_name}}{[\code{character(1)}]\cr
-A name of a function argument.}
+A function argument name.}
 
 \item{\code{.verbose}}{[\code{logical(1)}]\cr
 Print status messages?}
@@ -217,12 +215,12 @@ that \code{gradient} returns a \code{numeric} \code{vector} of length
 \item{\code{target}}{[\code{character()}]\cr
 The argument name(s) that get optimized.
 
-All target arguments must receive a \code{numeric} \code{vector}.
+All target arguments must be \code{numeric}.
 
-Can be \code{NULL} (default), then it is the first function argument.}
+Can be \code{NULL} (default), then the first function argument is selected.}
 
 \item{\code{npar}}{[\code{integer()}]\cr
-The length of each target arguments, i.e., the length(s) of the
+The length of each target argument, i.e., the length(s) of the
 \code{numeric} \code{vector} argument(s) specified by \code{target}.}
 
 \item{\code{...}}{Optionally additional function arguments that are fixed during the
@@ -263,12 +261,12 @@ that \code{hessian} returns a \code{numeric} \code{matrix} of dimension
 \item{\code{target}}{[\code{character()}]\cr
 The argument name(s) that get optimized.
 
-All target arguments must receive a \code{numeric} \code{vector}.
+All target arguments must be \code{numeric}.
 
-Can be \code{NULL} (default), then it is the first function argument.}
+Can be \code{NULL} (default), then the first function argument is selected.}
 
 \item{\code{npar}}{[\code{integer()}]\cr
-The length of each target arguments, i.e., the length(s) of the
+The length of each target argument, i.e., the length(s) of the
 \code{numeric} \code{vector} argument(s) specified by \code{target}.}
 
 \item{\code{...}}{Optionally additional function arguments that are fixed during the
@@ -301,8 +299,9 @@ Evaluate the objective function.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{.at}}{[\code{numeric()}]\cr
-The values for the target argument(s), written in a single vector (hence must
-be of length \code{sum(self$npar)}).}
+The values for the target argument(s), written in a single vector. (
+
+Must be of length \code{sum(self$npar)}.}
 
 \item{\code{.negate}}{[\code{logical(1)}]\cr
 Negate the function return value?}
@@ -350,8 +349,9 @@ Evaluate the gradient function.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{.at}}{[\code{numeric()}]\cr
-The values for the target argument(s), written in a single vector (hence must
-be of length \code{sum(self$npar)}).}
+The values for the target argument(s), written in a single vector. (
+
+Must be of length \code{sum(self$npar)}.}
 
 \item{\code{.negate}}{[\code{logical(1)}]\cr
 Negate the function return value?}
@@ -375,8 +375,9 @@ Evaluate the Hessian function.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{.at}}{[\code{numeric()}]\cr
-The values for the target argument(s), written in a single vector (hence must
-be of length \code{sum(self$npar)}).}
+The values for the target argument(s), written in a single vector. (
+
+Must be of length \code{sum(self$npar)}.}
 
 \item{\code{.negate}}{[\code{logical(1)}]\cr
 Negate the function return value?}
@@ -407,8 +408,9 @@ Validate an \code{Objective} object.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{.at}}{[\code{numeric()}]\cr
-The values for the target argument(s), written in a single vector (hence must
-be of length \code{sum(self$npar)}).}
+The values for the target argument(s), written in a single vector. (
+
+Must be of length \code{sum(self$npar)}.}
 
 \item{\code{output_template_f}}{[\code{any}]\cr
 A template of the expected function output value.}

@@ -1,15 +1,14 @@
 #' Specify numerical optimizer object
 #'
 #' @description
-#' The \code{Optimizer} object defines a numerical optimizer based on an
-#' optimization algorithm implemented in R.
-#'
-#' The main advantage of working with an \code{Optimizer} object instead of
-#' using the optimization function directly lies in the standardized inputs and
-#' outputs.
+#' The \code{Optimizer} object defines a numerical optimizer based on any
+#' optimization algorithm implemented in R. The main advantage of working with
+#' an \code{Optimizer} object instead of using the optimization function
+#' directly lies in the standardized inputs and outputs.
 #'
 #' Any R function that fulfills the following four constraints can be defined as
 #' an \code{Optimizer} object:
+#'
 #' 1. It must have an input for a \code{function}, the objective function to be
 #'    optimized.
 #' 2. It must have an input for a \code{numeric} vector, the initial values from
@@ -25,7 +24,7 @@
 #' 1. has at least one argument that receives a \code{numeric} \code{vector}
 #' 2. and returns a single \code{numeric} value.
 #'
-#' Alternatively, it can also be a \code{\link{Objective}} object for more
+#' Alternatively, it can also be an \code{\link{Objective}} object for more
 #' flexibility.
 #'
 #' @param initial \[`numeric()`\]\cr
@@ -50,7 +49,7 @@
 #' algorithm. Without specifications, default values of the optimizer are used.
 #'
 #' @param direction \[`character(1)`\]\cr
-#' Either \code{"min"} for minimization or \code{"max"} for maximization.
+#' Either `"min"` for minimization or `"max"` for maximization.
 #'
 #' @param .verbose \[`logical(1)`\]\cr
 #' Print status messages?
@@ -62,7 +61,7 @@
 #' objective <- TestFunctions::TF_ackley
 #' initial <- c(3, 3)
 #'
-#' # 2. get overview of optimizers in dictionary
+#' # 2. get overview of optimizers available in dictionary
 #' optimizer_dictionary$keys
 #'
 #' # 3. define 'nlm' optimizer
@@ -94,10 +93,12 @@ Optimizer <- R6::R6Class(
     #' @description
     #' Initializes a new \code{Optimizer} object.
     #'
-    #' @param which
-    #' A \code{character}, either one of \code{optimizer_dictionary$keys} or
-    #' \code{"custom"} (in which case \code{$definition()} must be used to
-    #' define the optimizer details).
+    #' @param which \[`character(1)`\]\cr
+    #' Either:
+    #'
+    #' - one of \code{optimizer_dictionary$keys}
+    #' - or \code{"custom"}, in which case \code{$definition()} must be used to
+    #' define the optimizer details.
     #'
     #' @return
     #' A new \code{Optimizer} object.
@@ -254,32 +255,23 @@ Optimizer <- R6::R6Class(
       direction
     ) {
 
-      if (missing(algorithm)) {
-        cli::cli_abort(c(
-          "x" = "Please specify argument {.var algorithm}.",
-          "*" = "It should be a {.cls function} that can perform numerical
-                 optimization."
-        ), call = NULL)
-      }
+      oeli::input_check_response(
+        check = oeli::check_missing(algorithm),
+        var_name = "algorithm"
+      )
       self$algorithm <- algorithm
       self$label <- oeli::variable_name(algorithm)
 
-      if (missing(arg_objective)) {
-        cli::cli_abort(c(
-          "x" = "Please specify argument {.var arg_objective}.",
-          "*" = "It should be the name of the function argument of
-                 {.var algorithm}."
-        ), call = NULL)
-      }
+      oeli::input_check_response(
+        check = oeli::check_missing(arg_objective),
+        var_name = "arg_objective"
+      )
       self$arg_objective <- arg_objective
 
-      if (missing(arg_initial)) {
-        cli::cli_abort(c(
-          "x" = "Please specify argument {.var arg_initial}.",
-          "*" = "It should be the name of the initial value argument of
-                 {.var algorithm}."
-        ), call = NULL)
-      }
+      oeli::input_check_response(
+        check = oeli::check_missing(arg_initial),
+        var_name = "arg_initial"
+      )
       self$arg_initial <- arg_initial
 
       self$arg_lower <- arg_lower
@@ -289,86 +281,44 @@ Optimizer <- R6::R6Class(
       self$gradient_as_attribute <- gradient_as_attribute
       self$hessian_as_attribute <- hessian_as_attribute
 
-      if (missing(out_value)) {
-        cli::cli_abort(c(
-          "x" = "Please specify argument {.var out_value}.",
-          "*" = "It should be the name of the optimal function value in the
-                 output list of {.var algorithm}."
-        ), call = NULL)
-      }
+      oeli::input_check_response(
+        check = oeli::check_missing(out_value),
+        var_name = "out_value"
+      )
       self$out_value <- out_value
 
-      if (missing(out_parameter)) {
-        cli::cli_abort(c(
-          "x" = "Please specify argument {.var out_parameter}.",
-          "*" = "It should be the name of the optimal parameter vector in the
-                 output list of {.var algorithm}."
-        ), call = NULL)
-      }
+      oeli::input_check_response(
+        check = oeli::check_missing(out_parameter),
+        var_name = "out_parameter"
+      )
       self$out_parameter <- out_parameter
 
-      if (missing(direction)) {
-        cli::cli_abort(c(
-          "x" = "Please specify argument {.var direction}.",
-          "*" = "It indicates whether the optimizer minimizes ({.val min}) or
-                 maximizes ({.val max})."
-        ), call = NULL)
-      }
+      oeli::input_check_response(
+        check = oeli::check_missing(direction),
+        var_name = "direction"
+      )
       self$direction <- direction
 
-      args_available <- oeli::function_arguments(
-        self$algorithm, with_default = TRUE, with_ellipsis = TRUE
+      oeli::input_check_response(
+        check = checkmate::check_function(
+          algorithm,
+          args = c(
+            arg_objective, self$arg_initial,
+            if (!is.na(arg_lower)) arg_lower, if (!is.na(arg_upper)) arg_upper,
+            if (!is.na(arg_gradient) && isFALSE(gradient_as_attribute)) arg_gradient,
+            if (!is.na(arg_hessian) && isFALSE(hessian_as_attribute)) arg_hessian,
+            "..."
+          )
+        ),
+        var_name = "algorithm"
       )
-
-      if (!self$arg_objective %in% args_available) {
-        cli::cli_warn(
-          "The optimizer needs to have the argument {.val {self$arg_objective}}."
-        )
-      }
-      if (!self$arg_initial %in% args_available) {
-        cli::cli_warn(
-          "The optimizer needs to have the argument {.val {self$arg_initial}}."
-        )
-      }
-      if (!is.na(arg_lower)) {
-        if (!self$arg_lower %in% args_available) {
-          cli::cli_warn(
-            "The optimizer needs to have the argument {.val {self$arg_lower}}."
-          )
-        }
-      }
-      if (!is.na(arg_upper)) {
-        if (!self$arg_upper %in% args_available) {
-          cli::cli_warn(
-            "The optimizer needs to have the argument {.val {self$arg_upper}}."
-          )
-        }
-      }
-      if (!is.na(arg_gradient) && isFALSE(gradient_as_attribute)) {
-        if (!self$arg_gradient %in% args_available) {
-          cli::cli_warn(
-            "The optimizer needs to have the argument {.val {self$arg_gradient}}."
-          )
-        }
-      }
-      if (!is.na(arg_hessian) && isFALSE(hessian_as_attribute)) {
-        if (!self$arg_hessian %in% args_available) {
-          cli::cli_warn(
-            "The optimizer needs to have the argument {.val {self$arg_hessian}}."
-          )
-        }
-      }
-      if (!"..." %in% args_available) {
-        cli::cli_warn(
-          "The optimizer needs to have an ellipsis (...) argument."
-        )
-      }
 
       invisible(self)
     },
 
     #' @description
     #' Sets optimizer arguments.
+    #'
     #' @return
     #' The \code{Optimizer} object.
 
@@ -380,14 +330,17 @@ Optimizer <- R6::R6Class(
     #' @description
     #' Validates the \code{Optimizer} object. A time limit in seconds for
     #' the optimization can be set via the \code{$seconds} field.
+    #'
     #' @return
     #' The \code{Optimizer} object.
 
     validate = function(
-      objective = optimizeR::test_objective,
+      objective = TestFunctions::TF_ackley,
       initial = round(stats::rnorm(2)),
-      ...,
-      direction = "min"
+      lower = NA,
+      upper = NA,
+      direction = "min",
+      ...
     ) {
 
       ### test objective
@@ -405,6 +358,8 @@ Optimizer <- R6::R6Class(
       out <- private$.optimize(
         objective = objective_object,
         initial = initial,
+        lower = lower,
+        upper = upper,
         additional_arguments = list(...),
         direction = direction
       )
@@ -462,7 +417,7 @@ Optimizer <- R6::R6Class(
     #' If an error occurred, then the error message is also appended as element
     #' \code{error_message}.
     #'
-    #' If the time limit was exceeded, this also counts as an error. In addition,
+    #' If the time limit was exceeded, this counts as an error. In addition,
     #' the flag \code{time_out = TRUE} is appended.
     #'
     #' @examples
@@ -631,6 +586,10 @@ Optimizer <- R6::R6Class(
 
     ### helper function that prepares the optimization results
     .prepare_result = function(result, initial, invert_objective) {
+      oeli::input_check_response(
+        check = checkmate::check_list(result$result),
+        prefix = "The optimizer output is bad:"
+      )
       out <- list()
       if (private$.out_value %in% names(result$result)) {
         if (invert_objective) {
@@ -859,6 +818,8 @@ Optimizer <- R6::R6Class(
           }
         }
       )
+
+      ### prepare result
       private$.prepare_result(result, initial, invert_objective)
     }
 

@@ -55,7 +55,7 @@ cli::test_that_cli("test various cli messages", {
    )
    expect_error(
      objective$validate(),
-     "Please specify the argument `.at`"
+     "Input `.at` is bad: Argument needs a value"
    )
    suppressMessages(
      expect_error(
@@ -205,7 +205,7 @@ test_that("objective with one target argument can be evaluated", {
 test_that("objective can be evaluated with a time limit", {
   skip_if_not(.Platform$OS.type %in% c("unix", "windows"))
   f <- function(x, a, b = 0) {
-    Sys.sleep(1)
+    Sys.sleep(2)
     (x + a)^2 + b
   }
   objective <- Objective$new(f = f, npar = 1, a = -2)
@@ -325,5 +325,4 @@ test_that("gradient and hessian can be specified and evaluated", {
       hessian = structure(c(22, -12, -12, -26), dim = c(2L, 2L))
     )
   )
-
 })

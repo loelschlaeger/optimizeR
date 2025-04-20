@@ -7,30 +7,28 @@
 #' @param target \[`character()`\]\cr
 #' The argument name(s) that get optimized.
 #'
-#' All target arguments must receive a \code{numeric} \code{vector}.
+#' All target arguments must be \code{numeric}.
 #'
-#' Can be \code{NULL} (default), then it is the first function argument.
+#' Can be \code{NULL} (default), then the first function argument is selected.
 #'
 #' @param npar \[`integer()`\]\cr
-#' The length of each target arguments, i.e., the length(s) of the
+#' The length of each target argument, i.e., the length(s) of the
 #' \code{numeric} \code{vector} argument(s) specified by \code{target}.
 #'
 #' @param ...
 #' Optionally additional function arguments that are fixed during the
 #' optimization.
 #'
-#' @param .overwrite \[`logical(1)`\]\cr
-#' Allow overwriting?
-#'
 #' @param .verbose \[`logical(1)`\]\cr
 #' Print status messages?
 #'
 #' @param argument_name \[`character(1)`\]\cr
-#' A name of a function argument.
+#' A function argument name.
 #'
 #' @param .at \[`numeric()`\]\cr
-#' The values for the target argument(s), written in a single vector (hence must
-#' be of length \code{sum(self$npar)}).
+#' The values for the target argument(s), written in a single vector. (
+#'
+#' Must be of length \code{sum(self$npar)}.
 #'
 #' @param .negate \[`logical(1)`\]\cr
 #' Negate the function return value?
@@ -50,15 +48,13 @@
 #'   sum(log(cluster_1 + cluster_2))
 #' }
 #'
-#' ### the log-likelihood function is supposed to be optimized over the first
-#' ### three arguments, the 'data' argument is constant
+#' ### optimize over the first three arguments, the 'data' argument is constant
 #' objective <- Objective$new(
 #'   f = llk, target = c("mu", "sd", "lambda"), npar = c(2, 2, 1),
 #'   data = faithful$eruptions
 #' )
 #'
-#' ### evaluate the objective function at 1:5 (1:2 is passed to mu, 3:4 to sd,
-#' ### and 5 to lambda)
+#' ### evaluate at 1:5 (1:2 is passed to mu, 3:4 to sd, and 5 to lambda)
 #' objective$evaluate(1:5)
 
 Objective <- R6::R6Class(
@@ -82,6 +78,10 @@ Objective <- R6::R6Class(
 
       ### input checks
       oeli::input_check_response(
+        check = oeli::check_missing(f),
+        var_name = "f"
+      )
+      oeli::input_check_response(
         check = checkmate::check_function(f),
         var_name = "f"
       )
@@ -97,6 +97,10 @@ Objective <- R6::R6Class(
       oeli::input_check_response(
         check = checkmate::check_function(f, args = target),
         var_name = "f"
+      )
+      oeli::input_check_response(
+        check = oeli::check_missing(npar),
+        var_name = "npar"
       )
       oeli::input_check_response(
         check = checkmate::check_integerish(
@@ -120,7 +124,10 @@ Objective <- R6::R6Class(
     },
 
     #' @description
-    #' Set a fixed function argument.
+    #' Set a function argument that remains fixed during optimization.
+    #'
+    #' @param .overwrite \[`logical(1)`\]\cr
+    #' Overwrite existing values?
 
     set_argument = function(..., .overwrite = TRUE, .verbose = self$verbose) {
 
@@ -178,6 +185,10 @@ Objective <- R6::R6Class(
     get_argument = function(argument_name, .verbose = self$verbose) {
 
       ### input checks
+      oeli::input_check_response(
+        check = oeli::check_missing(argument_name),
+        var_name = "argument_name"
+      )
       private$.check_argument_specified(argument_name, .verbose = .verbose)
       oeli::input_check_response(
         check = checkmate::check_flag(.verbose),
@@ -198,6 +209,10 @@ Objective <- R6::R6Class(
     remove_argument = function(argument_name, .verbose = self$verbose) {
 
       ### input checks
+      oeli::input_check_response(
+        check = oeli::check_missing(argument_name),
+        var_name = "argument_name"
+      )
       private$.check_argument_specified(argument_name, .verbose = .verbose)
       oeli::input_check_response(
         check = checkmate::check_flag(.verbose),
@@ -233,6 +248,12 @@ Objective <- R6::R6Class(
       .verbose = self$verbose
     ) {
 
+      ### input checks
+      oeli::input_check_response(
+        check = oeli::check_missing(gradient),
+        var_name = "gradient"
+      )
+
       ### determine arguments
       arguments <- oeli::merge_lists(list(...), private$.arguments)
 
@@ -266,6 +287,12 @@ Objective <- R6::R6Class(
       hessian, target = self$target, npar = self$npar, ...,
       .verbose = self$verbose
     ) {
+
+      ### input checks
+      oeli::input_check_response(
+        check = oeli::check_missing(hessian),
+        var_name = "hessian"
+      )
 
       ### determine arguments
       arguments <- oeli::merge_lists(list(...), private$.arguments)
@@ -325,6 +352,10 @@ Objective <- R6::R6Class(
     ) {
 
       ### input checks
+      oeli::input_check_response(
+        check = oeli::check_missing(.at),
+        var_name = ".at"
+      )
       private$.check_target(.at, .verbose = FALSE)
       oeli::input_check_response(
         check = checkmate::check_flag(.negate),
@@ -407,6 +438,10 @@ Objective <- R6::R6Class(
 
     evaluate_gradient = function(.at, .negate = FALSE, ...) {
       if (self$gradient_specified) {
+        oeli::input_check_response(
+          check = oeli::check_missing(.at),
+          var_name = ".at"
+        )
         private$.gradient$evaluate(.at = .at, .negate = .negate, ...)
       } else {
         cli::cli_abort(
@@ -422,6 +457,10 @@ Objective <- R6::R6Class(
 
     evaluate_hessian = function(.at, .negate = FALSE, ...) {
       if (self$hessian_specified) {
+        oeli::input_check_response(
+          check = oeli::check_missing(.at),
+          var_name = ".at"
+        )
         private$.hessian$evaluate(.at = .at, .negate = .negate, ...)
       } else {
         cli::cli_abort(
@@ -455,12 +494,10 @@ Objective <- R6::R6Class(
     ) {
 
       ### input checks
-      if (missing(.at)) {
-        cli::cli_abort(
-          "Please specify the argument {.var .at}",
-          call = NULL
-        )
-      }
+      oeli::input_check_response(
+        check = oeli::check_missing(.at),
+        var_name = ".at"
+      )
       oeli::input_check_response(
         check = checkmate::check_flag(.verbose),
         var_name = ".verbose"
@@ -508,7 +545,7 @@ Objective <- R6::R6Class(
           )
         ),
         paste(
-          "Fixed arguments specified:",
+          "Fixed arguments:",
           if(length(private$.arguments) == 0) {
             "none"
           } else {
@@ -540,6 +577,7 @@ Objective <- R6::R6Class(
 
     #' @field fixed_arguments \[`character()`\]\cr
     #' The name(s) of the fixed argument(s) (if any).
+
     fixed_arguments = function(value) {
       if (missing(value)) {
         names(private$.arguments)

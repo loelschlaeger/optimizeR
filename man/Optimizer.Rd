@@ -4,12 +4,10 @@
 \alias{Optimizer}
 \title{Specify numerical optimizer object}
 \description{
-The \code{Optimizer} object defines a numerical optimizer based on an
-optimization algorithm implemented in R.
-
-The main advantage of working with an \code{Optimizer} object instead of
-using the optimization function directly lies in the standardized inputs and
-outputs.
+The \code{Optimizer} object defines a numerical optimizer based on any
+optimization algorithm implemented in R. The main advantage of working with
+an \code{Optimizer} object instead of using the optimization function
+directly lies in the standardized inputs and outputs.
 
 Any R function that fulfills the following four constraints can be defined as
 an \code{Optimizer} object:
@@ -31,7 +29,7 @@ value and the optimal parameter vector.
 objective <- TestFunctions::TF_ackley
 initial <- c(3, 3)
 
-# 2. get overview of optimizers in dictionary
+# 2. get overview of optimizers available in dictionary
 optimizer_dictionary$keys
 
 # 3. define 'nlm' optimizer
@@ -191,9 +189,13 @@ Initializes a new \code{Optimizer} object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{which}}{A \code{character}, either one of \code{optimizer_dictionary$keys} or
-\code{"custom"} (in which case \code{$definition()} must be used to
-define the optimizer details).}
+\item{\code{which}}{[\code{character(1)}]\cr
+Either:
+\itemize{
+\item one of \code{optimizer_dictionary$keys}
+\item or \code{"custom"}, in which case \code{$definition()} must be used to
+define the optimizer details.
+}}
 
 \item{\code{...}}{[\code{any}]\cr
 Optionally additional named arguments to be passed to the optimizer
@@ -327,10 +329,12 @@ Validates the \code{Optimizer} object. A time limit in seconds for
 the optimization can be set via the \code{$seconds} field.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimizer$validate(
-  objective = optimizeR::test_objective,
+  objective = TestFunctions::TF_ackley,
   initial = round(stats::rnorm(2)),
-  ...,
-  direction = "min"
+  lower = NA,
+  upper = NA,
+  direction = "min",
+  ...
 )}\if{html}{\out{</div>}}
 }
 
@@ -344,18 +348,32 @@ A \code{function} to be optimized that
 \item and returns a single \code{numeric} value.
 }
 
-Alternatively, it can also be a \code{\link{Objective}} object for more
+Alternatively, it can also be an \code{\link{Objective}} object for more
 flexibility.}
 
 \item{\code{initial}}{[\code{numeric()}]\cr
 Starting parameter values for the optimization.}
 
-\item{\code{...}}{[\code{any}]\cr
-Optionally additional named arguments to be passed to the optimizer
-algorithm. Without specifications, default values of the optimizer are used.}
+\item{\code{lower}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
+Lower bounds on the parameters.
+
+If a single number, this will be applied to all parameters.
+
+Can be \code{NA} to not define any bounds.}
+
+\item{\code{upper}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
+Upper bounds on the parameters.
+
+If a single number, this will be applied to all parameters.
+
+Can be \code{NA} to not define any bounds.}
 
 \item{\code{direction}}{[\code{character(1)}]\cr
 Either \code{"min"} for minimization or \code{"max"} for maximization.}
+
+\item{\code{...}}{[\code{any}]\cr
+Optionally additional named arguments to be passed to the optimizer
+algorithm. Without specifications, default values of the optimizer are used.}
 }
 \if{html}{\out{</div>}}
 }
@@ -382,7 +400,7 @@ A \code{function} to be optimized that
 \item and returns a single \code{numeric} value.
 }
 
-Alternatively, it can also be a \code{\link{Objective}} object for more
+Alternatively, it can also be an \code{\link{Objective}} object for more
 flexibility.}
 
 \item{\code{initial}}{[\code{numeric()}]\cr
@@ -423,7 +441,7 @@ Appended are additional output elements of the optimizer.
 If an error occurred, then the error message is also appended as element
 \code{error_message}.
 
-If the time limit was exceeded, this also counts as an error. In addition,
+If the time limit was exceeded, this counts as an error. In addition,
 the flag \code{time_out = TRUE} is appended.
 }
 \subsection{Examples}{
@@ -455,7 +473,7 @@ A \code{function} to be optimized that
 \item and returns a single \code{numeric} value.
 }
 
-Alternatively, it can also be a \code{\link{Objective}} object for more
+Alternatively, it can also be an \code{\link{Objective}} object for more
 flexibility.}
 
 \item{\code{initial}}{[\code{numeric()}]\cr
@@ -535,7 +553,7 @@ A \code{function} to be optimized that
 \item and returns a single \code{numeric} value.
 }
 
-Alternatively, it can also be a \code{\link{Objective}} object for more
+Alternatively, it can also be an \code{\link{Objective}} object for more
 flexibility.}
 
 \item{\code{initial}}{[\code{numeric()}]\cr

@@ -1,6 +1,6 @@
 Package: optimizeR
 Title: Unified Framework for Numerical Optimizers
-Version: 1.2
+Version: 1.2.0
 Authors@R: c(
     person("Lennart", "Oelschl\u00e4ger", 
            email = "oelschlaeger.lennart@gmail.com", 
@@ -20,7 +20,6 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Suggests:
-    knitr,
     ggplot2,
     pracma,
     rmarkdown,
@@ -34,7 +33,7 @@ Imports:
     checkmate,
     cli,
     lbfgsb3c,
-    oeli (>= 0.5.2),
+    oeli (>= 0.7.2),
     R6,
     stats,
     TestFunctions,

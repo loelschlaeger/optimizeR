@@ -253,7 +253,7 @@
     Output
       * Function: f
       * Targets (length): x (1)
-      * Fixed arguments specified: b, a
+      * Fixed arguments: b, a
 
 # objective with more than one target argument can be evaluated
 
@@ -262,7 +262,7 @@
     Output
       * Function: llk
       * Targets (length): mu (2), sd (2), lambda (1)
-      * Fixed arguments specified: data
+      * Fixed arguments: data
 
 # objective with NULL argument can be evaluated
 
@@ -271,5 +271,5 @@
     Output
       * Function: f
       * Targets (length): x (3)
-      * Fixed arguments specified: none
+      * Fixed arguments: none
 
