@@ -33,10 +33,9 @@ Imports:
     checkmate,
     cli,
     lbfgsb3c,
-    oeli (>= 0.7.2),
+    oeli,
     R6,
     stats,
     TestFunctions,
     ucminf,
     utils
-VignetteBuilder: knitr
