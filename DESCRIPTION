@@ -25,7 +25,7 @@ Imports:
     checkmate,
     cli,
     lbfgsb3c,
-    oeli,
+    oeli (>= 0.7.2),
     pracma,
     R6,
     stats,
