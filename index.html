@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">optimizeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -60,20 +60,16 @@
 </div>
 <!-- badges: start -->
 
-<p>The <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a> package</p>
-<ul>
-<li>provides an object-oriented framework for optimizer functions in R</li>
-<li>and offers some convenience for useRs when minimizing or maximizing.</li>
-</ul>
-<p>❌ <strong>You won’t need the package if you…</strong></p>
+<p>The <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a> package provides an object-oriented framework for optimizer functions in R and offers some convenience when minimizing or maximizing.</p>
+<p>❌ <strong>You won’t need this package if you…</strong></p>
 <ul>
 <li>already know which optimizer you want to use and if you are happy with its constraints (e.g., only minimization over the first function argument possible),</li>
-<li>want to compare optimizers that are already covered by <a href="https://CRAN.R-project.org/package=optimx" class="external-link"><code>{optimx}</code></a> (Nash and Varadhan 2011) (they provide a framework to compare about 30 optimizers),</li>
+<li>want to compare optimizers that are already covered by <a href="https://CRAN.R-project.org/package=optimx" class="external-link"><code>{optimx}</code></a>, a framework to compare about 30 optimizers,</li>
 <li>or search for new optimization algorithms (because this package does not implement any optimizer functions itself).</li>
 </ul>
 <p>✅ <strong>But you might find the package useful if you want to…</strong></p>
 <ul>
-<li>compare any optimizer function (also those not covered by <a href="https://github.com/nashjc/optimx" class="external-link">optimx</a> or other frameworks; see the <a href="https://CRAN.R-project.org/view=Optimization" class="external-link">CRAN Task View: Optimization and Mathematical Programming</a> (Schwendinger and Borchers 2023) for an overview of R optimizers),</li>
+<li>compare any optimizer function (also those not covered by <a href="https://github.com/nashjc/optimx" class="external-link">optimx</a> or other frameworks; see the <a href="https://CRAN.R-project.org/view=Optimization" class="external-link">CRAN Task View: Optimization and Mathematical Programming</a> for an overview),</li>
 <li>have consistently named inputs and outputs across different optimizers (which is generally not the case),</li>
 <li>view optimizers as objects (which can be helpful when implementing packages that depend on optimization),</li>
 <li>use optimizers for both minimization and maximization,</li>
@@ -89,16 +85,17 @@
 <li>interrupt optimization if it exceeds 10 seconds,</li>
 <li>and compare the performance between the optimizers <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">stats::nlm</a></code> and <code><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">pracma::nelder_mead</a></code>.</li>
 </ul>
-<p>We can easily do this task with <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a>:</p>
+<p>We can do this task with <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a>. You can install the released package version from <a href="https://CRAN.R-project.org" class="external-link">CRAN</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="st"><a href="https://loelschlaeger.de/optimizeR/">"optimizeR"</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"optimizeR"</span><span class="op">)</span></span></code></pre></div>
+<p>Then load the package via <code><a href="https://loelschlaeger.de/optimizeR/">library("optimizeR")</a></code> and you should be ready to go.</p>
 <p><strong>1. Define the objective function</strong></p>
 <p>Let <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>f</mi><mo>:</mo><msup><mi>ℝ</mi><mn>4</mn></msup><mo>→</mo><mi>ℝ</mi></mrow><annotation encoding="application/x-tex">f:\mathbb{R}^4\to\mathbb{R}</annotation></semantics></math> with</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span>, <span class="va">x</span>, <span class="va">y</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">a</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="va">y</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">-</span> <span class="va">b</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>For <code>a = b = 20</code>, this is the inverted <a href="https://en.wikipedia.org/wiki/Ackley_function" class="external-link">Ackley function</a> with a global maximum in <code>x = y = 0</code>:</p>
+<p>For <code>a = b = 20</code>, this is the negative <a href="https://en.wikipedia.org/wiki/Ackley_function" class="external-link">Ackley function</a> with a global maximum in <code>x = y = 0</code>:</p>
 <p><img src="reference/figures/README-plot-ackley-1.png" width="50%" style="display: block; margin: auto;"></p>
 <p>We want to keep <code>a</code> and <code>b</code> fixed here and optimize over <code>x</code> and <code>y</code> (which are also both single numeric values).</p>
 <p>Two problems would occur if we would optimize <code>f</code> with say <code><a href="https://rdrr.io/r/stats/nlm.html" class="external-link">stats::nlm</a></code> directly:</p>
@@ -122,17 +119,20 @@
 <p>The <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a> package provides a dictionary of optimizers, that can be directly selected via the <code>which</code> argument. For an overview of available optimizers, see:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">optimizer_dictionary</span></span>
-<span><span class="co">#&gt; &lt;Dictionary&gt; optimizer algorithms </span></span>
+<span><span class="co">#&gt; &lt;Dictionary&gt; optimization algorithms </span></span>
 <span><span class="co">#&gt; Keys: </span></span>
 <span><span class="co">#&gt; - lbfgsb3c::lbfgsb3c</span></span>
+<span><span class="co">#&gt; - lbfgsb3c::lbfgsb3</span></span>
+<span><span class="co">#&gt; - lbfgsb3c::lbfgsb3f</span></span>
+<span><span class="co">#&gt; - lbfgsb3c::lbfgsb3x</span></span>
 <span><span class="co">#&gt; - stats::nlm</span></span>
 <span><span class="co">#&gt; - stats::nlminb</span></span>
 <span><span class="co">#&gt; - stats::optim</span></span>
 <span><span class="co">#&gt; - ucminf::ucminf</span></span></code></pre></div>
-<p>But in fact any optimizer that is not contained in the dictionary can be put into the <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a> framework by setting <code>which = "custom"</code> first…</p>
+<p>But in fact, any optimizer that is not contained in the dictionary can be put into the <a href="https://loelschlaeger.de/optimizeR/">optimizeR</a> framework by setting <code>which = "custom"</code> first…</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nelder_mead</span> <span class="op">&lt;-</span> <span class="va"><a href="reference/Optimizer.html">Optimizer</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>which <span class="op">=</span> <span class="st">"custom"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Please use method `$definition()` next to define a custom optimizer.</span></span></code></pre></div>
+<span><span class="co">#&gt; Use method `$definition()` next to define a custom optimizer.</span></span></code></pre></div>
 <p>… and using the <code>$definition()</code> method next:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">nelder_mead</span><span class="op">$</span><span class="fu">definition</span><span class="op">(</span></span>
@@ -167,7 +167,7 @@
 <span><span class="co">#&gt; [1] 1.974451 1.974451</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $seconds</span></span>
-<span><span class="co">#&gt; [1] 0.02160096</span></span>
+<span><span class="co">#&gt; [1] 0.0242281</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $initial</span></span>
 <span><span class="co">#&gt; [1] 3 3</span></span>
@@ -192,7 +192,7 @@
 <span><span class="co">#&gt; [1] 0 0</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $seconds</span></span>
-<span><span class="co">#&gt; [1] 0.009223938</span></span>
+<span><span class="co">#&gt; [1] 0.008966923</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $initial</span></span>
 <span><span class="co">#&gt; [1] 3 3</span></span>
@@ -218,39 +218,9 @@
 </ul>
 </div>
 <div class="section level2">
-<h2 id="how-to-get-the-access">How to get the access?<a class="anchor" aria-label="anchor" href="#how-to-get-the-access"></a>
-</h2>
-<p>You can install the released package version from <a href="https://CRAN.R-project.org" class="external-link">CRAN</a> with:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"optimizeR"</span><span class="op">)</span></span></code></pre></div>
-<p>Then load the package via <code><a href="https://loelschlaeger.de/optimizeR/">library("optimizeR")</a></code> and you should be ready to go.</p>
-</div>
-<div class="section level2">
-<h2 id="roadmap">Roadmap<a class="anchor" aria-label="anchor" href="#roadmap"></a>
-</h2>
-<p>The following steps to further improve the package are currently on our agenda:</p>
-<ul class="task-list">
-<li><p><label><input type="checkbox">The package already provides a dictionary that stores optimizers together with information about names of their inputs and outputs (see the <code>optimizer_dictionary</code> object). We want to extend this dictionary with more optimizers that are commonly used.</label></p></li>
-<li><p><label><input type="checkbox">We want to use alias for optimizers in the dictionary that group optimizers into classes (such as “unconstrained optimization”, “constrained Optimization”, “direct search”, “Newton-type” etc.). This would help to find alternative optimizers for a given task.</label></p></li>
-<li><p><label><input type="checkbox">We want to implement a <code>$summary()</code> method for an optimizer object that gives an overview of the optimizer, its arguments, and its properties.</label></p></li>
-</ul>
-</div>
-<div class="section level2">
 <h2 id="getting-in-touch">Getting in touch<a class="anchor" aria-label="anchor" href="#getting-in-touch"></a>
 </h2>
-<p>You have a question, found a bug, request a feature, want to give feedback, or like to contribute? It would be great to hear from you, <a href="https://github.com/loelschlaeger/optimizeR/issues/new/choose" class="external-link">please file an issue on GitHub</a>. 😊</p>
-</div>
-<div class="section level2">
-<h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
-</h2>
-<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
-<div id="ref-optimx" class="csl-entry">
-Nash, John C., and Ravi Varadhan. 2011. “Unifying Optimization Algorithms to Aid Software System Users: <span class="nocase">optimx</span> for R.” <em>Journal of Statistical Software</em> 43 (9): 1–14. <a href="https://doi.org/10.18637/jss.v043.i09" class="external-link uri">https://doi.org/10.18637/jss.v043.i09</a>.
-</div>
-<div id="ref-taskview" class="csl-entry">
-Schwendinger, F., and H. W. Borchers. 2023. “CRAN Task View: Optimization and Mathematical Programming.” <a href="https://CRAN.R-project.org/view=Optimization" class="external-link uri">https://CRAN.R-project.org/view=Optimization</a>.
-</div>
-</div>
+<p>If you have any questions, found a bug, need a feature, <a href="https://github.com/loelschlaeger/optimizeR/issues/new/choose" class="external-link">just file an issue on GitHub</a>.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
