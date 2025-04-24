@@ -1,6 +1,6 @@
 Package: optimizeR
 Title: Unified Framework for Numerical Optimizers
-Version: 1.1.3
+Version: 1.2.0
 Authors@R: c(
     person("Lennart", "Oelschl\u00e4ger", 
            email = "oelschlaeger.lennart@gmail.com", 
@@ -19,24 +19,23 @@ License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Suggests:
-    knitr,
-    ggplot2,
-    pracma,
-    rmarkdown,
-    testthat
-Config/testthat/edition: 3
-URL: https://loelschlaeger.de/optimizeR/, https://github.com/loelschlaeger/optimizeR/
-BugReports: https://github.com/loelschlaeger/optimizeR/issues
 Depends:
     R (>= 4.0.0)
 Imports: 
     checkmate,
     cli,
     lbfgsb3c,
-    oeli (>= 0.5.2),
+    oeli (>= 0.7.2),
+    pracma,
     R6,
     stats,
     TestFunctions,
-    ucminf,
-    utils
+    ucminf
+Suggests:
+    datasets,
+    ggplot2,
+    rmarkdown,
+    testthat
+Config/testthat/edition: 3
+URL: https://loelschlaeger.de/optimizeR/, https://github.com/loelschlaeger/optimizeR/
+BugReports: https://github.com/loelschlaeger/optimizeR/issues

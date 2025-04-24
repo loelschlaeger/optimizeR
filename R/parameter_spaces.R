@@ -1,20 +1,19 @@
-#' Switch Between Parameter Spaces
+#' Switch between parameter spaces
 #'
 #' @description
-#' This R6 object manages two related parameter spaces: the Optimization Space
-#' (for optimization) and the Interpretation Space (for easier interpretation).
+#' The \code{ParameterSpaces} object manages two related parameter spaces:
+#'
+#' - the Optimization Space (for optimization)
+#' - and the Interpretation Space (for easier interpretation).
 #'
 #' In the Optimization Space, parameters are stored as a \code{numeric}
-#' \code{vector}, the standard format for numerical optimizers. Parameters in
-#' this space are typically identified.
+#' \code{vector}, the standard format for numerical optimizers.
 #'
 #' In the Interpretation Space, parameters are stored as a \code{list} and can
-#' take different formats (e.g., \code{matrix}). Parameters here do not need to
-#' be identified.
+#' take different formats (e.g., \code{matrix}).
 #'
 #' The user can define transformation functions (not necessarily bijective) to
-#' switch between these two spaces via the \code{$o2i()} and \code{$i2o()}
-#' methods.
+#' switch between these spaces via the \code{$o2i()} and \code{$i2o()} methods.
 #'
 #' @examples
 #' ### Log-likelihood function of two-class Gaussian mixture model with
@@ -94,8 +93,16 @@ ParameterSpaces <- R6::R6Class(
 
       ### input checks
       oeli::input_check_response(
+        check = oeli::check_missing(parameter_names),
+        var_name = "parameter_names"
+      )
+      oeli::input_check_response(
         check = checkmate::check_names(parameter_names, type = "strict"),
         var_name = "parameter_names"
+      )
+      oeli::input_check_response(
+        check = oeli::check_missing(parameter_lengths_in_o_space),
+        var_name = "parameter_lengths_in_o_space"
       )
       oeli::input_check_response(
         check = checkmate::check_integerish(
@@ -205,9 +212,14 @@ ParameterSpaces <- R6::R6Class(
 
     switch = function(x, to = NULL) {
 
+      ### input checks
       oeli::input_check_response(
         check = checkmate::check_choice(to, c("o", "i"), null.ok = TRUE),
         var_name = "to"
+      )
+      oeli::input_check_response(
+        check = oeli::check_missing(x),
+        var_name = "x"
       )
 
       if (oeli::test_numeric_vector(x)) {

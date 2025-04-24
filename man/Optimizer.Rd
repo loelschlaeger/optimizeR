@@ -2,14 +2,12 @@
 % Please edit documentation in R/optimizer.R
 \name{Optimizer}
 \alias{Optimizer}
-\title{Specify numerical optimizer as R6 object}
+\title{Specify numerical optimizer object}
 \description{
-A \code{Optimizer} R6 object defines a numerical optimizer based on an
-optimization function implemented in R.
-
-The main advantage of working with an \code{Optimizer} object instead of
-using the optimization function directly lies in the standardized inputs and
-outputs.
+The \code{Optimizer} object defines a numerical optimizer based on any
+optimization algorithm implemented in R. The main advantage of working with
+an \code{Optimizer} object instead of using the optimization function
+directly lies in the standardized inputs and outputs.
 
 Any R function that fulfills the following four constraints can be defined as
 an \code{Optimizer} object:
@@ -31,7 +29,7 @@ value and the optimal parameter vector.
 objective <- TestFunctions::TF_ackley
 initial <- c(3, 3)
 
-# 2. get overview of optimizers in dictionary
+# 2. get overview of optimizers available in dictionary
 optimizer_dictionary$keys
 
 # 3. define 'nlm' optimizer
@@ -79,40 +77,89 @@ optimizer$optimize(objective = objective, initial = 2, direction = "max")
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{label}}{A \code{character}, the label for the optimizer.}
+\item{\code{label}}{[\code{character(1)}]\cr
+The label for the optimizer.}
 
-\item{\code{algorithm}}{A \code{function}, the optimization algorithm.}
+\item{\code{algorithm}}{[\code{function}]\cr
+The optimization algorithm.}
 
-\item{\code{arg_objective}}{A \code{character}, the argument name for the objective function in
+\item{\code{arg_objective}}{[\code{character(1)}]\cr
+The argument name for the objective function in \code{algorithm}.}
+
+\item{\code{arg_initial}}{[\code{character(1)}]\cr
+The argument name for the initial values in \code{algorithm}.}
+
+\item{\code{arg_lower}}{[\code{character(1)} | \code{NA}]\cr
+Optionally the argument name for the lower parameter bound in
+\code{algorithm}.
+
+Can be \code{NA} if not available.}
+
+\item{\code{arg_upper}}{[\code{character(1)} | \code{NA}]\cr
+Optionally the argument name for the upper parameter bound in
+\code{algorithm}.
+
+Can be \code{NA} if not available.}
+
+\item{\code{arg_gradient}}{[\code{character(1)} | \code{NA}]\cr
+Optionally the argument name for the gradient function in
+\code{algorithm}.
+
+Can be \code{NA} if not available.}
+
+\item{\code{arg_hessian}}{[\code{character(1)} | \code{NA}]\cr
+Optionally the argument name for the Hessian function in
+\code{algorithm}.
+
+Can be \code{NA} if not available.}
+
+\item{\code{gradient_as_attribute}}{[\code{logical(1)}]\cr
+Only relevant if \code{arg_gradient} is not \code{NA}.
+
+In that case, does \code{algorithm} expect that the gradient is an attribute
+of the objective function output (as for example in
+\code{\link[stats]{nlm}})? In that case, \code{arg_gradient} defines the
+attribute name.}
+
+\item{\code{hessian_as_attribute}}{[\code{logical(1)}]\cr
+Only relevant if \code{arg_hessian} is not \code{NA}.
+
+In that case, does \code{algorithm} expect that the Hessian is an attribute
+of the objective function output (as for example in
+\code{\link[stats]{nlm}})? In that case, \code{arg_hessian} defines the
+attribute name.}
+
+\item{\code{out_value}}{[\code{character(1)}]\cr
+The element name for the optimal function value in the output \code{list}
+of \code{algorithm}.}
+
+\item{\code{out_parameter}}{[\code{character(1)}]\cr
+The element name for the optimal parameters in the output \code{list} of
 \code{algorithm}.}
 
-\item{\code{arg_initial}}{A \code{character}, the argument name for the initial values in
-\code{algorithm}.}
-
-\item{\code{out_value}}{A \code{character}, the element name for the optimal function value in
-the output \code{list} of \code{algorithm}.}
-
-\item{\code{out_parameter}}{A \code{character}, the element name for the optimal parameters in the
-output \code{list} of \code{algorithm}.}
-
-\item{\code{direction}}{Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
+\item{\code{direction}}{[\code{character(1)}]\cr
+Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
 (if the optimizer maximizes).}
 
-\item{\code{arguments}}{A named \code{list} of custom arguments for \code{algorithm}. Defaults
-are used for arguments that are not specified.}
+\item{\code{arguments}}{[\code{list()}]\cr
+Custom arguments for \code{algorithm}.
 
-\item{\code{seconds}}{A \code{numeric}, a time limit in seconds. Optimization is interrupted
-prematurely if \code{seconds} is exceeded.
+Defaults are used for arguments that are not specified.}
+
+\item{\code{seconds}}{[\code{numeric(1)}]\cr
+A time limit in seconds.
+
+Optimization is interrupted prematurely if \code{seconds} is exceeded.
 
 No time limit if \code{seconds = Inf} (the default).
 
 Note the limitations documented in \code{\link[base]{setTimeLimit}}.}
 
-\item{\code{hide_warnings}}{Either \code{TRUE} to hide warnings during optimization, or \code{FALSE}
-(default) else.}
+\item{\code{hide_warnings}}{[\code{logical(1)}]\cr
+Hide warnings during optimization?}
 
-\item{\code{output_ignore}}{A \code{character} \code{vector} of elements to ignore in the
-optimization output.}
+\item{\code{output_ignore}}{[\code{character()}]\cr
+Elements to ignore (not include) in the optimization output.}
 }
 \if{html}{\out{</div>}}
 }
@@ -122,7 +169,6 @@ optimization output.}
 \item \href{#method-Optimizer-new}{\code{Optimizer$new()}}
 \item \href{#method-Optimizer-definition}{\code{Optimizer$definition()}}
 \item \href{#method-Optimizer-set_arguments}{\code{Optimizer$set_arguments()}}
-\item \href{#method-Optimizer-validate}{\code{Optimizer$validate()}}
 \item \href{#method-Optimizer-minimize}{\code{Optimizer$minimize()}}
 \item \href{#method-Optimizer-maximize}{\code{Optimizer$maximize()}}
 \item \href{#method-Optimizer-optimize}{\code{Optimizer$optimize()}}
@@ -136,18 +182,26 @@ optimization output.}
 \subsection{Method \code{new()}}{
 Initializes a new \code{Optimizer} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Optimizer$new(which, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Optimizer$new(which, ..., .verbose = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{which}}{A \code{character}, either one of \code{optimizer_dictionary$keys} or
-\code{"custom"} (in which case \code{$definition()} must be used to
-define the optimizer details).}
+\item{\code{which}}{[\code{character(1)}]\cr
+Either:
+\itemize{
+\item one of \code{optimizer_dictionary$keys}
+\item or \code{"custom"}, in which case \code{$definition()} must be used to
+define the optimizer details.
+}}
 
-\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
-Without specifications, default values are used.}
+\item{\code{...}}{[\code{any}]\cr
+Optionally additional named arguments to be passed to the optimizer
+algorithm. Without specifications, default values of the optimizer are used.}
+
+\item{\code{.verbose}}{[\code{logical(1)}]\cr
+Print status messages?}
 }
 \if{html}{\out{</div>}}
 }
@@ -165,6 +219,12 @@ Defines an optimizer.
   algorithm,
   arg_objective,
   arg_initial,
+  arg_lower = NA,
+  arg_upper = NA,
+  arg_gradient = NA,
+  arg_hessian = NA,
+  gradient_as_attribute = FALSE,
+  hessian_as_attribute = FALSE,
   out_value,
   out_parameter,
   direction
@@ -174,27 +234,68 @@ Defines an optimizer.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{algorithm}}{A \code{function}, the optimization algorithm.}
+\item{\code{algorithm}}{[\code{function}]\cr
+The optimization algorithm.}
 
-\item{\code{arg_objective}}{A \code{character}, the argument name for the objective function in
+\item{\code{arg_objective}}{[\code{character(1)}]\cr
+The argument name for the objective function in \code{algorithm}.}
+
+\item{\code{arg_initial}}{[\code{character(1)}]\cr
+The argument name for the initial values in \code{algorithm}.}
+
+\item{\code{arg_lower}}{[\code{character(1)} | \code{NA}]\cr
+Optionally the argument name for the lower parameter bound in
+\code{algorithm}.
+
+Can be \code{NA} if not available.}
+
+\item{\code{arg_upper}}{[\code{character(1)} | \code{NA}]\cr
+Optionally the argument name for the upper parameter bound in
+\code{algorithm}.
+
+Can be \code{NA} if not available.}
+
+\item{\code{arg_gradient}}{[\code{character(1)} | \code{NA}]\cr
+Optionally the argument name for the gradient function in
+\code{algorithm}.
+
+Can be \code{NA} if not available.}
+
+\item{\code{arg_hessian}}{[\code{character(1)} | \code{NA}]\cr
+Optionally the argument name for the Hessian function in
+\code{algorithm}.
+
+Can be \code{NA} if not available.}
+
+\item{\code{gradient_as_attribute}}{[\code{logical(1)}]\cr
+Only relevant if \code{arg_gradient} is not \code{NA}.
+
+In that case, does \code{algorithm} expect that the gradient is an attribute
+of the objective function output (as for example in
+\code{\link[stats]{nlm}})? In that case, \code{arg_gradient} defines the
+attribute name.}
+
+\item{\code{hessian_as_attribute}}{[\code{logical(1)}]\cr
+Only relevant if \code{arg_hessian} is not \code{NA}.
+
+In that case, does \code{algorithm} expect that the Hessian is an attribute
+of the objective function output (as for example in
+\code{\link[stats]{nlm}})? In that case, \code{arg_hessian} defines the
+attribute name.}
+
+\item{\code{out_value}}{[\code{character(1)}]\cr
+The element name for the optimal function value in the output \code{list}
+of \code{algorithm}.}
+
+\item{\code{out_parameter}}{[\code{character(1)}]\cr
+The element name for the optimal parameters in the output \code{list} of
 \code{algorithm}.}
 
-\item{\code{arg_initial}}{A \code{character}, the argument name for the initial values in
-\code{algorithm}.}
-
-\item{\code{out_value}}{A \code{character}, the element name for the optimal function value in
-the output \code{list} of \code{algorithm}.}
-
-\item{\code{out_parameter}}{A \code{character}, the element name for the optimal parameters in the
-output \code{list} of \code{algorithm}.}
-
-\item{\code{direction}}{Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
+\item{\code{direction}}{[\code{character(1)}]\cr
+Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
 (if the optimizer maximizes).}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-Invisibly the \code{Optimizer} object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -209,48 +310,9 @@ Sets optimizer arguments.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
-Without specifications, default values are used.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-The \code{Optimizer} object.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Optimizer-validate"></a>}}
-\if{latex}{\out{\hypertarget{method-Optimizer-validate}{}}}
-\subsection{Method \code{validate()}}{
-Validates the \code{Optimizer} object. A time limit in seconds for
-the optimization can be set via the \code{$seconds} field.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Optimizer$validate(
-  objective = optimizeR::test_objective,
-  initial = round(stats::rnorm(2)),
-  ...,
-  direction = "min"
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{objective}}{A \code{function} to be optimized that
-\enumerate{
-\item has at least one argument that receives a \code{numeric} \code{vector}
-\item and returns a single \code{numeric} value.
-}
-
-Alternatively, it can also be a \code{\link{Objective}} object for more
-flexibility.}
-
-\item{\code{initial}}{A \code{numeric} vector with starting parameter values for the optimization.}
-
-\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
-Without specifications, default values are used.}
-
-\item{\code{direction}}{Either \code{"min"} for minimization or \code{"max"} for maximization.}
+\item{\code{...}}{[\code{any}]\cr
+Optionally additional named arguments to be passed to the optimizer
+algorithm. Without specifications, default values of the optimizer are used.}
 }
 \if{html}{\out{</div>}}
 }
@@ -264,25 +326,42 @@ The \code{Optimizer} object.
 \subsection{Method \code{minimize()}}{
 Performing minimization.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Optimizer$minimize(objective, initial, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Optimizer$minimize(objective, initial, lower = NA, upper = NA, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{objective}}{A \code{function} to be optimized that
+\item{\code{objective}}{[\code{function} | \code{Objective}]\cr
+A \code{function} to be optimized that
 \enumerate{
 \item has at least one argument that receives a \code{numeric} \code{vector}
 \item and returns a single \code{numeric} value.
 }
 
-Alternatively, it can also be a \code{\link{Objective}} object for more
+Alternatively, it can also be an \code{\link{Objective}} object for more
 flexibility.}
 
-\item{\code{initial}}{A \code{numeric} vector with starting parameter values for the optimization.}
+\item{\code{initial}}{[\code{numeric()}]\cr
+Starting parameter values for the optimization.}
 
-\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
-Without specifications, default values are used.}
+\item{\code{lower}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
+Lower bounds on the parameters.
+
+If a single number, this will be applied to all parameters.
+
+Can be \code{NA} to not define any bounds.}
+
+\item{\code{upper}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
+Upper bounds on the parameters.
+
+If a single number, this will be applied to all parameters.
+
+Can be \code{NA} to not define any bounds.}
+
+\item{\code{...}}{[\code{any}]\cr
+Optionally additional named arguments to be passed to the optimizer
+algorithm. Without specifications, default values of the optimizer are used.}
 }
 \if{html}{\out{</div>}}
 }
@@ -301,7 +380,7 @@ Appended are additional output elements of the optimizer.
 If an error occurred, then the error message is also appended as element
 \code{error_message}.
 
-If the time limit was exceeded, this also counts as an error. In addition,
+If the time limit was exceeded, this counts as an error. In addition,
 the flag \code{time_out = TRUE} is appended.
 }
 \subsection{Examples}{
@@ -320,25 +399,42 @@ the flag \code{time_out = TRUE} is appended.
 \subsection{Method \code{maximize()}}{
 Performing maximization.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Optimizer$maximize(objective, initial, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Optimizer$maximize(objective, initial, lower = NA, upper = NA, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{objective}}{A \code{function} to be optimized that
+\item{\code{objective}}{[\code{function} | \code{Objective}]\cr
+A \code{function} to be optimized that
 \enumerate{
 \item has at least one argument that receives a \code{numeric} \code{vector}
 \item and returns a single \code{numeric} value.
 }
 
-Alternatively, it can also be a \code{\link{Objective}} object for more
+Alternatively, it can also be an \code{\link{Objective}} object for more
 flexibility.}
 
-\item{\code{initial}}{A \code{numeric} vector with starting parameter values for the optimization.}
+\item{\code{initial}}{[\code{numeric()}]\cr
+Starting parameter values for the optimization.}
 
-\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
-Without specifications, default values are used.}
+\item{\code{lower}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
+Lower bounds on the parameters.
+
+If a single number, this will be applied to all parameters.
+
+Can be \code{NA} to not define any bounds.}
+
+\item{\code{upper}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
+Upper bounds on the parameters.
+
+If a single number, this will be applied to all parameters.
+
+Can be \code{NA} to not define any bounds.}
+
+\item{\code{...}}{[\code{any}]\cr
+Optionally additional named arguments to be passed to the optimizer
+algorithm. Without specifications, default values of the optimizer are used.}
 }
 \if{html}{\out{</div>}}
 }
@@ -376,27 +472,52 @@ the flag \code{time_out = TRUE} is appended.
 \subsection{Method \code{optimize()}}{
 Performing minimization or maximization.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Optimizer$optimize(objective, initial, direction = "min", ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Optimizer$optimize(
+  objective,
+  initial,
+  lower = NA,
+  upper = NA,
+  direction = "min",
+  ...
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{objective}}{A \code{function} to be optimized that
+\item{\code{objective}}{[\code{function} | \code{Objective}]\cr
+A \code{function} to be optimized that
 \enumerate{
 \item has at least one argument that receives a \code{numeric} \code{vector}
 \item and returns a single \code{numeric} value.
 }
 
-Alternatively, it can also be a \code{\link{Objective}} object for more
+Alternatively, it can also be an \code{\link{Objective}} object for more
 flexibility.}
 
-\item{\code{initial}}{A \code{numeric} vector with starting parameter values for the optimization.}
+\item{\code{initial}}{[\code{numeric()}]\cr
+Starting parameter values for the optimization.}
 
-\item{\code{direction}}{Either \code{"min"} for minimization or \code{"max"} for maximization.}
+\item{\code{lower}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
+Lower bounds on the parameters.
 
-\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
-Without specifications, default values are used.}
+If a single number, this will be applied to all parameters.
+
+Can be \code{NA} to not define any bounds.}
+
+\item{\code{upper}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
+Upper bounds on the parameters.
+
+If a single number, this will be applied to all parameters.
+
+Can be \code{NA} to not define any bounds.}
+
+\item{\code{direction}}{[\code{character(1)}]\cr
+Either \code{"min"} for minimization or \code{"max"} for maximization.}
+
+\item{\code{...}}{[\code{any}]\cr
+Optionally additional named arguments to be passed to the optimizer
+algorithm. Without specifications, default values of the optimizer are used.}
 }
 \if{html}{\out{</div>}}
 }
@@ -442,8 +563,9 @@ Prints the optimizer label.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{...}}{Optionally additional arguments to be passed to the optimizer algorithm.
-Without specifications, default values are used.}
+\item{\code{...}}{[\code{any}]\cr
+Optionally additional named arguments to be passed to the optimizer
+algorithm. Without specifications, default values of the optimizer are used.}
 }
 \if{html}{\out{</div>}}
 }

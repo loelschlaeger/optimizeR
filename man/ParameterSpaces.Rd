@@ -2,22 +2,22 @@
 % Please edit documentation in R/parameter_spaces.R
 \name{ParameterSpaces}
 \alias{ParameterSpaces}
-\title{Switch Between Parameter Spaces}
+\title{Switch between parameter spaces}
 \description{
-This R6 object manages two related parameter spaces: the Optimization Space
-(for optimization) and the Interpretation Space (for easier interpretation).
+The \code{ParameterSpaces} object manages two related parameter spaces:
+\itemize{
+\item the Optimization Space (for optimization)
+\item and the Interpretation Space (for easier interpretation).
+}
 
 In the Optimization Space, parameters are stored as a \code{numeric}
-\code{vector}, the standard format for numerical optimizers. Parameters in
-this space are typically identified.
+\code{vector}, the standard format for numerical optimizers.
 
 In the Interpretation Space, parameters are stored as a \code{list} and can
-take different formats (e.g., \code{matrix}). Parameters here do not need to
-be identified.
+take different formats (e.g., \code{matrix}).
 
 The user can define transformation functions (not necessarily bijective) to
-switch between these two spaces via the \code{$o2i()} and \code{$i2o()}
-methods.
+switch between these spaces via the \code{$o2i()} and \code{$i2o()} methods.
 }
 \examples{
 ### Log-likelihood function of two-class Gaussian mixture model with
