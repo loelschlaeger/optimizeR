@@ -78,7 +78,6 @@ Whether a Hessian function has been specified via \verb{$set_hessian()}.}
 \item \href{#method-Objective-evaluate}{\code{Objective$evaluate()}}
 \item \href{#method-Objective-evaluate_gradient}{\code{Objective$evaluate_gradient()}}
 \item \href{#method-Objective-evaluate_hessian}{\code{Objective$evaluate_hessian()}}
-\item \href{#method-Objective-validate}{\code{Objective$validate()}}
 \item \href{#method-Objective-print}{\code{Objective$print()}}
 \item \href{#method-Objective-clone}{\code{Objective$clone()}}
 }
@@ -384,45 +383,6 @@ Negate the function return value?}
 
 \item{\code{...}}{Optionally additional function arguments that are fixed during the
 optimization.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Objective-validate"></a>}}
-\if{latex}{\out{\hypertarget{method-Objective-validate}{}}}
-\subsection{Method \code{validate()}}{
-Validate an \code{Objective} object.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Objective$validate(
-  .at,
-  output_template_f = numeric(1),
-  output_template_gradient = numeric(sum(self$npar)),
-  output_template_hessian = matrix(numeric(), nrow = sum(self$npar), ncol =
-    sum(self$npar)),
-  .verbose = TRUE
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{.at}}{[\code{numeric()}]\cr
-The values for the target argument(s), written in a single vector. (
-
-Must be of length \code{sum(self$npar)}.}
-
-\item{\code{output_template_f}}{[\code{any}]\cr
-A template of the expected function output value.}
-
-\item{\code{output_template_gradient}}{[\code{any}]\cr
-A template of the expected gradient output value.}
-
-\item{\code{output_template_hessian}}{[\code{any}]\cr
-A template of the expected hessian output value.}
-
-\item{\code{.verbose}}{[\code{logical(1)}]\cr
-Print status messages?}
 }
 \if{html}{\out{</div>}}
 }

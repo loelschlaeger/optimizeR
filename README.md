@@ -119,9 +119,12 @@ available optimizers, see:
 
 ``` r
 optimizer_dictionary
-#> <Dictionary> optimizer algorithms 
+#> <Dictionary> optimization algorithms 
 #> Keys: 
 #> - lbfgsb3c::lbfgsb3c
+#> - lbfgsb3c::lbfgsb3
+#> - lbfgsb3c::lbfgsb3f
+#> - lbfgsb3c::lbfgsb3x
 #> - stats::nlm
 #> - stats::nlminb
 #> - stats::optim
@@ -134,7 +137,7 @@ first…
 
 ``` r
 nelder_mead <- Optimizer$new(which = "custom")
-#> Please use method `$definition()` next to define a custom optimizer.
+#> Use method `$definition()` next to define a custom optimizer.
 ```
 
 … and using the `$definition()` method next:
@@ -188,7 +191,7 @@ nlm$maximize(objective = objective, initial = c(3, 3))
 #> [1] 1.974451 1.974451
 #> 
 #> $seconds
-#> [1] 0.01711607
+#> [1] 0.0242281
 #> 
 #> $initial
 #> [1] 3 3
@@ -215,7 +218,7 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> [1] 0 0
 #> 
 #> $seconds
-#> [1] 0.008198023
+#> [1] 0.008966923
 #> 
 #> $initial
 #> [1] 3 3

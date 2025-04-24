@@ -356,7 +356,7 @@ Objective <- R6::R6Class(
         check = oeli::check_missing(.at),
         var_name = ".at"
       )
-      private$.check_target(.at, .verbose = FALSE)
+      private$.check_target(.at)
       oeli::input_check_response(
         check = checkmate::check_flag(.negate),
         var_name = ".negate"
@@ -469,65 +469,6 @@ Objective <- R6::R6Class(
           call = NULL
         )
       }
-    },
-
-    #' @description
-    #' Validate an \code{Objective} object.
-    #'
-    #' @param output_template_f \[`any`\]\cr
-    #' A template of the expected function output value.
-    #'
-    #' @param output_template_gradient \[`any`\]\cr
-    #' A template of the expected gradient output value.
-    #'
-    #' @param output_template_hessian \[`any`\]\cr
-    #' A template of the expected hessian output value.
-
-    validate = function(
-      .at,
-      output_template_f = numeric(1),
-      output_template_gradient = numeric(sum(self$npar)),
-      output_template_hessian = matrix(
-        numeric(), nrow = sum(self$npar), ncol = sum(self$npar)
-      ),
-      .verbose = TRUE
-    ) {
-
-      ### input checks
-      oeli::input_check_response(
-        check = oeli::check_missing(.at),
-        var_name = ".at"
-      )
-      oeli::input_check_response(
-        check = checkmate::check_flag(.verbose),
-        var_name = ".verbose"
-      )
-
-      ### validation
-      if (.verbose) {
-        cli::cli_progress_step(
-          "Validating the {.code {private$.objective_name}} function."
-        )
-      }
-      private$.check_target(.at, .verbose = .verbose)
-      private$.check_arguments_complete(.verbose = .verbose)
-      private$.check_output_template(
-        .at, output_template_f = output_template_f, .verbose = .verbose
-      )
-      if (!is.null(private$.gradient)) {
-        private$.gradient$validate(
-          .at = .at, output_template_f = output_template_gradient,
-          .verbose = .verbose
-        )
-      }
-      if (!is.null(private$.hessian)) {
-        private$.hessian$validate(
-          .at = .at, output_template_f = output_template_hessian,
-          .verbose = .verbose
-        )
-      }
-      invisible(self)
-
     },
 
     #' @description
@@ -708,7 +649,7 @@ Objective <- R6::R6Class(
     .hessian = NULL,
 
     ### helper function that checks the target argument
-    .check_target = function(.at, .verbose = self$verbose) {
+    .check_target = function(.at) {
       if (!checkmate::test_numeric(
         .at, any.missing = FALSE, len = sum(private$.npar)
       )) {
@@ -719,21 +660,15 @@ Objective <- R6::R6Class(
           call = NULL
         )
       }
-      if (.verbose) {
-        cli::cli_alert_success(
-          "The value{?s} for the {length(private$.npar)} target
-          argument{?s} {?is/are} correctly specified.",
-          wrap = TRUE
-        )
-      }
       invisible(TRUE)
     },
 
     ### helper function that checks if a function argument is specified
-    .check_argument_specified = function(
-      argument_name, .verbose = self$verbose
-    ) {
-      checkmate::assert_string(argument_name)
+    .check_argument_specified = function(argument_name, .verbose = self$verbose) {
+      oeli::input_check_response(
+        check = checkmate::check_string(argument_name),
+        var_name = "argument_name"
+      )
       if (!argument_name %in% names(private$.arguments)) {
         cli::cli_abort(
           "Function argument {.var {argument_name}} is required but not
@@ -745,43 +680,6 @@ Objective <- R6::R6Class(
       if (.verbose) {
         cli::cli_alert_success(
           "Required argument {.val {argument_name}} is specified."
-        )
-      }
-    },
-
-    ### helper function that checks if all required arguments are specified
-    .check_arguments_complete = function(.verbose = self$verbose) {
-      arguments_required <- oeli::function_arguments(
-        private$.f, with_default = FALSE, with_ellipsis = FALSE
-      )
-      for (argument_name in setdiff(arguments_required, private$.target)) {
-        private$.check_argument_specified(argument_name, .verbose = FALSE)
-      }
-      if (.verbose) {
-        cli::cli_alert_success(
-          "All required fixed arguments for {.code {private$.objective_name}}
-          are specified.",
-          wrap = TRUE
-        )
-      }
-    },
-
-    ### helper function that checks if the output is as expected
-    .check_output_template = function(
-      .at, output_template_f, .verbose = self$verbose
-    ) {
-      if (.verbose) {
-        cli::cli_progress_step(
-          "Verifying the output structure of {.code {private$.objective_name}}
-          function."
-        )
-      }
-      output <- self$evaluate(.at = .at)
-      if (!oeli::identical_structure(output, output_template_f)) {
-        cli::cli_abort(
-          "The function output of {.code {private$.objective_name}} does not
-          have the expected structure.",
-          call = NULL
         )
       }
     },

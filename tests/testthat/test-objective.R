@@ -7,6 +7,18 @@ cli::test_that_cli("test various cli messages", {
    objective <- Objective$new(f = f, npar = 1)
    objective$verbose <- TRUE
 
+   ### bad argument value
+   expect_error(
+     objective$evaluate("a"),
+     "must be"
+   )
+
+   ### missing argument
+   expect_error(
+     objective$get_argument("a"),
+     "required but not specified"
+   )
+
    ### setting argument
    expect_snapshot(
      objective$set_argument("a" = -2)
@@ -46,37 +58,8 @@ cli::test_that_cli("test various cli messages", {
      objective$set_hessian(f_hessian)
    )
 
-   ### validate
-   suppressMessages(
-     expect_error(
-       objective$validate(1:2),
-       "of length 1"
-     )
-   )
-   expect_error(
-     objective$validate(),
-     "Input `.at` is bad: Argument needs a value"
-   )
-   suppressMessages(
-     expect_error(
-       objective$validate(1),
-       "does not have the expected structure"
-     )
-   )
-   suppressMessages(
-     expect_message(
-        objective$validate(1, output_template_hessian = numeric(1))
-     )
-   )
-   objective$remove_argument("a", .verbose = FALSE)
-   suppressMessages(
-     expect_error(
-       objective$validate(1),
-       "Function argument `a` is required but not specified"
-     )
-   )
-
    ### synchronizing arguments for gradient and Hessian
+   objective$remove_argument("a", .verbose = FALSE)
    expect_snapshot(
      objective$set_argument("a" = 1)
    )
@@ -304,9 +287,6 @@ test_that("gradient and hessian can be specified and evaluated", {
   expect_equal(
     himmelblau_objective$evaluate_hessian(c(3, 2)),
     himmelblau_hessian(c(3, 2))
-  )
-  expect_silent(
-    himmelblau_objective$validate(c(3, 2), .verbose = FALSE)
   )
 
   ### values as attributes

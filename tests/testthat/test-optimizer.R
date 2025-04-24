@@ -10,10 +10,6 @@ test_that("optimizer object exceptions can be detected", {
       out_parameter = "parameter",
       direction = "min"
     )
-  expect_error(
-    oeli::quiet(bad_output_opt$validate()),
-    "The optimizer output is bad: Must be of type 'list'"
-  )
 
   ### test error
   error_opt <- Optimizer$new("custom", .verbose = FALSE)$

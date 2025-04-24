@@ -169,7 +169,6 @@ Elements to ignore (not include) in the optimization output.}
 \item \href{#method-Optimizer-new}{\code{Optimizer$new()}}
 \item \href{#method-Optimizer-definition}{\code{Optimizer$definition()}}
 \item \href{#method-Optimizer-set_arguments}{\code{Optimizer$set_arguments()}}
-\item \href{#method-Optimizer-validate}{\code{Optimizer$validate()}}
 \item \href{#method-Optimizer-minimize}{\code{Optimizer$minimize()}}
 \item \href{#method-Optimizer-maximize}{\code{Optimizer$maximize()}}
 \item \href{#method-Optimizer-optimize}{\code{Optimizer$optimize()}}
@@ -311,66 +310,6 @@ Sets optimizer arguments.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{...}}{[\code{any}]\cr
-Optionally additional named arguments to be passed to the optimizer
-algorithm. Without specifications, default values of the optimizer are used.}
-}
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-The \code{Optimizer} object.
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Optimizer-validate"></a>}}
-\if{latex}{\out{\hypertarget{method-Optimizer-validate}{}}}
-\subsection{Method \code{validate()}}{
-Validates the \code{Optimizer} object. A time limit in seconds for
-the optimization can be set via the \code{$seconds} field.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Optimizer$validate(
-  objective = TestFunctions::TF_ackley,
-  initial = round(stats::rnorm(2)),
-  lower = NA,
-  upper = NA,
-  direction = "min",
-  ...
-)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{objective}}{[\code{function} | \code{Objective}]\cr
-A \code{function} to be optimized that
-\enumerate{
-\item has at least one argument that receives a \code{numeric} \code{vector}
-\item and returns a single \code{numeric} value.
-}
-
-Alternatively, it can also be an \code{\link{Objective}} object for more
-flexibility.}
-
-\item{\code{initial}}{[\code{numeric()}]\cr
-Starting parameter values for the optimization.}
-
-\item{\code{lower}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
-Lower bounds on the parameters.
-
-If a single number, this will be applied to all parameters.
-
-Can be \code{NA} to not define any bounds.}
-
-\item{\code{upper}}{[\code{NA} | \code{numeric()} | \code{numeric(1)}]\cr
-Upper bounds on the parameters.
-
-If a single number, this will be applied to all parameters.
-
-Can be \code{NA} to not define any bounds.}
-
-\item{\code{direction}}{[\code{character(1)}]\cr
-Either \code{"min"} for minimization or \code{"max"} for maximization.}
-
 \item{\code{...}}{[\code{any}]\cr
 Optionally additional named arguments to be passed to the optimizer
 algorithm. Without specifications, default values of the optimizer are used.}

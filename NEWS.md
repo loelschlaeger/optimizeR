@@ -1,8 +1,8 @@
 # optimizeR 1.2.0
 
-* The old S3 interface has been removed, hence, the functions `define_optimizer()`, `optimizer_nlm()`, `optimizer_optim()`, `new_optimizer()`, `validate_optimizer()`, and `apply_optimizer()` are no longer available. Please use the R6 interface instead, via `Optimizer$new()` and corresponding methods, see `help("Optimizer", "optimizeR")` for details.
-
 * Gradient, Hessian, and parameter bounds can now be passed to `Optimizer` objects.
+
+* The old S3 interface has been removed, hence, the functions `define_optimizer()`, `optimizer_nlm()`, `optimizer_optim()`, `new_optimizer()`, `validate_optimizer()`, and `apply_optimizer()` are no longer available. Please use the R6 interface instead, via `Optimizer$new()` and corresponding methods, see `help("Optimizer", "optimizeR")` for details.
 
 # optimizeR 1.1.3
 

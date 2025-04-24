@@ -328,78 +328,6 @@ Optimizer <- R6::R6Class(
     },
 
     #' @description
-    #' Validates the \code{Optimizer} object. A time limit in seconds for
-    #' the optimization can be set via the \code{$seconds} field.
-    #'
-    #' @return
-    #' The \code{Optimizer} object.
-
-    validate = function(
-      objective = TestFunctions::TF_ackley,
-      initial = round(stats::rnorm(2)),
-      lower = NA,
-      upper = NA,
-      direction = "min",
-      ...
-    ) {
-
-      ### test objective
-      objective_object <- private$.build_objective_object(objective, initial)
-      cli::cli_progress_step(
-        "Checking the objective.",
-        msg_done = "The objective is fine."
-      )
-      objective_object$validate(.at = initial)
-
-      ### test optimization
-      cli::cli_progress_step(
-        paste0("Trying to ", direction, "imize.")
-      )
-      out <- private$.optimize(
-        objective = objective_object,
-        initial = initial,
-        lower = lower,
-        upper = upper,
-        additional_arguments = list(...),
-        direction = direction
-      )
-
-      ### output checks
-      if (isTRUE(out[["time_out"]])) {
-        cli::cli_alert_warning(
-          "Time limit reached, consider increasing {.val $seconds}."
-        )
-      } else if (!is.null(out[["error_message"]])) {
-        cli::cli_abort(
-          "Test optimization failed: {out[['error_message']]}"
-        )
-      }
-      cli::cli_progress_step(
-        "Checking that the output is a list.",
-        msg_done = "The output is the required list."
-      )
-      if (!is.list(out)) {
-        cli::cli_abort(
-          "Test optimization did not return a {.cls list}."
-        )
-      }
-      values_required <- c("value", "parameter", "seconds", "initial")
-      cli::cli_progress_step(
-        "Checking for output elements {values_required}.",
-        msg_done = "All required elements are in the output."
-      )
-      for (value in values_required) {
-        if (!value %in% names(out)) {
-          cli::cli_abort("Output does not contain the element {.var {value}}.")
-        }
-      }
-
-      ### finish
-      cli::cli_progress_done()
-      invisible(self)
-    },
-
-    #' @description
     #' Performing minimization.
     #'
     #' @return
@@ -560,267 +488,6 @@ Optimizer <- R6::R6Class(
     print = function(...) {
       cat("<optimizer '", self$label, "'>", sep = "")
       invisible(self)
-    }
-
-  ),
-
-  private = list(
-
-    .label = "unlabeled",
-    .algorithm = NULL,
-    .arg_objective = NULL,
-    .arg_initial = NULL,
-    .arg_lower = NULL,
-    .arg_upper = NULL,
-    .arg_gradient = NULL,
-    .arg_hessian = NULL,
-    .gradient_as_attribute = NULL,
-    .hessian_as_attribute = NULL,
-    .out_value = NULL,
-    .out_parameter = NULL,
-    .direction = NULL,
-    .arguments = list(),
-    .seconds = Inf,
-    .hide_warnings = FALSE,
-    .output_ignore = character(),
-
-    ### helper function that prepares the optimization results
-    .prepare_result = function(result, initial, invert_objective) {
-      oeli::input_check_response(
-        check = checkmate::check_list(result$result),
-        prefix = "The optimizer output is bad:"
-      )
-      out <- list()
-      if (private$.out_value %in% names(result$result)) {
-        if (invert_objective) {
-          out[["value"]] <- -result$result[[private$.out_value]]
-        } else {
-          out[["value"]] <- result$result[[private$.out_value]]
-        }
-      } else {
-        out[["value"]] <- NA_real_
-      }
-      if (private$.out_parameter %in% names(result$result)) {
-        out[["parameter"]] <- result$result[[private$.out_parameter]]
-      } else {
-        out[["parameter"]] <- rep(NA_real_, length(initial))
-      }
-      if ("time" %in% names(result)) {
-        out[["seconds"]] <- as.numeric(result$time)
-      } else {
-        out[["seconds"]] <- NA_real_
-      }
-      out[["initial"]] <- initial
-      if (!"error" %in% names(result)) {
-        out[["error"]] <- FALSE
-      } else {
-        out[["error"]] <- TRUE
-      }
-      not_add <- c(private$.output_ignore, private$.out_value, private$.out_parameter)
-      oeli::merge_lists(
-        out,
-        result$result[!names(result$result) %in% not_add]
-      )
-    },
-
-    ### helper function that build an 'Objective' object from a function
-    .build_objective_object = function(objective, initial) {
-      if (!checkmate::test_r6(objective, "Objective")) {
-        oeli::assert_numeric_vector(initial)
-        objective <- Objective$new(
-          f = objective,
-          target = names(formals(objective))[1],
-          npar = length(initial)
-        )
-      }
-      return(objective)
-    },
-
-    ### helper function that performs optimization
-    .optimize = function(
-      objective,
-      initial,
-      lower,
-      upper,
-      additional_arguments,
-      direction
-    ) {
-
-      ### input checks
-      oeli::input_check_response(
-        check = checkmate::check_choice(direction, c("min", "max")),
-        "direction"
-      )
-      checkmate::assert_list(additional_arguments)
-
-      ### build objective function
-      objective_object <- private$.build_objective_object(objective, initial)
-
-      ### check initial values and parameter bounds
-      oeli::input_check_response(
-        check = oeli::check_numeric_vector(
-          initial, len = sum(objective_object$npar)
-        ),
-        "initial"
-      )
-      parameter_bounds_arguments <- list()
-      if (!checkmate::test_scalar_na(lower)) {
-        if (!is.na(self$arg_lower)) {
-          if (checkmate::test_number(lower)) {
-            lower <- rep(lower, length(initial))
-          }
-          oeli::input_check_response(
-            check = oeli::check_numeric_vector(
-              lower, len = length(initial), any.missing = FALSE
-            ),
-            "lower"
-          )
-          parameter_bounds_arguments <- c(
-            parameter_bounds_arguments,
-            structure(
-              list(lower), names = self$arg_lower
-            )
-          )
-        } else {
-          if (!self$hide_warnings) {
-            cli::cli_warn(
-              "The optimizer does not support lower parameter bounds."
-            )
-          }
-          lower <- NA
-        }
-      }
-      if (!checkmate::test_scalar_na(upper)) {
-        if (!is.na(self$arg_upper)) {
-          if (checkmate::test_number(upper)) {
-            upper <- rep(upper, length(initial))
-          }
-          oeli::input_check_response(
-            check = oeli::check_numeric_vector(
-              upper, len = length(initial), any.missing = FALSE
-            ),
-            "upper"
-          )
-          parameter_bounds_arguments <- c(
-            parameter_bounds_arguments,
-            structure(
-              list(upper), names = self$arg_upper
-            )
-          )
-        } else {
-          if (!self$hide_warnings) {
-            cli::cli_warn(
-              "The optimizer does not support upper parameter bounds."
-            )
-          }
-          upper <- NA
-        }
-      }
-
-      ### build gradient and hessian arguments
-      gradient_hessian_arguments <- list()
-      if (objective_object$gradient_specified && !self$gradient_as_attribute) {
-        if (!is.na(self$arg_gradient)) {
-          gradient_hessian_arguments <- c(
-            gradient_hessian_arguments,
-            structure(
-              list(objective_object$evaluate_gradient),
-              names = self$arg_gradient
-            )
-          )
-        } else {
-          if (!self$hide_warnings) {
-            cli::cli_warn(
-              "The optimizer does not support custom gradient function."
-            )
-          }
-        }
-      }
-      if (objective_object$hessian_specified && !self$hessian_as_attribute) {
-        if (!is.na(self$arg_hessian)) {
-          gradient_hessian_arguments <- c(
-            gradient_hessian_arguments,
-            structure(
-              list(objective_object$evaluate_hessian),
-              names = self$arg_hessian
-            )
-          )
-        } else {
-          if (!self$hide_warnings) {
-            cli::cli_warn(
-              "The optimizer does not support custom Hessian function."
-            )
-          }
-        }
-      }
-
-      ### build optimizer arguments
-      invert_objective <- !identical(private$.direction, direction)
-      args <- c(
-        ### defines objective and initial argument for optimizer
-        structure(
-          list(objective_object$evaluate, initial),
-          names = c(private$.arg_objective, private$.arg_initial)
-        ),
-        ### ensures that optimizer minimizes
-        list(
-          ".negate" = invert_objective,
-          ".gradient_as_attribute" = self$gradient_as_attribute,
-          ".gradient_attribute_name" = self$arg_gradient,
-          ".hessian_as_attribute" = self$hessian_as_attribute,
-          ".hessian_attribute_name" = self$arg_hessian
-        ),
-
-        ### arguments via ... have priority over previously specified arguments
-        oeli::merge_lists(
-          parameter_bounds_arguments,
-          gradient_hessian_arguments,
-          additional_arguments,
-          private$.arguments
-        )
-      )
-      checkmate::assert_list(args, names = "unique")
-
-      ### optimize
-      result <- tryCatch(
-        {
-          suppressWarnings(
-            oeli::timed(
-              oeli::do.call_timed(
-                what = private$.algorithm,
-                args = args,
-                units = "secs"
-              ),
-              seconds = private$.seconds,
-              on_time_out = "error"
-            ),
-            classes = if (private$.hide_warnings) "warning" else ""
-          )
-        },
-        error = function(e) {
-          error_message <- e$message
-          time_out <- grepl("time limit exceeded", error_message)
-          if (time_out) {
-            list(
-              "result" = list(
-                "error_message" = error_message,
-                "time_out" = TRUE
-              ),
-              "error" = TRUE,
-              "time" = NA_real_
-            )
-          } else {
-            list(
-              "result" = list("error_message" = error_message),
-              "error" = TRUE,
-              "time" = NA_real_
-            )
-          }
-        }
-      )
-
-      ### prepare result
-      private$.prepare_result(result, initial, invert_objective)
     }
 
   ),
@@ -1097,6 +764,264 @@ Optimizer <- R6::R6Class(
         private$.output_ignore <- value
       }
     }
+  ),
+
+  private = list(
+
+    .label = "unlabeled",
+    .algorithm = NULL,
+    .arg_objective = NULL,
+    .arg_initial = NULL,
+    .arg_lower = NULL,
+    .arg_upper = NULL,
+    .arg_gradient = NULL,
+    .arg_hessian = NULL,
+    .gradient_as_attribute = NULL,
+    .hessian_as_attribute = NULL,
+    .out_value = NULL,
+    .out_parameter = NULL,
+    .direction = NULL,
+    .arguments = list(),
+    .seconds = Inf,
+    .hide_warnings = FALSE,
+    .output_ignore = character(),
+
+    ### helper function that prepares the optimization results
+    .prepare_result = function(result, initial, invert_objective) {
+      oeli::input_check_response(
+        check = checkmate::check_list(result$result),
+        prefix = "The optimizer output is bad:"
+      )
+      out <- list()
+      if (private$.out_value %in% names(result$result)) {
+        if (invert_objective) {
+          out[["value"]] <- -result$result[[private$.out_value]]
+        } else {
+          out[["value"]] <- result$result[[private$.out_value]]
+        }
+      } else {
+        out[["value"]] <- NA_real_
+      }
+      if (private$.out_parameter %in% names(result$result)) {
+        out[["parameter"]] <- result$result[[private$.out_parameter]]
+      } else {
+        out[["parameter"]] <- rep(NA_real_, length(initial))
+      }
+      if ("time" %in% names(result)) {
+        out[["seconds"]] <- as.numeric(result$time)
+      } else {
+        out[["seconds"]] <- NA_real_
+      }
+      out[["initial"]] <- initial
+      if (!"error" %in% names(result)) {
+        out[["error"]] <- FALSE
+      } else {
+        out[["error"]] <- TRUE
+      }
+      not_add <- c(private$.output_ignore, private$.out_value, private$.out_parameter)
+      oeli::merge_lists(
+        out,
+        result$result[!names(result$result) %in% not_add]
+      )
+    },
+
+    ### helper function that build an 'Objective' object from a function
+    .build_objective_object = function(objective, initial) {
+      if (!checkmate::test_r6(objective, "Objective")) {
+        oeli::input_check_response(
+          check = oeli::check_numeric_vector(initial),
+          var_name = "initial"
+        )
+        objective <- Objective$new(
+          f = objective,
+          target = names(formals(objective))[1],
+          npar = length(initial)
+        )
+      }
+      return(objective)
+    },
+
+    ### helper function that performs optimization
+    .optimize = function(
+    objective,
+    initial,
+    lower,
+    upper,
+    additional_arguments,
+    direction
+    ) {
+
+      ### input checks
+      oeli::input_check_response(
+        check = checkmate::check_choice(direction, c("min", "max")),
+        var_name = "direction"
+      )
+      checkmate::assert_list(additional_arguments) # to make sure
+
+      ### build objective function
+      objective_object <- private$.build_objective_object(objective, initial)
+
+      ### check parameter bounds
+      parameter_bounds_arguments <- list()
+      if (!checkmate::test_scalar_na(lower)) {
+        if (!is.na(self$arg_lower)) {
+          if (checkmate::test_number(lower)) {
+            lower <- rep(lower, length(initial))
+          }
+          oeli::input_check_response(
+            check = oeli::check_numeric_vector(
+              lower, len = length(initial), any.missing = FALSE
+            ),
+            var_name = "lower"
+          )
+          parameter_bounds_arguments <- c(
+            parameter_bounds_arguments,
+            structure(
+              list(lower), names = self$arg_lower
+            )
+          )
+        } else {
+          if (!self$hide_warnings) {
+            cli::cli_warn(
+              "The optimizer does not support lower parameter bounds."
+            )
+          }
+          lower <- NA
+        }
+      }
+      if (!checkmate::test_scalar_na(upper)) {
+        if (!is.na(self$arg_upper)) {
+          if (checkmate::test_number(upper)) {
+            upper <- rep(upper, length(initial))
+          }
+          oeli::input_check_response(
+            check = oeli::check_numeric_vector(
+              upper, len = length(initial), any.missing = FALSE
+            ),
+            "upper"
+          )
+          parameter_bounds_arguments <- c(
+            parameter_bounds_arguments,
+            structure(
+              list(upper), names = self$arg_upper
+            )
+          )
+        } else {
+          if (!self$hide_warnings) {
+            cli::cli_warn(
+              "The optimizer does not support upper parameter bounds."
+            )
+          }
+          upper <- NA
+        }
+      }
+
+      ### build gradient and hessian arguments
+      gradient_hessian_arguments <- list()
+      if (objective_object$gradient_specified && !self$gradient_as_attribute) {
+        if (!is.na(self$arg_gradient)) {
+          gradient_hessian_arguments <- c(
+            gradient_hessian_arguments,
+            structure(
+              list(objective_object$evaluate_gradient),
+              names = self$arg_gradient
+            )
+          )
+        } else {
+          if (!self$hide_warnings) {
+            cli::cli_warn(
+              "The optimizer does not support custom gradient function."
+            )
+          }
+        }
+      }
+      if (objective_object$hessian_specified && !self$hessian_as_attribute) {
+        if (!is.na(self$arg_hessian)) {
+          gradient_hessian_arguments <- c(
+            gradient_hessian_arguments,
+            structure(
+              list(objective_object$evaluate_hessian),
+              names = self$arg_hessian
+            )
+          )
+        } else {
+          if (!self$hide_warnings) {
+            cli::cli_warn(
+              "The optimizer does not support custom Hessian function."
+            )
+          }
+        }
+      }
+
+      ### build optimizer arguments
+      invert_objective <- !identical(private$.direction, direction)
+      args <- c(
+        ### defines objective and initial argument for optimizer
+        structure(
+          list(objective_object$evaluate, initial),
+          names = c(private$.arg_objective, private$.arg_initial)
+        ),
+        ### ensures that optimizer minimizes
+        list(
+          ".negate" = invert_objective,
+          ".gradient_as_attribute" = self$gradient_as_attribute,
+          ".gradient_attribute_name" = self$arg_gradient,
+          ".hessian_as_attribute" = self$hessian_as_attribute,
+          ".hessian_attribute_name" = self$arg_hessian
+        ),
+
+        ### arguments via ... have priority over previously specified arguments
+        oeli::merge_lists(
+          parameter_bounds_arguments,
+          gradient_hessian_arguments,
+          additional_arguments,
+          private$.arguments
+        )
+      )
+      checkmate::assert_list(args, names = "unique") # to make sure
+
+      ### optimize
+      result <- tryCatch(
+        {
+          suppressWarnings(
+            oeli::timed(
+              oeli::do.call_timed(
+                what = private$.algorithm,
+                args = args,
+                units = "secs"
+              ),
+              seconds = private$.seconds,
+              on_time_out = "error"
+            ),
+            classes = if (private$.hide_warnings) "warning" else ""
+          )
+        },
+        error = function(e) {
+          error_message <- e$message
+          time_out <- grepl("time limit exceeded", error_message)
+          if (time_out) {
+            list(
+              "result" = list(
+                "error_message" = error_message,
+                "time_out" = TRUE
+              ),
+              "error" = TRUE,
+              "time" = NA_real_
+            )
+          } else {
+            list(
+              "result" = list("error_message" = error_message),
+              "error" = TRUE,
+              "time" = NA_real_
+            )
+          }
+        }
+      )
+
+      ### prepare result
+      private$.prepare_result(result, initial, invert_objective)
+    }
+
   )
 
 )
