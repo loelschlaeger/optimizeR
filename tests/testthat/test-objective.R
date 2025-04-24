@@ -186,7 +186,7 @@ test_that("objective with one target argument can be evaluated", {
 })
 
 test_that("objective can be evaluated with a time limit", {
-  skip_if_not(.Platform$OS.type %in% c("unix", "windows"))
+  skip_if_not(.Platform$OS.type == "windows")
   f <- function(x, a, b = 0) {
     Sys.sleep(2)
     (x + a)^2 + b

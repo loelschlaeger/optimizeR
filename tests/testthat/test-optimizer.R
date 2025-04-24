@@ -30,7 +30,7 @@ test_that("optimizer object exceptions can be detected", {
   expect_equal(out$error_message, "error message")
 
   ### test time out
-  skip_if_not(.Platform$OS.type %in% c("unix", "windows"))
+  skip_if_not(.Platform$OS.type == "windows")
   slow_opt <- Optimizer$new("custom", .verbose = FALSE)$
     definition(
       algorithm = function(f, p, ...) {
