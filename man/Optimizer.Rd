@@ -38,12 +38,12 @@ nlm <- Optimizer$new(which = "stats::nlm")
 # 4. define the 'pracma::nelder_mead' optimizer (not contained in the dictionary)
 nelder_mead <- Optimizer$new(which = "custom")
 nelder_mead$definition(
-  algorithm = pracma::nelder_mead, # the optimization function
-  arg_objective = "fn",            # the argument name for the objective function
-  arg_initial = "x0",              # the argument name for the initial values
-  out_value = "fmin",              # the element for the optimal function value in the output
-  out_parameter = "xmin",          # the element for the optimal parameters in the output
-  direction = "min"                # the optimizer minimizes
+  algorithm = pracma::nelder_mead, # optimization function
+  arg_objective = "fn",            # argument name for the objective function
+  arg_initial = "x0",              # argument name for the initial values
+  out_value = "fmin",              # element for the optimal function value in the output
+  out_parameter = "xmin",          # element for the optimal parameters in the output
+  direction = "min"                # optimizer minimizes
 )
 
 # 5. compare the minimization results

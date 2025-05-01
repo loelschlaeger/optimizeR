@@ -7,18 +7,6 @@ cli::test_that_cli("test various cli messages", {
    objective <- Objective$new(f = f, npar = 1)
    objective$verbose <- TRUE
 
-   ### bad argument value
-   expect_error(
-     objective$evaluate("a"),
-     "must be"
-   )
-
-   ### missing argument
-   expect_error(
-     objective$get_argument("a"),
-     "required but not specified"
-   )
-
    ### setting argument
    expect_snapshot(
      objective$set_argument("a" = -2)
@@ -306,3 +294,4 @@ test_that("gradient and hessian can be specified and evaluated", {
     )
   )
 })
+

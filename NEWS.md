@@ -1,3 +1,7 @@
+# optimizeR development
+
+* Small fixes.
+
 # optimizeR 1.2.0
 
 * Gradient, Hessian, and parameter bounds can now be passed to `Optimizer` objects.
