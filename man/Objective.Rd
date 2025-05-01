@@ -35,7 +35,7 @@ objective$evaluate(1:5)
 \item{\code{objective_name}}{[\code{character(1)}]\cr
 The label for the objective function.}
 
-\item{\code{fixed_arguments}}{[\code{character()}]\cr
+\item{\code{fixed_arguments}}{[\code{character()}, read-only]\cr
 The name(s) of the fixed argument(s) (if any).}
 
 \item{\code{seconds}}{[\code{numeric(1)}]\cr
@@ -52,16 +52,16 @@ Hide warnings when evaluating the objective function?}
 \item{\code{verbose}}{[\code{logical(1)}]\cr
 Print status messages?}
 
-\item{\code{npar}}{[\code{integer()}]\cr
+\item{\code{npar}}{[\code{integer()}, read-only]\cr
 The length of each target argument.}
 
-\item{\code{target}}{[\code{character()}]\cr
+\item{\code{target}}{[\code{character()}, read-only]\cr
 The argument name(s) that get optimized.}
 
-\item{\code{gradient_specified}}{[\code{logical(1)}]\cr
+\item{\code{gradient_specified}}{[\code{logical(1)}, read-only]\cr
 Whether a gradient function has been specified via \verb{$set_gradient()}.}
 
-\item{\code{hessian_specified}}{[\code{logical(1)}]\cr
+\item{\code{hessian_specified}}{[\code{logical(1)}, read-only]\cr
 Whether a Hessian function has been specified via \verb{$set_hessian()}.}
 }
 \if{html}{\out{</div>}}
@@ -298,7 +298,7 @@ Evaluate the objective function.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{.at}}{[\code{numeric()}]\cr
-The values for the target argument(s), written in a single vector. (
+The values for the target argument(s), written in a single vector.
 
 Must be of length \code{sum(self$npar)}.}
 
@@ -348,7 +348,7 @@ Evaluate the gradient function.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{.at}}{[\code{numeric()}]\cr
-The values for the target argument(s), written in a single vector. (
+The values for the target argument(s), written in a single vector.
 
 Must be of length \code{sum(self$npar)}.}
 
@@ -374,7 +374,7 @@ Evaluate the Hessian function.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{.at}}{[\code{numeric()}]\cr
-The values for the target argument(s), written in a single vector. (
+The values for the target argument(s), written in a single vector.
 
 Must be of length \code{sum(self$npar)}.}
 

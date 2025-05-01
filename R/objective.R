@@ -26,7 +26,7 @@
 #' A function argument name.
 #'
 #' @param .at \[`numeric()`\]\cr
-#' The values for the target argument(s), written in a single vector. (
+#' The values for the target argument(s), written in a single vector.
 #'
 #' Must be of length \code{sum(self$npar)}.
 #'
@@ -516,7 +516,7 @@ Objective <- R6::R6Class(
       }
     },
 
-    #' @field fixed_arguments \[`character()`\]\cr
+    #' @field fixed_arguments \[`character()`, read-only\]\cr
     #' The name(s) of the fixed argument(s) (if any).
 
     fixed_arguments = function(value) {
@@ -577,7 +577,7 @@ Objective <- R6::R6Class(
       }
     },
 
-    #' @field npar \[`integer()`\]\cr
+    #' @field npar \[`integer()`, read-only\]\cr
     #' The length of each target argument.
 
     npar = function(value) {
@@ -591,7 +591,7 @@ Objective <- R6::R6Class(
       }
     },
 
-    #' @field target \[`character()`\]\cr
+    #' @field target \[`character()`, read-only\]\cr
     #' The argument name(s) that get optimized.
 
     target = function(value) {
@@ -605,7 +605,7 @@ Objective <- R6::R6Class(
       }
     },
 
-    #' @field gradient_specified \[`logical(1)`\]\cr
+    #' @field gradient_specified \[`logical(1)`, read-only\]\cr
     #' Whether a gradient function has been specified via `$set_gradient()`.
 
     gradient_specified = function(value) {
@@ -619,7 +619,7 @@ Objective <- R6::R6Class(
       }
     },
 
-    #' @field hessian_specified \[`logical(1)`\]\cr
+    #' @field hessian_specified \[`logical(1)`, read-only\]\cr
     #' Whether a Hessian function has been specified via `$set_hessian()`.
 
     hessian_specified = function(value) {
