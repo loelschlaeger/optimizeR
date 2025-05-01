@@ -37,7 +37,7 @@ value and the optimal parameter vector.
 
     <a class="navbar-brand me-2" href="../index.html">optimizeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -671,12 +671,12 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-in"><span><span class="va">nelder_mead</span> <span class="op">&lt;-</span> <span class="va">Optimizer</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>which <span class="op">=</span> <span class="st">"custom"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Use method `$definition()` next to define a custom optimizer.</span>
 <span class="r-in"><span><span class="va">nelder_mead</span><span class="op">$</span><span class="fu">definition</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  algorithm <span class="op">=</span> <span class="fu">pracma</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">nelder_mead</a></span>, <span class="co"># the optimization function</span></span></span>
-<span class="r-in"><span>  arg_objective <span class="op">=</span> <span class="st">"fn"</span>,            <span class="co"># the argument name for the objective function</span></span></span>
-<span class="r-in"><span>  arg_initial <span class="op">=</span> <span class="st">"x0"</span>,              <span class="co"># the argument name for the initial values</span></span></span>
-<span class="r-in"><span>  out_value <span class="op">=</span> <span class="st">"fmin"</span>,              <span class="co"># the element for the optimal function value in the output</span></span></span>
-<span class="r-in"><span>  out_parameter <span class="op">=</span> <span class="st">"xmin"</span>,          <span class="co"># the element for the optimal parameters in the output</span></span></span>
-<span class="r-in"><span>  direction <span class="op">=</span> <span class="st">"min"</span>                <span class="co"># the optimizer minimizes</span></span></span>
+<span class="r-in"><span>  algorithm <span class="op">=</span> <span class="fu">pracma</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">nelder_mead</a></span>, <span class="co"># optimization function</span></span></span>
+<span class="r-in"><span>  arg_objective <span class="op">=</span> <span class="st">"fn"</span>,            <span class="co"># argument name for the objective function</span></span></span>
+<span class="r-in"><span>  arg_initial <span class="op">=</span> <span class="st">"x0"</span>,              <span class="co"># argument name for the initial values</span></span></span>
+<span class="r-in"><span>  out_value <span class="op">=</span> <span class="st">"fmin"</span>,              <span class="co"># element for the optimal function value in the output</span></span></span>
+<span class="r-in"><span>  out_parameter <span class="op">=</span> <span class="st">"xmin"</span>,          <span class="co"># element for the optimal parameters in the output</span></span></span>
+<span class="r-in"><span>  direction <span class="op">=</span> <span class="st">"min"</span>                <span class="co"># optimizer minimizes</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># 5. compare the minimization results</span></span></span>
@@ -688,7 +688,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.974451 1.974451</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.03985429</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.03964925</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3 3</span>
@@ -713,7 +713,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01237774</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01339197</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3 3</span>
@@ -747,7 +747,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.9085614</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001808882</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.002002716</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
@@ -778,7 +778,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9085598</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.002276182</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.002331257</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
@@ -810,7 +810,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10031</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001550198</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.001613855</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
@@ -835,7 +835,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9085598</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.002220392</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.002398729</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
