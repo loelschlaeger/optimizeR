@@ -120,7 +120,6 @@ Objective <- R6::R6Class(
       private$.f <- f
       private$.target <- target
       private$.npar <- npar
-
     },
 
     #' @description
@@ -154,9 +153,7 @@ Objective <- R6::R6Class(
         if (argument_names[i] %in% names(private$.arguments)) {
           if (!.overwrite) {
             cli::cli_abort(
-              "Argument {.var {argument_names[i]}} already exists, call
-               {.var $set_argument(..., {.val .overwrite = TRUE})} to
-              overwrite.",
+              "Argument {.var {argument_names[i]}} already exists.",
               call = NULL
             )
           } else {
@@ -315,39 +312,49 @@ Objective <- R6::R6Class(
     #' @description
     #' Evaluate the objective function.
     #'
-    #' @param .gradient_as_attribute \[`logical(1)\]\cr
+    #' @param .gradient_as_attribute \[`logical(1)`\]\cr
     #' Add the value of the gradient function as an attribute to the output?
     #'
     #' The attribute name is defined via the `.gradient_attribute_name`
     #' argument.
     #'
-    #' Ignored if `$gradient_specified` is `FALSE`.
+    #' Ignored if `$gradient_specified` and `.gradient_numeric` are `FALSE`.
     #'
-    #' @param .gradient_attribute_name \[`character(1)\]\cr
+    #' @param .gradient_attribute_name \[`character(1)`\]\cr
     #' Only relevant if `.gradient_as_attribute = TRUE`.
     #'
     #' In that case, the attribute name for the gradient (if available).
     #'
-    #' @param .hessian_as_attribute \[`logical(1)\]\cr
+    #' @param .gradient_numeric \[`logical(1)`\]\cr
+    #' Calculate the gradient via the numerical approximation
+    #' \code{\link[numDeriv]{grad}}?
+    #'
+    #' @param .hessian_as_attribute \[`logical(1)`\]\cr
     #' Add the value of the Hessian function as an attribute to the output?
     #'
     #' The attribute name is defined via the `.hessian_attribute_name`
     #' argument.
     #'
-    #' Ignored if `$hessian_specified` is `FALSE`.
+    #' Ignored if `$hessian_specified` and `hessian_numeric` are `FALSE`.
     #'
-    #' @param .hessian_attribute_name \[`character(1)\]\cr
+    #' @param .hessian_attribute_name \[`character(1)`\]\cr
     #' Only relevant if `.hessian_as_attribute = TRUE`.
     #'
     #' In that case, the attribute name for the Hessian (if available).
+    #'
+    #' @param .hessian_numeric \[`logical(1)`\]\cr
+    #' Calculate the Hessian via the numerical approximation
+    #' \code{\link[numDeriv]{hessian}}?
 
     evaluate = function(
       .at,
       .negate = FALSE,
       .gradient_as_attribute = FALSE,
       .gradient_attribute_name = "gradient",
+      .gradient_numeric = FALSE,
       .hessian_as_attribute = FALSE,
       .hessian_attribute_name = "hessian",
+      .hessian_numeric = FALSE,
       ...
     ) {
 
@@ -357,6 +364,9 @@ Objective <- R6::R6Class(
         var_name = ".at"
       )
       private$.check_target(.at)
+      private$.check_arguments_complete(
+        .names_add_args_provided = names(list(...))
+      )
       oeli::input_check_response(
         check = checkmate::check_flag(.negate),
         var_name = ".negate"
@@ -372,6 +382,10 @@ Objective <- R6::R6Class(
         var_name = ".gradient_attribute_name"
       )
       oeli::input_check_response(
+        check = checkmate::check_flag(.gradient_numeric),
+        var_name = ".gradient_numeric"
+      )
+      oeli::input_check_response(
         check = checkmate::check_flag(.hessian_as_attribute),
         var_name = ".hessian_as_attribute"
       )
@@ -380,6 +394,10 @@ Objective <- R6::R6Class(
           .hessian_attribute_name, na.ok = !.hessian_as_attribute
         ),
         var_name = ".hessian_attribute_name"
+      )
+      oeli::input_check_response(
+        check = checkmate::check_flag(.hessian_numeric),
+        var_name = ".hessian_numeric"
       )
 
       ### evaluation
@@ -417,15 +435,27 @@ Objective <- R6::R6Class(
       )
 
       ### add gradient and Hessian
-      if (isTRUE(.gradient_as_attribute) && self$gradient_specified) {
-        attr(out, .gradient_attribute_name) <- self$evaluate_gradient(
-          .at = .at, .negate = .negate, ...
-        )
+      if (.gradient_as_attribute) {
+        if (.gradient_numeric) {
+          attr(out, .gradient_attribute_name) <- self$evaluate_gradient_numeric(
+            .at = .at, .negate = .negate, ...
+          )
+        } else if (self$gradient_specified) {
+          attr(out, .gradient_attribute_name) <- self$evaluate_gradient(
+            .at = .at, .negate = .negate, ...
+          )
+        }
       }
-      if (isTRUE(.hessian_as_attribute) && self$hessian_specified) {
-        attr(out, .hessian_attribute_name) <- self$evaluate_hessian(
-          .at = .at, .negate = .negate, ...
-        )
+      if (.hessian_as_attribute) {
+        if (.hessian_numeric) {
+          attr(out, .hessian_attribute_name) <- self$evaluate_hessian_numeric(
+            .at = .at, .negate = .negate, ...
+          )
+        } else if (self$hessian_specified) {
+          attr(out, .hessian_attribute_name) <- self$evaluate_hessian(
+            .at = .at, .negate = .negate, ...
+          )
+        }
       }
 
       ### return
@@ -445,12 +475,25 @@ Objective <- R6::R6Class(
         private$.gradient$evaluate(.at = .at, .negate = .negate, ...)
       } else {
         cli::cli_abort(paste(
-            "Gradient function is required but not specified, please call",
-            "{.var $set_gradient()} first."
+            "Gradient function is required but not specified yet."
           ),
           call = NULL
         )
       }
+    },
+
+    #' @description
+    #' Evaluate the numerical gradient \code{\link[numDeriv]{grad}}.
+
+    evaluate_gradient_numeric = function(.at, .negate = FALSE, ...) {
+      oeli::input_check_response(
+        check = oeli::check_missing(.at),
+        var_name = ".at"
+      )
+      do.call(
+        what = numDeriv::grad,
+        args = list(func = self$evaluate, x = .at, .negate = .negate, ...)
+      )
     },
 
     #' @description
@@ -465,12 +508,25 @@ Objective <- R6::R6Class(
         private$.hessian$evaluate(.at = .at, .negate = .negate, ...)
       } else {
         cli::cli_abort(paste(
-            "Hessian function is required but not specified, please call",
-            "{.var $set_hessian()} first."
+            "Hessian function is required but not specified yet."
           ),
           call = NULL
         )
       }
+    },
+
+    #' @description
+    #' Evaluate the numerical Hessian \code{\link[numDeriv]{hessian}}.
+
+    evaluate_hessian_numeric = function(.at, .negate = FALSE, ...) {
+      oeli::input_check_response(
+        check = oeli::check_missing(.at),
+        var_name = ".at"
+      )
+      do.call(
+        what = numDeriv::hessian,
+        args = list(func = self$evaluate, x = .at, .negate = .negate, ...)
+      )
     },
 
     #' @description
@@ -691,8 +747,7 @@ Objective <- R6::R6Class(
       if (!argument_name %in% names(private$.arguments)) {
         cli::cli_abort(paste(
             "Function argument {.var {argument_name}} is required but not",
-            "specified, please call",
-            "{.var $set_argument({.val {argument_name}} = ...)} first."
+            "specified yet."
           ),
           call = NULL
         )
@@ -707,16 +762,27 @@ Objective <- R6::R6Class(
     },
 
     ### helper function that checks if all required arguments are specified
-    .check_arguments_complete = function(.verbose = self$verbose) {
+    .check_arguments_complete = function(
+      .verbose = self$verbose, .names_add_args_provided = character()
+    ) {
 
       oeli::input_check_response(
         check = checkmate::check_flag(.verbose),
         var_name = ".verbose"
       )
+      oeli::input_check_response(
+        check = checkmate::check_character(
+          .names_add_args_provided, any.missing = FALSE, null.ok = TRUE
+        ),
+        var_name = ".names_add_args_provided"
+      )
       arguments_required <- oeli::function_arguments(
         private$.f, with_default = FALSE, with_ellipsis = FALSE
       )
-      for (argument_name in setdiff(arguments_required, private$.target)) {
+      check_argument_available_names <- setdiff(
+        arguments_required, c(private$.target, .names_add_args_provided)
+      )
+      for (argument_name in check_argument_available_names) {
         private$.check_argument_specified(argument_name, .verbose = FALSE)
       }
       if (.verbose) {

@@ -1,6 +1,10 @@
-# optimizeR development
+# optimizeR 1.2.1
 
 * Small fixes.
+
+* Added private helper function `.check_arguments_complete()` to `Objective` object that checks if all required arguments are specified.
+
+* Added functionality to `Objective` object that can compute numerical gradient and Hessian.
 
 # optimizeR 1.2.0
 
