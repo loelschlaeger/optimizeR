@@ -4,7 +4,7 @@
 #' The \code{ParameterSpaces} object manages two related parameter spaces:
 #'
 #' - the Optimization Space (for optimization)
-#' - and the Interpretation Space (for easier interpretation).
+#' - the Interpretation Space (for easier interpretation).
 #'
 #' In the Optimization Space, parameters are stored as a \code{numeric}
 #' \code{vector}, the standard format for numerical optimizers.
@@ -12,7 +12,7 @@
 #' In the Interpretation Space, parameters are stored as a \code{list} and can
 #' take different formats (e.g., \code{matrix}).
 #'
-#' The user can define transformation functions (not necessarily bijective) to
+#' Users can define transformation functions (not necessarily bijective) to
 #' switch between these spaces via the \code{$o2i()} and \code{$i2o()} methods.
 #'
 #' @examples
@@ -56,7 +56,7 @@
 #'
 #' ### switch between parameter spaces
 #'
-#' par <- list(                             # parameters in interpretation space
+#' par <- list(              # parameters in interpretation space
 #'   "mu" = c(2, 4),
 #'   "sd" = c(0.5, 1),
 #'   "lambda" = c(0.4, 0.6)
@@ -114,7 +114,8 @@ ParameterSpaces <- R6::R6Class(
 
       ### set internal parameters
       private$.parameter_names <- p <- parameter_names
-      private$.parameter_lengths_in_o_space <- n <- parameter_lengths_in_o_space
+      private$.parameter_lengths_in_o_space <- n <-
+        parameter_lengths_in_o_space
       private$.o2i <- {
         o2i <- replicate(length(n), function(x) x)
         names(o2i) <- p
@@ -143,7 +144,11 @@ ParameterSpaces <- R6::R6Class(
       )
 
       ### optimization space
-      cli::cli_h1("Optimization Space {.cls numeric({private$.o_space_length()})}")
+      cli::cli_h1(paste0(
+        "Optimization Space {.cls numeric(",
+        private$.o_space_length(),
+        ")}"
+      ))
       print.data.frame(
         structure(
           data.frame(private$.format_ranges(), private$.parameter_names),
@@ -166,11 +171,18 @@ ParameterSpaces <- R6::R6Class(
       }
 
       ### interpretation space
-      cli::cli_h1("Interpretation Space {.cls list({private$.number_parameters()})}")
+      cli::cli_h1(paste0(
+        "Interpretation Space {.cls list(",
+        private$.number_parameters(),
+        ")}"
+      ))
       print.data.frame(
         structure(
           data.frame(
-            sapply(seq_along(private$.parameter_names), function(i) sprintf("[[%d]]", i)),
+            sapply(
+              seq_along(private$.parameter_names),
+              function(i) sprintf("[[%d]]", i)
+            ),
             private$.parameter_names),
           names = NULL
         ),
@@ -199,8 +211,8 @@ ParameterSpaces <- R6::R6Class(
     #'
     #' @param x \[`numeric()` | `list()`\]\cr
     #' The parameters, either as a `numeric vector` (will be switched to
-    #' Interpretation Space), or as a `list()` (will be switched to Optimization
-    #' Space).
+    #' Interpretation Space), or as a `list()` (will be switched to
+    #' Optimization Space).
     #'
     #' @param to \[`character(1)` | `NULL`\]\cr
     #' Explicitly switch to a specific space, either
@@ -238,7 +250,10 @@ ParameterSpaces <- R6::R6Class(
         }
 
         ### transform to Interpretation Space
-        out <-  setNames(vector("list", private$.number_parameters()), private$.parameter_names)
+        out <- setNames(
+          vector("list", private$.number_parameters()),
+          private$.parameter_names
+        )
         ranges <- private$.get_ranges()
         x_split <- lapply(ranges, function(start_end) {
           if (is.null(start_end)) {
@@ -299,8 +314,8 @@ ParameterSpaces <- R6::R6Class(
     },
 
     #' @description
-    #' Define transformation functions when switching from Optimization Space to
-    #' Interpretation Space.
+    #' Define transformation functions when switching from Optimization Space
+    #' to Interpretation Space.
     #'
     #' @param ... \[`function`\]\cr
     #' One or more transformation functions, named according to the parameters.
@@ -318,7 +333,8 @@ ParameterSpaces <- R6::R6Class(
           names(input), subset.of = private$.parameter_names
         )
       )
-      private$.o2i <- oeli::merge_lists(input, private$.o2i)[private$.parameter_names]
+      private$.o2i <-
+        oeli::merge_lists(input, private$.o2i)[private$.parameter_names]
       invisible(self)
     },
 
@@ -327,7 +343,7 @@ ParameterSpaces <- R6::R6Class(
     #' to Optimization Space.
     #'
     #' @param ... \[`function`\]\cr
-    #' One or more transformers functions, named according to the parameters.
+    #' One or more transformation functions, named according to the parameters.
     #'
     #' Transformers from Interpretation Space to Optimization Space (i2o)
     #' **must return** a `numeric`. The default is `as.vector()`.
@@ -342,7 +358,8 @@ ParameterSpaces <- R6::R6Class(
           names(input), subset.of = private$.parameter_names
         )
       )
-      private$.i2o <- oeli::merge_lists(input, private$.i2o)[private$.parameter_names]
+      private$.i2o <-
+        oeli::merge_lists(input, private$.i2o)[private$.parameter_names]
       invisible(self)
     }
 
@@ -359,7 +376,9 @@ ParameterSpaces <- R6::R6Class(
       length(names)
     },
 
-    .o_space_length = function(lengths = private$.parameter_lengths_in_o_space) {
+    .o_space_length = function(
+      lengths = private$.parameter_lengths_in_o_space
+    ) {
       sum(lengths)
     },
 

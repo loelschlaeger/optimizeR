@@ -195,7 +195,10 @@ test_that("objective with more than one target argument can be evaluated", {
   llk <- function(mu, sd, lambda, data) {
     sd <- exp(sd)
     lambda <- plogis(lambda)
-    sum(log(lambda * dnorm(data, mu[1], sd[1]) + (1 - lambda) * dnorm(data, mu[2], sd[2])))
+    sum(log(
+      lambda * dnorm(data, mu[1], sd[1]) +
+        (1 - lambda) * dnorm(data, mu[2], sd[2])
+    ))
   }
   objective <- Objective$new(
     f = llk, target = c("mu", "sd", "lambda"), npar = c(2, 2, 1),
@@ -323,6 +326,33 @@ test_that("numerical gradient and hessian can be calculated", {
   expect_equal(
     objective$evaluate_hessian_numeric(1:2),
     himmelblau_hessian(1:2, a = 11, b = 7)
+  )
+})
+
+test_that("invalid numerical derivatives return NA structures", {
+  normal_mixture_llk <- function(mu, sigma, lambda, data) {
+    sigma <- exp(sigma)
+    lambda <- plogis(lambda)
+    sum(log(
+      lambda * dnorm(data, mu[1], sigma[1]) +
+        (1 - lambda) * dnorm(data, mu[2], sigma[2])
+    ))
+  }
+  objective <- Objective$new(
+    f = normal_mixture_llk,
+    target = c("mu", "sigma", "lambda"),
+    npar = c(2, 2, 1),
+    data = datasets::faithful$eruptions
+  )
+  bad <- c(-2L, -3L, -5L, -3L, -1L)
+
+  expect_identical(
+    objective$evaluate_gradient_numeric(.at = bad),
+    rep(NA_real_, length(bad))
+  )
+  expect_identical(
+    objective$evaluate_hessian_numeric(.at = bad),
+    matrix(NA_real_, nrow = length(bad), ncol = length(bad))
   )
 })
 

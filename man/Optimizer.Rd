@@ -9,12 +9,12 @@ optimization algorithm implemented in R. The main advantage of working with
 an \code{Optimizer} object instead of using the optimization function
 directly lies in the standardized inputs and outputs.
 
-Any R function that fulfills the following four constraints can be defined as
-an \code{Optimizer} object:
+Any R function that fulfills the following four constraints can be defined
+as an \code{Optimizer} object:
 \enumerate{
 \item It must have an input for a \code{function}, the objective function to be
 optimized.
-\item It must have an input for a \code{numeric} vector, the initial values from
+\item It must have an input for a \code{numeric} vector, the initial values
 where the optimizer starts.
 \item It must have a \code{...} argument for additional parameters passed on to
 the objective function.
@@ -35,14 +35,15 @@ optimizer_dictionary$keys
 # 3. define 'nlm' optimizer
 nlm <- Optimizer$new(which = "stats::nlm")
 
-# 4. define the 'pracma::nelder_mead' optimizer (not contained in the dictionary)
+# 4. define the 'pracma::nelder_mead' optimizer
+#    (not contained in the dictionary)
 nelder_mead <- Optimizer$new(which = "custom")
 nelder_mead$definition(
   algorithm = pracma::nelder_mead, # optimization function
-  arg_objective = "fn",            # argument name for the objective function
+  arg_objective = "fn",            # objective function argument name
   arg_initial = "x0",              # argument name for the initial values
-  out_value = "fmin",              # element for the optimal function value in the output
-  out_parameter = "xmin",          # element for the optimal parameters in the output
+  out_value = "fmin",              # element for the optimal function value
+  out_parameter = "xmin",          # element for the optimal parameters
   direction = "min"                # optimizer minimizes
 )
 
@@ -71,8 +72,12 @@ Optimizer$new("stats::nlm")$
 
 objective <- function(x) -x^4 + 3*x - 5
 optimizer <- Optimizer$new("stats::nlm")
-optimizer$optimize(objective = objective, initial = 2, direction = "min")
-optimizer$optimize(objective = objective, initial = 2, direction = "max")
+optimizer$optimize(
+  objective = objective, initial = 2, direction = "min"
+)
+optimizer$optimize(
+  objective = objective, initial = 2, direction = "max"
+)
 }
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
@@ -130,8 +135,8 @@ of the objective function output (as for example in
 attribute name.}
 
 \item{\code{out_value}}{[\code{character(1)}]\cr
-The element name for the optimal function value in the output \code{list}
-of \code{algorithm}.}
+The element name for the optimal function value in the output
+\code{list} of \code{algorithm}.}
 
 \item{\code{out_parameter}}{[\code{character(1)}]\cr
 The element name for the optimal parameters in the output \code{list} of
@@ -197,8 +202,10 @@ define the optimizer details.
 }}
 
 \item{\code{...}}{[\code{any}]\cr
-Optionally additional named arguments to be passed to the optimizer
-algorithm. Without specifications, default values of the optimizer are used.}
+In \code{Optimizer$new()} and \code{$set_arguments()}, named arguments to
+pass to the optimizer algorithm. In \code{$minimize()},
+\code{$maximize()}, and \code{$optimize()}, named arguments to pass to the
+objective function.}
 
 \item{\code{.verbose}}{[\code{logical(1)}]\cr
 Print status messages?}
@@ -284,8 +291,8 @@ of the objective function output (as for example in
 attribute name.}
 
 \item{\code{out_value}}{[\code{character(1)}]\cr
-The element name for the optimal function value in the output \code{list}
-of \code{algorithm}.}
+The element name for the optimal function value in the output
+\code{list} of \code{algorithm}.}
 
 \item{\code{out_parameter}}{[\code{character(1)}]\cr
 The element name for the optimal parameters in the output \code{list} of
@@ -311,8 +318,10 @@ Sets optimizer arguments.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{...}}{[\code{any}]\cr
-Optionally additional named arguments to be passed to the optimizer
-algorithm. Without specifications, default values of the optimizer are used.}
+In \code{Optimizer$new()} and \code{$set_arguments()}, named arguments to
+pass to the optimizer algorithm. In \code{$minimize()},
+\code{$maximize()}, and \code{$optimize()}, named arguments to pass to the
+objective function.}
 }
 \if{html}{\out{</div>}}
 }
@@ -324,7 +333,7 @@ The \code{Optimizer} object.
 \if{html}{\out{<a id="method-Optimizer-minimize"></a>}}
 \if{latex}{\out{\hypertarget{method-Optimizer-minimize}{}}}
 \subsection{Method \code{minimize()}}{
-Performing minimization.
+Perform minimization.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimizer$minimize(objective, initial, lower = NA, upper = NA, ...)}\if{html}{\out{</div>}}
 }
@@ -360,8 +369,10 @@ If a single number, this will be applied to all parameters.
 Can be \code{NA} to not define any bounds.}
 
 \item{\code{...}}{[\code{any}]\cr
-Optionally additional named arguments to be passed to the optimizer
-algorithm. Without specifications, default values of the optimizer are used.}
+In \code{Optimizer$new()} and \code{$set_arguments()}, named arguments to
+pass to the optimizer algorithm. In \code{$minimize()},
+\code{$maximize()}, and \code{$optimize()}, named arguments to pass to the
+objective function.}
 }
 \if{html}{\out{</div>}}
 }
@@ -371,13 +382,15 @@ A named \code{list}, containing at least these five elements:
 \item{\code{value}}{A \code{numeric}, the minimum function value.}
 \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
 where the minimum is obtained.}
-\item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
+\item{\code{seconds}}{A \code{numeric}, the optimization time in
+seconds.}
 \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
-\item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
+\item{\code{error}}{A \code{logical} flag: \code{TRUE} if an error
+occurred, otherwise \code{FALSE}.}
 }
-Appended are additional output elements of the optimizer.
+Additional output elements from the optimizer are appended.
 
-If an error occurred, then the error message is also appended as element
+If an error occurred, the error message is also appended as element
 \code{error_message}.
 
 If the time limit was exceeded, this counts as an error. In addition,
@@ -397,7 +410,7 @@ the flag \code{time_out = TRUE} is appended.
 \if{html}{\out{<a id="method-Optimizer-maximize"></a>}}
 \if{latex}{\out{\hypertarget{method-Optimizer-maximize}{}}}
 \subsection{Method \code{maximize()}}{
-Performing maximization.
+Perform maximization.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimizer$maximize(objective, initial, lower = NA, upper = NA, ...)}\if{html}{\out{</div>}}
 }
@@ -433,8 +446,10 @@ If a single number, this will be applied to all parameters.
 Can be \code{NA} to not define any bounds.}
 
 \item{\code{...}}{[\code{any}]\cr
-Optionally additional named arguments to be passed to the optimizer
-algorithm. Without specifications, default values of the optimizer are used.}
+In \code{Optimizer$new()} and \code{$set_arguments()}, named arguments to
+pass to the optimizer algorithm. In \code{$minimize()},
+\code{$maximize()}, and \code{$optimize()}, named arguments to pass to the
+objective function.}
 }
 \if{html}{\out{</div>}}
 }
@@ -444,17 +459,19 @@ A named \code{list}, containing at least these five elements:
 \item{\code{value}}{A \code{numeric}, the maximum function value.}
 \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
 where the maximum is obtained.}
-\item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
+\item{\code{seconds}}{A \code{numeric}, the optimization time in
+seconds.}
 \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
-\item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
+\item{\code{error}}{A \code{logical} flag: \code{TRUE} if an error
+occurred, otherwise \code{FALSE}.}
 }
-Appended are additional output elements of the optimizer.
+Additional output elements from the optimizer are appended.
 
-If an error occurred, then the error message is also appended as element
+If an error occurred, the error message is also appended as element
 \code{error_message}.
 
-If the time limit was exceeded, this also counts as an error. In addition,
-the flag \code{time_out = TRUE} is appended.
+If the time limit was exceeded, this also counts as an error. In
+addition, the flag \code{time_out = TRUE} is appended.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -470,7 +487,7 @@ the flag \code{time_out = TRUE} is appended.
 \if{html}{\out{<a id="method-Optimizer-optimize"></a>}}
 \if{latex}{\out{\hypertarget{method-Optimizer-optimize}{}}}
 \subsection{Method \code{optimize()}}{
-Performing minimization or maximization.
+Perform minimization or maximization.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Optimizer$optimize(
   objective,
@@ -516,35 +533,43 @@ Can be \code{NA} to not define any bounds.}
 Either \code{"min"} for minimization or \code{"max"} for maximization.}
 
 \item{\code{...}}{[\code{any}]\cr
-Optionally additional named arguments to be passed to the optimizer
-algorithm. Without specifications, default values of the optimizer are used.}
+In \code{Optimizer$new()} and \code{$set_arguments()}, named arguments to
+pass to the optimizer algorithm. In \code{$minimize()},
+\code{$maximize()}, and \code{$optimize()}, named arguments to pass to the
+objective function.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 A named \code{list}, containing at least these five elements:
 \describe{
-\item{\code{value}}{A \code{numeric}, the maximum function value.}
+\item{\code{value}}{A \code{numeric}, the optimized function value.}
 \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
-where the maximum is obtained.}
-\item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
+where the optimum is obtained.}
+\item{\code{seconds}}{A \code{numeric}, the optimization time in
+seconds.}
 \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
-\item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
+\item{\code{error}}{A \code{logical} flag: \code{TRUE} if an error
+occurred, otherwise \code{FALSE}.}
 }
-Appended are additional output elements of the optimizer.
+Additional output elements from the optimizer are appended.
 
-If an error occurred, then the error message is also appended as element
+If an error occurred, the error message is also appended as element
 \code{error_message}.
 
-If the time limit was exceeded, this also counts as an error. In addition,
-the flag \code{time_out = TRUE} is appended.
+If the time limit was exceeded, this also counts as an error. In
+addition, the flag \code{time_out = TRUE} is appended.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{objective <- function(x) -x^4 + 3*x - 5
 optimizer <- Optimizer$new("stats::nlm")
-optimizer$optimize(objective = objective, initial = 2, direction = "min")
-optimizer$optimize(objective = objective, initial = 2, direction = "max")
+optimizer$optimize(
+  objective = objective, initial = 2, direction = "min"
+)
+optimizer$optimize(
+  objective = objective, initial = 2, direction = "max"
+)
 }
 \if{html}{\out{</div>}}
 
@@ -564,8 +589,10 @@ Prints the optimizer label.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{...}}{[\code{any}]\cr
-Optionally additional named arguments to be passed to the optimizer
-algorithm. Without specifications, default values of the optimizer are used.}
+In \code{Optimizer$new()} and \code{$set_arguments()}, named arguments to
+pass to the optimizer algorithm. In \code{$minimize()},
+\code{$maximize()}, and \code{$optimize()}, named arguments to pass to the
+objective function.}
 }
 \if{html}{\out{</div>}}
 }

@@ -7,8 +7,8 @@
 An \code{Objective} object.
 }
 \description{
-The \code{Objective} object specifies the framework for an objective function
-for numerical optimization.
+The \code{Objective} object specifies the framework for an objective
+function for numerical optimization.
 }
 \examples{
 ### define log-likelihood function of Gaussian mixture model
@@ -56,7 +56,7 @@ Print status messages?}
 The length of each target argument.}
 
 \item{\code{target}}{[\code{character()}, read-only]\cr
-The argument name(s) that get optimized.}
+The argument name(s) to optimize.}
 
 \item{\code{gradient_specified}}{[\code{logical(1)}, read-only]\cr
 Whether a gradient function has been specified via \verb{$set_gradient()}.}
@@ -101,15 +101,15 @@ A \code{function} to be optimized.
 
 It is expected that \code{f} has at least one \code{numeric} argument.
 
-Further, it is expected that the return value of \code{f} is of the
+Also, the return value of \code{f} is expected to have the
 structure \code{numeric(1)}, i.e. a single \code{numeric} value.}
 
 \item{\code{target}}{[\code{character()}]\cr
-The argument name(s) that get optimized.
+The argument name(s) to optimize.
 
 All target arguments must be \code{numeric}.
 
-Can be \code{NULL} (default), then the first function argument is selected.}
+If \code{NULL} (default), the first function argument is selected.}
 
 \item{\code{npar}}{[\code{integer()}]\cr
 The length of each target argument, i.e., the length(s) of the
@@ -211,14 +211,14 @@ A \code{function} that computes the gradient of the objective function
 
 It is expected that \code{gradient} has the same call as \code{f}, and
 that \code{gradient} returns a \code{numeric} \code{vector} of length
-\code{self$npar}.}
+\code{sum(self$npar)}.}
 
 \item{\code{target}}{[\code{character()}]\cr
-The argument name(s) that get optimized.
+The argument name(s) to optimize.
 
 All target arguments must be \code{numeric}.
 
-Can be \code{NULL} (default), then the first function argument is selected.}
+If \code{NULL} (default), the first function argument is selected.}
 
 \item{\code{npar}}{[\code{integer()}]\cr
 The length of each target argument, i.e., the length(s) of the
@@ -257,14 +257,14 @@ A \code{function} that computes the Hessian of the objective function
 
 It is expected that \code{hessian} has the same call as \code{f}, and
 that \code{hessian} returns a \code{numeric} \code{matrix} of dimension
-\code{self$npar} times \code{self$npar}.}
+\code{sum(self$npar)} times \code{sum(self$npar)}.}
 
 \item{\code{target}}{[\code{character()}]\cr
-The argument name(s) that get optimized.
+The argument name(s) to optimize.
 
 All target arguments must be \code{numeric}.
 
-Can be \code{NULL} (default), then the first function argument is selected.}
+If \code{NULL} (default), the first function argument is selected.}
 
 \item{\code{npar}}{[\code{integer()}]\cr
 The length of each target argument, i.e., the length(s) of the
@@ -354,6 +354,9 @@ optimization.}
 \if{latex}{\out{\hypertarget{method-Objective-evaluate_gradient}{}}}
 \subsection{Method \code{evaluate_gradient()}}{
 Evaluate the gradient function.
+
+Returns a \code{numeric} vector of \code{NA_real_} values if the
+evaluation fails or returns an unexpected result.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Objective$evaluate_gradient(.at, .negate = FALSE, ...)}\if{html}{\out{</div>}}
 }
@@ -380,6 +383,9 @@ optimization.}
 \if{latex}{\out{\hypertarget{method-Objective-evaluate_gradient_numeric}{}}}
 \subsection{Method \code{evaluate_gradient_numeric()}}{
 Evaluate the numerical gradient \code{\link[numDeriv]{grad}}.
+
+Returns a \code{numeric} vector of \code{NA_real_} values if the
+calculation fails or returns an unexpected result.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Objective$evaluate_gradient_numeric(.at, .negate = FALSE, ...)}\if{html}{\out{</div>}}
 }
@@ -406,6 +412,9 @@ optimization.}
 \if{latex}{\out{\hypertarget{method-Objective-evaluate_hessian}{}}}
 \subsection{Method \code{evaluate_hessian()}}{
 Evaluate the Hessian function.
+
+Returns an \code{NA_real_} value or matrix if the evaluation fails or
+returns an unexpected result.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Objective$evaluate_hessian(.at, .negate = FALSE, ...)}\if{html}{\out{</div>}}
 }
@@ -432,6 +441,9 @@ optimization.}
 \if{latex}{\out{\hypertarget{method-Objective-evaluate_hessian_numeric}{}}}
 \subsection{Method \code{evaluate_hessian_numeric()}}{
 Evaluate the numerical Hessian \code{\link[numDeriv]{hessian}}.
+
+Returns an \code{NA_real_} matrix if the calculation fails or returns an
+unexpected result.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Objective$evaluate_hessian_numeric(.at, .negate = FALSE, ...)}\if{html}{\out{</div>}}
 }

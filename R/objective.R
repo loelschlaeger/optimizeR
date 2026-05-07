@@ -1,15 +1,15 @@
 #' Specify objective function object
 #'
 #' @description
-#' The \code{Objective} object specifies the framework for an objective function
-#' for numerical optimization.
+#' The \code{Objective} object specifies the framework for an objective
+#' function for numerical optimization.
 #'
 #' @param target \[`character()`\]\cr
-#' The argument name(s) that get optimized.
+#' The argument name(s) to optimize.
 #'
 #' All target arguments must be \code{numeric}.
 #'
-#' Can be \code{NULL} (default), then the first function argument is selected.
+#' If \code{NULL} (default), the first function argument is selected.
 #'
 #' @param npar \[`integer()`\]\cr
 #' The length of each target argument, i.e., the length(s) of the
@@ -71,7 +71,7 @@ Objective <- R6::R6Class(
     #'
     #' It is expected that \code{f} has at least one \code{numeric} argument.
     #'
-    #' Further, it is expected that the return value of \code{f} is of the
+    #' Also, the return value of \code{f} is expected to have the
     #' structure \code{numeric(1)}, i.e. a single \code{numeric} value.
 
     initialize = function(f, target = NULL, npar, ...) {
@@ -158,7 +158,9 @@ Objective <- R6::R6Class(
             )
           } else {
             if (.verbose) {
-              cli::cli_alert("Overwriting argument {.val {argument_names[i]}}.")
+              cli::cli_alert(
+                "Overwriting argument {.val {argument_names[i]}}."
+              )
             }
           }
         } else {
@@ -238,7 +240,7 @@ Objective <- R6::R6Class(
     #'
     #' It is expected that \code{gradient} has the same call as \code{f}, and
     #' that \code{gradient} returns a \code{numeric} \code{vector} of length
-    #' \code{self$npar}.
+    #' \code{sum(self$npar)}.
 
     set_gradient = function(
       gradient, target = self$target, npar = self$npar, ...,
@@ -278,7 +280,7 @@ Objective <- R6::R6Class(
     #'
     #' It is expected that \code{hessian} has the same call as \code{f}, and
     #' that \code{hessian} returns a \code{numeric} \code{matrix} of dimension
-    #' \code{self$npar} times \code{self$npar}.
+    #' \code{sum(self$npar)} times \code{sum(self$npar)}.
 
     set_hessian = function(
       hessian, target = self$target, npar = self$npar, ...,
@@ -408,7 +410,11 @@ Objective <- R6::R6Class(
         }),
         names = private$.target
       )
-      setTimeLimit(cpu = self$seconds, elapsed = self$seconds, transient = TRUE)
+      setTimeLimit(
+        cpu = self$seconds,
+        elapsed = self$seconds,
+        transient = TRUE
+      )
       on.exit({
         setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE)
       })
@@ -423,7 +429,11 @@ Objective <- R6::R6Class(
         },
         error = function(e) {
           msg <- e$message
-          if (grepl("reached elapsed time limit|reached CPU time limit", msg)) {
+          time_limit_reached <- grepl(
+            "reached elapsed time limit|reached CPU time limit",
+            msg
+          )
+          if (time_limit_reached) {
             return("time limit reached")
           } else {
             cli::cli_abort(
@@ -437,9 +447,10 @@ Objective <- R6::R6Class(
       ### add gradient and Hessian
       if (.gradient_as_attribute) {
         if (.gradient_numeric) {
-          attr(out, .gradient_attribute_name) <- self$evaluate_gradient_numeric(
-            .at = .at, .negate = .negate, ...
-          )
+          attr(out, .gradient_attribute_name) <-
+            self$evaluate_gradient_numeric(
+              .at = .at, .negate = .negate, ...
+            )
         } else if (self$gradient_specified) {
           attr(out, .gradient_attribute_name) <- self$evaluate_gradient(
             .at = .at, .negate = .negate, ...
@@ -465,6 +476,9 @@ Objective <- R6::R6Class(
 
     #' @description
     #' Evaluate the gradient function.
+    #'
+    #' Returns a \code{numeric} vector of \code{NA_real_} values if the
+    #' evaluation fails or returns an unexpected result.
 
     evaluate_gradient = function(.at, .negate = FALSE, ...) {
       if (self$gradient_specified) {
@@ -472,7 +486,11 @@ Objective <- R6::R6Class(
           check = oeli::check_missing(.at),
           var_name = ".at"
         )
-        private$.gradient$evaluate(.at = .at, .negate = .negate, ...)
+        out <- tryCatch(
+          private$.gradient$evaluate(.at = .at, .negate = .negate, ...),
+          error = function(e) private$.fallback_gradient()
+        )
+        private$.as_gradient(out)
       } else {
         cli::cli_abort(paste(
             "Gradient function is required but not specified yet."
@@ -484,20 +502,32 @@ Objective <- R6::R6Class(
 
     #' @description
     #' Evaluate the numerical gradient \code{\link[numDeriv]{grad}}.
+    #'
+    #' Returns a \code{numeric} vector of \code{NA_real_} values if the
+    #' calculation fails or returns an unexpected result.
 
     evaluate_gradient_numeric = function(.at, .negate = FALSE, ...) {
       oeli::input_check_response(
         check = oeli::check_missing(.at),
         var_name = ".at"
       )
-      do.call(
-        what = numDeriv::grad,
-        args = list(func = self$evaluate, x = .at, .negate = .negate, ...)
+      out <- tryCatch(
+        suppressWarnings(
+          do.call(
+            what = numDeriv::grad,
+            args = list(func = self$evaluate, x = .at, .negate = .negate, ...)
+          )
+        ),
+        error = function(e) private$.fallback_gradient()
       )
+      private$.as_gradient(out)
     },
 
     #' @description
     #' Evaluate the Hessian function.
+    #'
+    #' Returns an \code{NA_real_} value or matrix if the evaluation fails or
+    #' returns an unexpected result.
 
     evaluate_hessian = function(.at, .negate = FALSE, ...) {
       if (self$hessian_specified) {
@@ -505,7 +535,11 @@ Objective <- R6::R6Class(
           check = oeli::check_missing(.at),
           var_name = ".at"
         )
-        private$.hessian$evaluate(.at = .at, .negate = .negate, ...)
+        out <- tryCatch(
+          private$.hessian$evaluate(.at = .at, .negate = .negate, ...),
+          error = function(e) private$.fallback_hessian()
+        )
+        private$.as_hessian(out, scalar_ok = TRUE)
       } else {
         cli::cli_abort(paste(
             "Hessian function is required but not specified yet."
@@ -517,16 +551,25 @@ Objective <- R6::R6Class(
 
     #' @description
     #' Evaluate the numerical Hessian \code{\link[numDeriv]{hessian}}.
+    #'
+    #' Returns an \code{NA_real_} matrix if the calculation fails or returns an
+    #' unexpected result.
 
     evaluate_hessian_numeric = function(.at, .negate = FALSE, ...) {
       oeli::input_check_response(
         check = oeli::check_missing(.at),
         var_name = ".at"
       )
-      do.call(
-        what = numDeriv::hessian,
-        args = list(func = self$evaluate, x = .at, .negate = .negate, ...)
+      out <- tryCatch(
+        suppressWarnings(
+          do.call(
+            what = numDeriv::hessian,
+            args = list(func = self$evaluate, x = .at, .negate = .negate, ...)
+          )
+        ),
+        error = function(e) private$.fallback_hessian()
       )
+      private$.as_hessian(out)
     },
 
     #' @description
@@ -651,7 +694,7 @@ Objective <- R6::R6Class(
     },
 
     #' @field target \[`character()`, read-only\]\cr
-    #' The argument name(s) that get optimized.
+    #' The argument name(s) to optimize.
 
     target = function(value) {
       if (missing(value)) {
@@ -706,6 +749,60 @@ Objective <- R6::R6Class(
     .verbose = getOption("verbose", default = FALSE),
     .gradient = NULL,
     .hessian = NULL,
+
+    .as_gradient = function(value) {
+      if (
+        checkmate::test_numeric(
+          value,
+          any.missing = FALSE,
+          finite = TRUE,
+          len = private$.target_length()
+        ) &&
+        is.null(dim(value))
+      ) {
+        return(as.numeric(value))
+      }
+      private$.fallback_gradient()
+    },
+
+    .as_hessian = function(value, scalar_ok = FALSE) {
+      n <- private$.target_length()
+      if (
+        scalar_ok &&
+        n == 1 &&
+        checkmate::test_number(value, na.ok = FALSE, finite = TRUE)
+      ) {
+        return(as.numeric(value))
+      }
+      if (
+        is.matrix(value) &&
+        all(dim(value) == c(n, n)) &&
+        checkmate::test_numeric(value, any.missing = FALSE, finite = TRUE)
+      ) {
+        return(matrix(
+          as.numeric(value),
+          nrow = n,
+          dimnames = dimnames(value)
+        ))
+      }
+      if (scalar_ok && n == 1) {
+        return(NA_real_)
+      }
+      private$.fallback_hessian()
+    },
+
+    .fallback_gradient = function() {
+      rep(NA_real_, private$.target_length())
+    },
+
+    .fallback_hessian = function() {
+      n <- private$.target_length()
+      matrix(NA_real_, nrow = n, ncol = n)
+    },
+
+    .target_length = function() {
+      as.integer(sum(private$.npar))
+    },
 
     ### helper function that checks the target argument
     .check_target = function(.at, .verbose = self$verbose) {

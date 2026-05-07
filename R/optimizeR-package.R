@@ -1,3 +1,4 @@
+#' @inherit Optimizer examples
 #' @keywords internal
 "_PACKAGE"
 

@@ -75,7 +75,10 @@ test_that("Probit parameter spaces work", {
   checkmate::expect_list(par2, len = 3)
   expect_identical(par$b, par2$b)
   expect_identical(round(par$Omega, 2), round(par2$Omega, 2))
-  expect_identical(round(oeli::diff_cov(par$Sigma), 2), round(oeli::diff_cov(par2$Sigma), 2))
+  expect_identical(
+    round(oeli::diff_cov(par$Sigma), 2),
+    round(oeli::diff_cov(par2$Sigma), 2)
+  )
 
   ### catch errors
   expect_error(

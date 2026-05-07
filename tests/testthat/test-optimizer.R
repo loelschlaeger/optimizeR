@@ -63,7 +63,10 @@ test_that("simple minimization works", {
   )
   expect_named(
     out,
-    c("value", "parameter", "seconds", "initial", "error", "gradient", "code", "iterations")
+    c(
+      "value", "parameter", "seconds", "initial",
+      "error", "gradient", "code", "iterations"
+    )
   )
 })
 
@@ -77,7 +80,10 @@ test_that("simple maximization works", {
   )
   expect_named(
     out,
-    c("value", "parameter", "seconds", "initial", "error", "gradient", "code", "iterations")
+    c(
+      "value", "parameter", "seconds", "initial",
+      "error", "gradient", "code", "iterations"
+    )
   )
 })
 
@@ -91,8 +97,33 @@ test_that("minimization with additional arguments works", {
   )
   expect_named(
     out,
-    c("value", "parameter", "seconds", "initial", "error", "gradient", "code", "iterations")
+    c(
+      "value", "parameter", "seconds", "initial",
+      "error", "gradient", "code", "iterations"
+    )
   )
+})
+
+test_that("call-time arguments are passed only to the objective", {
+  seen <- new.env(parent = emptyenv())
+  objective <- function(x, control, for_f) {
+    seen$control <- control
+    seen$for_f <- for_f
+    sum(x^2)
+  }
+
+  expect_warning(
+    out <- Optimizer$new("stats::optim")$minimize(
+      objective = objective,
+      initial = 1:3,
+      control = list("something" = 1),
+      for_f = "hi"
+    ),
+    NA
+  )
+  expect_false(out$error)
+  expect_identical(seen$control, list("something" = 1))
+  expect_identical(seen$for_f, "hi")
 })
 
 test_that("fixed argument that is NULL can be passed", {

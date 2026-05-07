@@ -6,12 +6,12 @@
 #' an \code{Optimizer} object instead of using the optimization function
 #' directly lies in the standardized inputs and outputs.
 #'
-#' Any R function that fulfills the following four constraints can be defined as
-#' an \code{Optimizer} object:
+#' Any R function that fulfills the following four constraints can be defined
+#' as an \code{Optimizer} object:
 #'
 #' 1. It must have an input for a \code{function}, the objective function to be
 #'    optimized.
-#' 2. It must have an input for a \code{numeric} vector, the initial values from
+#' 2. It must have an input for a \code{numeric} vector, the initial values
 #'    where the optimizer starts.
 #' 3. It must have a \code{...} argument for additional parameters passed on to
 #'    the objective function.
@@ -45,8 +45,10 @@
 #' Can be `NA` to not define any bounds.
 #'
 #' @param ... \[`any`\]\cr
-#' Optionally additional named arguments to be passed to the optimizer
-#' algorithm. Without specifications, default values of the optimizer are used.
+#' In \code{Optimizer$new()} and \code{$set_arguments()}, named arguments to
+#' pass to the optimizer algorithm. In \code{$minimize()},
+#' \code{$maximize()}, and \code{$optimize()}, named arguments to pass to the
+#' objective function.
 #'
 #' @param direction \[`character(1)`\]\cr
 #' Either `"min"` for minimization or `"max"` for maximization.
@@ -67,14 +69,15 @@
 #' # 3. define 'nlm' optimizer
 #' nlm <- Optimizer$new(which = "stats::nlm")
 #'
-#' # 4. define the 'pracma::nelder_mead' optimizer (not contained in the dictionary)
+#' # 4. define the 'pracma::nelder_mead' optimizer
+#' #    (not contained in the dictionary)
 #' nelder_mead <- Optimizer$new(which = "custom")
 #' nelder_mead$definition(
 #'   algorithm = pracma::nelder_mead, # optimization function
-#'   arg_objective = "fn",            # argument name for the objective function
+#'   arg_objective = "fn",            # objective function argument name
 #'   arg_initial = "x0",              # argument name for the initial values
-#'   out_value = "fmin",              # element for the optimal function value in the output
-#'   out_parameter = "xmin",          # element for the optimal parameters in the output
+#'   out_value = "fmin",              # element for the optimal function value
+#'   out_parameter = "xmin",          # element for the optimal parameters
 #'   direction = "min"                # optimizer minimizes
 #' )
 #'
@@ -229,8 +232,8 @@ Optimizer <- R6::R6Class(
     #' attribute name.
     #'
     #' @param out_value \[`character(1)`\]\cr
-    #' The element name for the optimal function value in the output \code{list}
-    #' of \code{algorithm}.
+    #' The element name for the optimal function value in the output
+    #' \code{list} of \code{algorithm}.
     #'
     #' @param out_parameter \[`character(1)`\]\cr
     #' The element name for the optimal parameters in the output \code{list} of
@@ -305,8 +308,12 @@ Optimizer <- R6::R6Class(
           args = c(
             arg_objective, self$arg_initial,
             if (!is.na(arg_lower)) arg_lower, if (!is.na(arg_upper)) arg_upper,
-            if (!is.na(arg_gradient) && isFALSE(gradient_as_attribute)) arg_gradient,
-            if (!is.na(arg_hessian) && isFALSE(hessian_as_attribute)) arg_hessian,
+            if (
+              !is.na(arg_gradient) && isFALSE(gradient_as_attribute)
+            ) arg_gradient,
+            if (
+              !is.na(arg_hessian) && isFALSE(hessian_as_attribute)
+            ) arg_hessian,
             "..."
           )
         ),
@@ -328,7 +335,7 @@ Optimizer <- R6::R6Class(
     },
 
     #' @description
-    #' Performing minimization.
+    #' Perform minimization.
     #'
     #' @return
     #' A named \code{list}, containing at least these five elements:
@@ -336,13 +343,15 @@ Optimizer <- R6::R6Class(
     #'   \item{\code{value}}{A \code{numeric}, the minimum function value.}
     #'   \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
     #'   where the minimum is obtained.}
-    #'   \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
+    #'   \item{\code{seconds}}{A \code{numeric}, the optimization time in
+    #'   seconds.}
     #'   \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
-    #'   \item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
+    #'   \item{\code{error}}{A \code{logical} flag: \code{TRUE} if an error
+    #'   occurred, otherwise \code{FALSE}.}
     #' }
-    #' Appended are additional output elements of the optimizer.
+    #' Additional output elements from the optimizer are appended.
     #'
-    #' If an error occurred, then the error message is also appended as element
+    #' If an error occurred, the error message is also appended as element
     #' \code{error_message}.
     #'
     #' If the time limit was exceeded, this counts as an error. In addition,
@@ -378,7 +387,7 @@ Optimizer <- R6::R6Class(
     },
 
     #' @description
-    #' Performing maximization.
+    #' Perform maximization.
     #'
     #' @return
     #' A named \code{list}, containing at least these five elements:
@@ -386,17 +395,19 @@ Optimizer <- R6::R6Class(
     #'   \item{\code{value}}{A \code{numeric}, the maximum function value.}
     #'   \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
     #'   where the maximum is obtained.}
-    #'   \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
+    #'   \item{\code{seconds}}{A \code{numeric}, the optimization time in
+    #'   seconds.}
     #'   \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
-    #'   \item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
+    #'   \item{\code{error}}{A \code{logical} flag: \code{TRUE} if an error
+    #'   occurred, otherwise \code{FALSE}.}
     #' }
-    #' Appended are additional output elements of the optimizer.
+    #' Additional output elements from the optimizer are appended.
     #'
-    #' If an error occurred, then the error message is also appended as element
+    #' If an error occurred, the error message is also appended as element
     #' \code{error_message}.
     #'
-    #' If the time limit was exceeded, this also counts as an error. In addition,
-    #' the flag \code{time_out = TRUE} is appended.
+    #' If the time limit was exceeded, this also counts as an error. In
+    #' addition, the flag \code{time_out = TRUE} is appended.
     #'
     #' @examples
     #' Optimizer$new("stats::nlm")$
@@ -428,31 +439,37 @@ Optimizer <- R6::R6Class(
     },
 
     #' @description
-    #' Performing minimization or maximization.
+    #' Perform minimization or maximization.
     #'
     #' @return
     #' A named \code{list}, containing at least these five elements:
     #' \describe{
-    #'   \item{\code{value}}{A \code{numeric}, the maximum function value.}
+    #'   \item{\code{value}}{A \code{numeric}, the optimized function value.}
     #'   \item{\code{parameter}}{A \code{numeric} vector, the parameter vector
-    #'   where the maximum is obtained.}
-    #'   \item{\code{seconds}}{A \code{numeric}, the optimization time in seconds.}
+    #'   where the optimum is obtained.}
+    #'   \item{\code{seconds}}{A \code{numeric}, the optimization time in
+    #'   seconds.}
     #'   \item{\code{initial}}{A \code{numeric}, the initial parameter values.}
-    #'   \item{\code{error}}{Either \code{TRUE} if an error occurred, or \code{FALSE}, else.}
+    #'   \item{\code{error}}{A \code{logical} flag: \code{TRUE} if an error
+    #'   occurred, otherwise \code{FALSE}.}
     #' }
-    #' Appended are additional output elements of the optimizer.
+    #' Additional output elements from the optimizer are appended.
     #'
-    #' If an error occurred, then the error message is also appended as element
+    #' If an error occurred, the error message is also appended as element
     #' \code{error_message}.
     #'
-    #' If the time limit was exceeded, this also counts as an error. In addition,
-    #' the flag \code{time_out = TRUE} is appended.
+    #' If the time limit was exceeded, this also counts as an error. In
+    #' addition, the flag \code{time_out = TRUE} is appended.
     #'
     #' @examples
     #' objective <- function(x) -x^4 + 3*x - 5
     #' optimizer <- Optimizer$new("stats::nlm")
-    #' optimizer$optimize(objective = objective, initial = 2, direction = "min")
-    #' optimizer$optimize(objective = objective, initial = 2, direction = "max")
+    #' optimizer$optimize(
+    #'   objective = objective, initial = 2, direction = "min"
+    #' )
+    #' optimizer$optimize(
+    #'   objective = objective, initial = 2, direction = "max"
+    #' )
 
     optimize = function(
       objective,
@@ -657,8 +674,8 @@ Optimizer <- R6::R6Class(
     },
 
     #' @field out_value \[`character(1)`\]\cr
-    #' The element name for the optimal function value in the output \code{list}
-    #' of \code{algorithm}.
+    #' The element name for the optimal function value in the output
+    #' \code{list} of \code{algorithm}.
 
     out_value = function(value) {
       if (missing(value)) {
@@ -818,7 +835,11 @@ Optimizer <- R6::R6Class(
       } else {
         out[["error"]] <- TRUE
       }
-      not_add <- c(private$.output_ignore, private$.out_value, private$.out_parameter)
+      not_add <- c(
+        private$.output_ignore,
+        private$.out_value,
+        private$.out_parameter
+      )
       oeli::merge_lists(
         out,
         result$result[!names(result$result) %in% not_add]
@@ -911,6 +932,44 @@ Optimizer <- R6::R6Class(
         }
       }
 
+      ### build objective, gradient, and Hessian wrappers
+      invert_objective <- !identical(private$.direction, direction)
+      evaluate_arguments <- function(.at) {
+        c(
+          list(
+            ".at" = .at,
+            ".negate" = invert_objective
+          ),
+          additional_arguments
+        )
+      }
+      objective_function <- function(.at, ...) {
+        do.call(
+          what = objective_object$evaluate,
+          args = c(
+            evaluate_arguments(.at),
+            list(
+              ".gradient_as_attribute" = self$gradient_as_attribute,
+              ".gradient_attribute_name" = self$arg_gradient,
+              ".hessian_as_attribute" = self$hessian_as_attribute,
+              ".hessian_attribute_name" = self$arg_hessian
+            )
+          )
+        )
+      }
+      gradient_function <- function(.at, ...) {
+        do.call(
+          what = objective_object$evaluate_gradient,
+          args = evaluate_arguments(.at)
+        )
+      }
+      hessian_function <- function(.at, ...) {
+        do.call(
+          what = objective_object$evaluate_hessian,
+          args = evaluate_arguments(.at)
+        )
+      }
+
       ### build gradient and hessian arguments
       gradient_hessian_arguments <- list()
       if (objective_object$gradient_specified && !self$gradient_as_attribute) {
@@ -918,7 +977,7 @@ Optimizer <- R6::R6Class(
           gradient_hessian_arguments <- c(
             gradient_hessian_arguments,
             structure(
-              list(objective_object$evaluate_gradient),
+              list(gradient_function),
               names = self$arg_gradient
             )
           )
@@ -935,7 +994,7 @@ Optimizer <- R6::R6Class(
           gradient_hessian_arguments <- c(
             gradient_hessian_arguments,
             structure(
-              list(objective_object$evaluate_hessian),
+              list(hessian_function),
               names = self$arg_hessian
             )
           )
@@ -949,27 +1008,17 @@ Optimizer <- R6::R6Class(
       }
 
       ### build optimizer arguments
-      invert_objective <- !identical(private$.direction, direction)
       args <- c(
         ### defines objective and initial argument for optimizer
         structure(
-          list(objective_object$evaluate, initial),
+          list(objective_function, initial),
           names = c(private$.arg_objective, private$.arg_initial)
         ),
-        ### ensures that optimizer minimizes
-        list(
-          ".negate" = invert_objective,
-          ".gradient_as_attribute" = self$gradient_as_attribute,
-          ".gradient_attribute_name" = self$arg_gradient,
-          ".hessian_as_attribute" = self$hessian_as_attribute,
-          ".hessian_attribute_name" = self$arg_hessian
-        ),
 
-        ### arguments via ... have priority over previously specified arguments
+        ### optimizer arguments have priority over internal helper arguments
         oeli::merge_lists(
           parameter_bounds_arguments,
           gradient_hessian_arguments,
-          additional_arguments,
           private$.arguments
         )
       )

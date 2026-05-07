@@ -8,13 +8,69 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Provides a unified object-oriented framework for numerical optimizers in R. Allows for both minimization and maximization with any optimizer, optimization over more than one function argument, measuring of computation time, setting a time limit for long optimization tasks.
+Provides a unified object-oriented framework for numerical optimizers in R. Supports minimization and maximization with any optimizer, optimization over more than one function argument, computation time measurement, and time limits for long optimization tasks.
+}
+\examples{
+### Task: compare minimization with 'stats::nlm' and 'pracma::nelder_mead'
+
+# 1. define objective function and initial values
+objective <- TestFunctions::TF_ackley
+initial <- c(3, 3)
+
+# 2. get overview of optimizers available in dictionary
+optimizer_dictionary$keys
+
+# 3. define 'nlm' optimizer
+nlm <- Optimizer$new(which = "stats::nlm")
+
+# 4. define the 'pracma::nelder_mead' optimizer
+#    (not contained in the dictionary)
+nelder_mead <- Optimizer$new(which = "custom")
+nelder_mead$definition(
+  algorithm = pracma::nelder_mead, # optimization function
+  arg_objective = "fn",            # objective function argument name
+  arg_initial = "x0",              # argument name for the initial values
+  out_value = "fmin",              # element for the optimal function value
+  out_parameter = "xmin",          # element for the optimal parameters
+  direction = "min"                # optimizer minimizes
+)
+
+# 5. compare the minimization results
+nlm$minimize(objective, initial)
+nelder_mead$minimize(objective, initial)
+
+
+## ------------------------------------------------
+## Method `Optimizer$minimize`
+## ------------------------------------------------
+
+Optimizer$new("stats::nlm")$
+  minimize(objective = function(x) x^4 + 3*x - 5, initial = 2)
+
+## ------------------------------------------------
+## Method `Optimizer$maximize`
+## ------------------------------------------------
+
+Optimizer$new("stats::nlm")$
+  maximize(objective = function(x) -x^4 + 3*x - 5, initial = 2)
+
+## ------------------------------------------------
+## Method `Optimizer$optimize`
+## ------------------------------------------------
+
+objective <- function(x) -x^4 + 3*x - 5
+optimizer <- Optimizer$new("stats::nlm")
+optimizer$optimize(
+  objective = objective, initial = 2, direction = "min"
+)
+optimizer$optimize(
+  objective = objective, initial = 2, direction = "max"
+)
 }
 \seealso{
 Useful links:
 \itemize{
   \item \url{https://loelschlaeger.de/optimizeR/}
-  \item \url{https://github.com/loelschlaeger/optimizeR/}
   \item Report bugs at \url{https://github.com/loelschlaeger/optimizeR/issues}
 }
 

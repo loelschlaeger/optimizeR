@@ -1,36 +1,62 @@
+# optimizeR 1.3.0
+
+* Documentation improvements.
+
+* Removed renv.
+
+* Added a safeguard if computation of (numerical) gradient or Hessian fails.
+  (#5)
+
+* Additional arguments passed to optimization methods now go only to the
+  objective function. (#1)
+
 # optimizeR 1.2.1
 
 * Small fixes.
 
-* Added private helper function `.check_arguments_complete()` to `Objective` object that checks if all required arguments are specified.
+* Added private helper function `.check_arguments_complete()` to the
+  `Objective` object. It checks whether all required arguments are specified.
 
-* Added functionality to `Objective` object that can compute numerical gradient and Hessian.
+* Added functionality to the `Objective` object that can compute a numerical
+  gradient and Hessian.
 
 # optimizeR 1.2.0
 
-* Gradient, Hessian, and parameter bounds can now be passed to `Optimizer` objects.
+* Gradient, Hessian, and parameter bounds can now be passed to `Optimizer`
+  objects.
 
-* The old S3 interface has been removed, hence, the functions `define_optimizer()`, `optimizer_nlm()`, `optimizer_optim()`, `new_optimizer()`, `validate_optimizer()`, and `apply_optimizer()` are no longer available. Please use the R6 interface instead, via `Optimizer$new()` and corresponding methods, see `help("Optimizer", "optimizeR")` for details.
+* The old S3 interface has been removed. The functions `define_optimizer()`,
+  `optimizer_nlm()`, `optimizer_optim()`, `new_optimizer()`,
+  `validate_optimizer()`, and `apply_optimizer()` are no longer available.
+  Please use the R6 interface via `Optimizer$new()` and the corresponding
+  methods. See `help("Optimizer", "optimizeR")` for details.
 
 # optimizeR 1.1.3
 
-* The `ParameterSpaces` allows to specify parameters that are not used for transformations. This could be useful if a general `ParameterSpaces` object is defined for nested sets of parameters.
+* `ParameterSpaces` now allows users to specify parameters that are not used
+  for transformations. This can be useful when one general `ParameterSpaces`
+  object is defined for nested sets of parameters.
 
 # optimizeR 1.1.2
 
-* New `ParameterSpaces` R6 object to transform parameters between optimization and interpretation space.
+* Added the `ParameterSpaces` R6 object to transform parameters between
+  optimization and interpretation space.
 
 # optimizeR 1.1.1
 
-* The `Objective` object now allows for different types of output structures of the objective function, for which a template can be provided via the `$output_template` field.
+* The `Objective` object now allows different output structures for the
+  objective function. A template can be provided via the `$output_template`
+  field.
 
 # optimizeR 1.1.0
 
-* The `Optimizer` object has a new method `optimize` which can be used for minimization and maximization by setting the argument `direction`.
+* The `Optimizer` object has a new method `optimize`, which can be used for
+  minimization and maximization by setting the argument `direction`.
 
-* In method `Objective$initialize()`, renamed argument `objective` -> `f`.
+* In method `Objective$initialize()`, renamed argument `objective` to `f`.
 
-* In method `Objective$initialize()`, if `target = NULL` (the new default), the first argument from `f` is taken as target argument.
+* In method `Objective$initialize()`, if `target = NULL` (the new default),
+  the first argument from `f` is taken as the target argument.
 
 # optimizeR 1.0.5
 
@@ -38,19 +64,22 @@
 
 # optimizeR 1.0.4
 
-* Fixed bug and added test cases when having fixed arguments that are `NULL`.
+* Fixed a bug and added test cases for fixed arguments that are `NULL`.
 
 # optimizeR 1.0.3
 
-* Fixed bug in creating error message in case of a time out.
+* Fixed a bug in creating the error message for a timeout.
 
-* Added checks for objective, initial, and ellipsis argument for the optimizer function.
+* Added checks for the objective, initial, and ellipsis arguments of the
+  optimizer function.
 
-* Added `verbose` argument to methods `$get_argument()` and `$remove_argument()` of `Objective` object.
+* Added a `verbose` argument to the `$get_argument()` and
+  `$remove_argument()` methods of the `Objective` object.
 
-* Added field `fixed_arguments` to `Objective` object which returns the names of the fixed arguments.
+* Added field `fixed_arguments` to the `Objective` object. It returns the
+  names of the fixed arguments.
 
-* Fixed bug in proper backwards compatibility.
+* Fixed a bug in backward compatibility.
 
 # optimizeR 1.0.2
 
@@ -60,7 +89,8 @@
 
 # optimizeR 1.0.1
 
-* Fixed wrong values for `"out_value"` and `"out_parameter"` in the optimizer dictionary entry for `stats::optim`.
+* Fixed wrong values for `"out_value"` and `"out_parameter"` in the optimizer
+  dictionary entry for `stats::optim`.
 
 # optimizeR 1.0.0
 
@@ -70,17 +100,22 @@
 
 * Removed package start-up message.
 
-* Added the `.direction` argument to `define_optimizer()` to specify whether the optimizer minimizes or maximizes.
+* Added the `.direction` argument to `define_optimizer()` to specify whether
+  the optimizer minimizes or maximizes.
 
-* Added a dot before the argument names for `define_optimizer()` to avoid clashes with the `...` argument.
+* Added a dot before the argument names for `define_optimizer()` to avoid
+  clashes with the `...` argument.
 
 * Removed dependency on `{glue}`.
 
-* Using `TestFunctions::TF_ackley` instead of own implementation of Ackley function (for the validation).
+* Used `TestFunctions::TF_ackley` instead of the package's own implementation
+  of the Ackley function for validation.
 
 # optimizeR 0.3.2
 
-* Just added package logo and created package website (https://loelschlaeger.de/optimizeR) with the [{pkgdown}](https://pkgdown.r-lib.org/) package. No code changes.
+* Added the package logo and created the package website
+  (https://loelschlaeger.de/optimizeR) with
+  [{pkgdown}](https://pkgdown.r-lib.org/). No code changes.
 
 # optimizeR 0.3.1
 
@@ -100,7 +135,8 @@
   * `out_ign` -> `output_ignore`
   * `test_par` -> `validation_settings`
   
-* Elements for input `validation_settings` have been simplified, please see the documentation of `define_optimizer()`.
+* Elements for input `validation_settings` have been simplified. Please see
+  the documentation of `define_optimizer()`.
 
 * Elements in the output of `apply_optimizer()` were renamed for clarity:
 
@@ -108,7 +144,8 @@
   * `z` -> `parameter`
   * `time` -> `seconds` (now just a `numeric`) 
   
-* Element `initial` (the starting parameter vector) was added to the output of `apply_optimizer()`.
+* Element `initial` (the starting parameter vector) was added to the output of
+  `apply_optimizer()`.
 
 # optimizeR 0.2.0
 
@@ -118,7 +155,8 @@
   * `set_optimizer_nlm()` -> `optimizer_nlm()`
   * `set_optimizer_optim()` -> `optimizer_optim()`
 
-* Functions `is_number()`, `try_silent()`, `timed()`, and `do.call_timed()` are no longer exported.
+* Functions `is_number()`, `try_silent()`, `timed()`, and
+  `do.call_timed()` are no longer exported.
 
 * Function `try_silent_timed()` was removed.
 

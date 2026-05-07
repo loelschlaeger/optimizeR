@@ -15,31 +15,30 @@ coverage](https://codecov.io/gh/loelschlaeger/optimizeR/graph/badge.svg)](https:
 <!-- badges: end -->
 
 The `{optimizeR}` package provides an object-oriented framework for
-optimizer functions in R and offers some convenience when minimizing or
-maximizing.
+optimizer functions in R and adds convenience features for minimization
+and maximization.
 
-❌ **You won’t need this package if you…**
+**You probably do not need this package if you…**
 
-- already know which optimizer you want to use and if you are happy with
-  its constraints (e.g., only minimization over the first function
-  argument possible),
+- already know which optimizer you want to use and are comfortable with
+  its constraints, such as minimization only over the first function
+  argument;
 - want to compare optimizers that are already covered by
   [`{optimx}`](https://CRAN.R-project.org/package=optimx), a framework
-  to compare about 30 optimizers,
-- or search for new optimization algorithms (because this package does
-  not implement any optimizer functions itself).
+  for comparing about 30 optimizers;
+- are searching for new optimization algorithms, because this package
+  does not implement optimizer functions itself.
 
-✅ **But you might find the package useful if you want to…**
+**You might find the package useful if you want to…**
 
-- compare any optimizer function (also those not covered by `{optimx}`
-  or other frameworks; see the [CRAN Task View: Optimization and
-  Mathematical
+- compare optimizer functions not covered by `{optimx}` or other
+  frameworks (see the [CRAN Task View: Optimization and Mathematical
   Programming](https://CRAN.R-project.org/view=Optimization) for an
-  overview),
-- have consistently named inputs and outputs across different optimizers
-  (which is generally not the case),
-- view optimizers as objects (which can be helpful when implementing
-  packages that depend on optimization),
+  overview);
+- have consistently named inputs and outputs across different
+  optimizers;
+- view optimizers as objects, which can help when implementing packages
+  that depend on optimization;
 - use optimizers for both minimization and maximization,
 - optimize over more than one function argument,
 - measure computation time or set a time limit for long optimization
@@ -47,13 +46,12 @@ maximizing.
 
 ## How to use the package?
 
-The following demo is a bit artificial but showcases the package
-purpose. Let’s assume we want to
+The following demo is a bit artificial, but it showcases the package
+purpose. Assume we want to
 
 - maximize a function over two of its arguments,
 - interrupt optimization if it exceeds 10 seconds,
-- and compare the performance between the optimizers `stats::nlm` and
-  `pracma::nelder_mead`.
+- compare the performance of `stats::nlm` and `pracma::nelder_mead`.
 
 We can do this task with `{optimizeR}`. You can install the released
 package version from [CRAN](https://CRAN.R-project.org) with:
@@ -62,8 +60,7 @@ package version from [CRAN](https://CRAN.R-project.org) with:
 install.packages("optimizeR")
 ```
 
-Then load the package via `library("optimizeR")` and you should be ready
-to go.
+Then load the package via `library("optimizeR")`.
 
 **1. Define the objective function**
 
@@ -79,20 +76,20 @@ For `a = b = 20`, this is the negative [Ackley
 function](https://en.wikipedia.org/wiki/Ackley_function) with a global
 maximum in `x = y = 0`:
 
-<img src="man/figures/README-plot-ackley-1.png" width="50%" style="display: block; margin: auto;" />
+<img src="man/figures/README-plot-ackley-1.png" alt="" width="50%" style="display: block; margin: auto;" />
 
-We want to keep `a` and `b` fixed here and optimize over `x` and `y`
-(which are also both single numeric values).
+We want to keep `a` and `b` fixed here and optimize over `x` and `y`,
+which are both single numeric values.
 
-Two problems would occur if we would optimize `f` with say `stats::nlm`
-directly:
+Two problems would occur if we optimized `f` directly with, say,
+`stats::nlm`:
 
-1.  there are two target arguments (`x` and `y`) and
-2.  the position of the target argument is not in the first place.
+1.  There are two target arguments (`x` and `y`).
+2.  The target arguments are not the first arguments of `f`.
 
-Both artifacts are not allowed by `stats::nlm` and most of other
-available optimizers, but supported by `{optimizeR}`. We just have to
-define an objective object which we later can pass to the optimizers:
+Both features are unsupported by `stats::nlm` and most other optimizers,
+but they are supported by `{optimizeR}`. We just have to define an
+objective object that we can later pass to the optimizers:
 
 ``` r
 objective <- Objective$new(
@@ -106,15 +103,15 @@ objective <- Objective$new(
 
 **2. Create the optimizer objects**
 
-Now that we have defined the objective function, let’s define our
+Now that we have defined the objective function, let’s define the
 optimizer objects. For `stats::nlm`, this is a one-liner:
 
 ``` r
 nlm <- Optimizer$new(which = "stats::nlm")
 ```
 
-The `{optimizeR}` package provides a dictionary of optimizers, that can
-be directly selected via the `which` argument. For an overview of
+The `{optimizeR}` package provides a dictionary of optimizers that can
+be selected directly via the `which` argument. For an overview of
 available optimizers, see:
 
 ``` r
@@ -131,56 +128,56 @@ optimizer_dictionary
 #> - ucminf::ucminf
 ```
 
-But in fact, any optimizer that is not contained in the dictionary can
-be put into the `{optimizeR}` framework by setting `which = "custom"`
-first…
+Any optimizer that is not contained in the dictionary can still be put
+into the `{optimizeR}` framework by setting `which = "custom"` first:
 
 ``` r
 nelder_mead <- Optimizer$new(which = "custom")
 #> Use method `$definition()` next to define a custom optimizer.
 ```
 
-… and using the `$definition()` method next:
+Then use the `$definition()` method:
 
 ``` r
 nelder_mead$definition(
   algorithm = pracma::nelder_mead, # the optimization function
-  arg_objective = "fn",            # the argument name for the objective function
+  arg_objective = "fn",            # the objective function argument name
   arg_initial = "x0",              # the argument name for the initial values
-  out_value = "fmin",              # the element for the optimal function value in the output
-  out_parameter = "xmin",          # the element for the optimal parameters in the output
+  out_value = "fmin",              # the optimal function value element
+  out_parameter = "xmin",          # the optimal parameter element
   direction = "min"                # the optimizer minimizes
 )
 ```
 
 **3. Set a time limit**
 
-Each optimizer object has a field called `$seconds` which equals `Inf`
-by default. You can optionally set a different, single numeric value
-here to set a time limit in seconds for the optimization:
+Each optimizer object has a field called `$seconds`, which equals `Inf`
+by default. You can set a different single numeric value to define a
+time limit in seconds for the optimization:
 
 ``` r
 nlm$seconds <- 10
 nelder_mead$seconds <- 10
 ```
 
-Note that not everything (especially compiled C code) can technically be
-timed out, see the help site `help("withTimeout", package = "R.utils")`
+Note that not everything, especially compiled C code, can technically be
+timed out. See the help page `help("withTimeout", package = "R.utils")`
 for more details.
 
 **4. Maximize the objective function**
 
-Each optimizer object has the two methods `$maximize()` and
-`$minimize()` for function maximization or minimization, respectively.
-Both methods require values for the two arguments
+Each optimizer object has the methods `$maximize()` and `$minimize()`
+for function maximization and minimization, respectively. Both methods
+require values for two arguments:
 
 1.  `objective` (either an objective object as defined above or just a
     function) and
-2.  `initial` (an initial parameter vector from where the optimizer
-    should start)
+2.  `initial` (an initial parameter vector where the optimizer should
+    start)
 
-and optionally accepts additional arguments to be passed to the
-optimizer or the objective function.
+They optionally accept additional arguments for the objective function.
+Optimizer-specific arguments should be set when creating the optimizer
+object or via `$set_arguments()`.
 
 ``` r
 nlm$maximize(objective = objective, initial = c(3, 3))
@@ -191,7 +188,7 @@ nlm$maximize(objective = objective, initial = c(3, 3))
 #> [1] 1.974451 1.974451
 #> 
 #> $seconds
-#> [1] 0.0242281
+#> [1] 0.04005599
 #> 
 #> $initial
 #> [1] 3 3
@@ -218,7 +215,7 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> [1] 0 0
 #> 
 #> $seconds
-#> [1] 0.008966923
+#> [1] 0.02831006
 #> 
 #> $initial
 #> [1] 3 3
@@ -242,17 +239,17 @@ Note that
 - the inputs for the objective function and initial parameter values are
   named consistently across optimizers,
 
-- the output values for the optimal parameter vector and the maximimum
+- the output values for the optimal parameter vector and maximum
   function value are also named consistently across optimizers,
 
-- the output contains the initial parameter values and the optimization
-  time in seconds and additionally other optimizer-specific elements,
+- the output contains the initial parameter values, the optimization
+  time in seconds, and other optimizer-specific elements,
 
-- `pracma::nelder_mead` outperforms `stats::nlm` here both in terms of
-  optimization time and convergence to the global maximum.
+- `pracma::nelder_mead` outperforms `stats::nlm` here both in
+  optimization time and in convergence to the global maximum.
 
 ## Getting in touch
 
-If you have any questions, found a bug, need a feature, [just file an
-issue on
+If you have any questions, found a bug, or need a feature, please [file
+an issue on
 GitHub](https://github.com/loelschlaeger/optimizeR/issues/new/choose).

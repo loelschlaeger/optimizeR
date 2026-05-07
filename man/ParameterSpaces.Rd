@@ -7,7 +7,7 @@
 The \code{ParameterSpaces} object manages two related parameter spaces:
 \itemize{
 \item the Optimization Space (for optimization)
-\item and the Interpretation Space (for easier interpretation).
+\item the Interpretation Space (for easier interpretation).
 }
 
 In the Optimization Space, parameters are stored as a \code{numeric}
@@ -16,7 +16,7 @@ In the Optimization Space, parameters are stored as a \code{numeric}
 In the Interpretation Space, parameters are stored as a \code{list} and can
 take different formats (e.g., \code{matrix}).
 
-The user can define transformation functions (not necessarily bijective) to
+Users can define transformation functions (not necessarily bijective) to
 switch between these spaces via the \code{$o2i()} and \code{$i2o()} methods.
 }
 \examples{
@@ -60,7 +60,7 @@ normal_mixture_spaces <- ParameterSpaces$
 
 ### switch between parameter spaces
 
-par <- list(                             # parameters in interpretation space
+par <- list(              # parameters in interpretation space
   "mu" = c(2, 4),
   "sd" = c(0.5, 1),
   "lambda" = c(0.4, 0.6)
@@ -139,8 +139,8 @@ Switch between Optimization Space and Interpretation Space.
 \describe{
 \item{\code{x}}{[\code{numeric()} | \code{list()}]\cr
 The parameters, either as a \verb{numeric vector} (will be switched to
-Interpretation Space), or as a \code{list()} (will be switched to Optimization
-Space).}
+Interpretation Space), or as a \code{list()} (will be switched to
+Optimization Space).}
 
 \item{\code{to}}{[\code{character(1)} | \code{NULL}]\cr
 Explicitly switch to a specific space, either
@@ -158,8 +158,8 @@ If \code{NULL}, the function will switch to the other space.}
 \if{html}{\out{<a id="method-ParameterSpaces-o2i"></a>}}
 \if{latex}{\out{\hypertarget{method-ParameterSpaces-o2i}{}}}
 \subsection{Method \code{o2i()}}{
-Define transformation functions when switching from Optimization Space to
-Interpretation Space.
+Define transformation functions when switching from Optimization Space
+to Interpretation Space.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ParameterSpaces$o2i(...)}\if{html}{\out{</div>}}
 }
@@ -190,7 +190,7 @@ to Optimization Space.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{...}}{[\code{function}]\cr
-One or more transformers functions, named according to the parameters.
+One or more transformation functions, named according to the parameters.
 
 Transformers from Interpretation Space to Optimization Space (i2o)
 \strong{must return} a \code{numeric}. The default is \code{as.vector()}.}
