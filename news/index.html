@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">optimizeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,33 +32,41 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.2.1" id="optimizer-121">optimizeR 1.2.1<a class="anchor" aria-label="anchor" href="#optimizer-121"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.3.0" id="optimizer-130">optimizeR 1.3.0<a class="anchor" aria-label="anchor" href="#optimizer-130"></a></h2>
+<ul><li><p>Documentation improvements.</p></li>
+<li><p>Removed renv.</p></li>
+<li><p>Added a safeguard if computation of (numerical) gradient or Hessian fails. (<a href="https://github.com/loelschlaeger/optimizeR/issues/5" class="external-link">#5</a>)</p></li>
+<li><p>Additional arguments passed to optimization methods now go only to the objective function. (<a href="https://github.com/loelschlaeger/optimizeR/issues/1" class="external-link">#1</a>)</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.2.1" id="optimizer-121">optimizeR 1.2.1<a class="anchor" aria-label="anchor" href="#optimizer-121"></a></h2><p class="text-muted">CRAN release: 2025-06-26</p>
 <ul><li><p>Small fixes.</p></li>
-<li><p>Added private helper function <code>.check_arguments_complete()</code> to <code>Objective</code> object that checks if all required arguments are specified.</p></li>
-<li><p>Added functionality to <code>Objective</code> object that can compute numerical gradient and Hessian.</p></li>
+<li><p>Added private helper function <code>.check_arguments_complete()</code> to the <code>Objective</code> object. It checks whether all required arguments are specified.</p></li>
+<li><p>Added functionality to the <code>Objective</code> object that can compute a numerical gradient and Hessian.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2.0" id="optimizer-120">optimizeR 1.2.0<a class="anchor" aria-label="anchor" href="#optimizer-120"></a></h2><p class="text-muted">CRAN release: 2025-04-24</p>
 <ul><li><p>Gradient, Hessian, and parameter bounds can now be passed to <code>Optimizer</code> objects.</p></li>
-<li><p>The old S3 interface has been removed, hence, the functions <code>define_optimizer()</code>, <code>optimizer_nlm()</code>, <code>optimizer_optim()</code>, <code>new_optimizer()</code>, <code>validate_optimizer()</code>, and <code>apply_optimizer()</code> are no longer available. Please use the R6 interface instead, via <code>Optimizer$new()</code> and corresponding methods, see <code><a href="../reference/Optimizer.html">help("Optimizer", "optimizeR")</a></code> for details.</p></li>
+<li><p>The old S3 interface has been removed. The functions <code>define_optimizer()</code>, <code>optimizer_nlm()</code>, <code>optimizer_optim()</code>, <code>new_optimizer()</code>, <code>validate_optimizer()</code>, and <code>apply_optimizer()</code> are no longer available. Please use the R6 interface via <code>Optimizer$new()</code> and the corresponding methods. See <code><a href="../reference/Optimizer.html">help("Optimizer", "optimizeR")</a></code> for details.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.3" id="optimizer-113">optimizeR 1.1.3<a class="anchor" aria-label="anchor" href="#optimizer-113"></a></h2><p class="text-muted">CRAN release: 2025-03-27</p>
-<ul><li>The <code>ParameterSpaces</code> allows to specify parameters that are not used for transformations. This could be useful if a general <code>ParameterSpaces</code> object is defined for nested sets of parameters.</li>
+<ul><li>
+<code>ParameterSpaces</code> now allows users to specify parameters that are not used for transformations. This can be useful when one general <code>ParameterSpaces</code> object is defined for nested sets of parameters.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.2" id="optimizer-112">optimizeR 1.1.2<a class="anchor" aria-label="anchor" href="#optimizer-112"></a></h2><p class="text-muted">CRAN release: 2024-11-27</p>
-<ul><li>New <code>ParameterSpaces</code> R6 object to transform parameters between optimization and interpretation space.</li>
+<ul><li>Added the <code>ParameterSpaces</code> R6 object to transform parameters between optimization and interpretation space.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.1" id="optimizer-111">optimizeR 1.1.1<a class="anchor" aria-label="anchor" href="#optimizer-111"></a></h2><p class="text-muted">CRAN release: 2024-06-19</p>
-<ul><li>The <code>Objective</code> object now allows for different types of output structures of the objective function, for which a template can be provided via the <code>$output_template</code> field.</li>
+<ul><li>The <code>Objective</code> object now allows different output structures for the objective function. A template can be provided via the <code>$output_template</code> field.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.0" id="optimizer-110">optimizeR 1.1.0<a class="anchor" aria-label="anchor" href="#optimizer-110"></a></h2><p class="text-muted">CRAN release: 2024-05-27</p>
-<ul><li><p>The <code>Optimizer</code> object has a new method <code>optimize</code> which can be used for minimization and maximization by setting the argument <code>direction</code>.</p></li>
-<li><p>In method <code>Objective$initialize()</code>, renamed argument <code>objective</code> -&gt; <code>f</code>.</p></li>
-<li><p>In method <code>Objective$initialize()</code>, if <code>target = NULL</code> (the new default), the first argument from <code>f</code> is taken as target argument.</p></li>
+<ul><li><p>The <code>Optimizer</code> object has a new method <code>optimize</code>, which can be used for minimization and maximization by setting the argument <code>direction</code>.</p></li>
+<li><p>In method <code>Objective$initialize()</code>, renamed argument <code>objective</code> to <code>f</code>.</p></li>
+<li><p>In method <code>Objective$initialize()</code>, if <code>target = NULL</code> (the new default), the first argument from <code>f</code> is taken as the target argument.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.5" id="optimizer-105">optimizeR 1.0.5<a class="anchor" aria-label="anchor" href="#optimizer-105"></a></h2><p class="text-muted">CRAN release: 2024-02-28</p>
@@ -66,15 +74,15 @@
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.4" id="optimizer-104">optimizeR 1.0.4<a class="anchor" aria-label="anchor" href="#optimizer-104"></a></h2><p class="text-muted">CRAN release: 2024-02-05</p>
-<ul><li>Fixed bug and added test cases when having fixed arguments that are <code>NULL</code>.</li>
+<ul><li>Fixed a bug and added test cases for fixed arguments that are <code>NULL</code>.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.3" id="optimizer-103">optimizeR 1.0.3<a class="anchor" aria-label="anchor" href="#optimizer-103"></a></h2><p class="text-muted">CRAN release: 2024-01-31</p>
-<ul><li><p>Fixed bug in creating error message in case of a time out.</p></li>
-<li><p>Added checks for objective, initial, and ellipsis argument for the optimizer function.</p></li>
-<li><p>Added <code>verbose</code> argument to methods <code>$get_argument()</code> and <code>$remove_argument()</code> of <code>Objective</code> object.</p></li>
-<li><p>Added field <code>fixed_arguments</code> to <code>Objective</code> object which returns the names of the fixed arguments.</p></li>
-<li><p>Fixed bug in proper backwards compatibility.</p></li>
+<ul><li><p>Fixed a bug in creating the error message for a timeout.</p></li>
+<li><p>Added checks for the objective, initial, and ellipsis arguments of the optimizer function.</p></li>
+<li><p>Added a <code>verbose</code> argument to the <code>$get_argument()</code> and <code>$remove_argument()</code> methods of the <code>Objective</code> object.</p></li>
+<li><p>Added field <code>fixed_arguments</code> to the <code>Objective</code> object. It returns the names of the fixed arguments.</p></li>
+<li><p>Fixed a bug in backward compatibility.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.0.2" id="optimizer-102">optimizeR 1.0.2<a class="anchor" aria-label="anchor" href="#optimizer-102"></a></h2><p class="text-muted">CRAN release: 2024-01-14</p>
@@ -95,11 +103,11 @@
 <li><p>Added the <code>.direction</code> argument to <code>define_optimizer()</code> to specify whether the optimizer minimizes or maximizes.</p></li>
 <li><p>Added a dot before the argument names for <code>define_optimizer()</code> to avoid clashes with the <code>...</code> argument.</p></li>
 <li><p>Removed dependency on <a href="https://glue.tidyverse.org/" class="external-link">glue</a>.</p></li>
-<li><p>Using <code><a href="https://rdrr.io/pkg/TestFunctions/man/TF_ackley.html" class="external-link">TestFunctions::TF_ackley</a></code> instead of own implementation of Ackley function (for the validation).</p></li>
+<li><p>Used <code><a href="https://rdrr.io/pkg/TestFunctions/man/TF_ackley.html" class="external-link">TestFunctions::TF_ackley</a></code> instead of the package’s own implementation of the Ackley function for validation.</p></li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.2" id="optimizer-032">optimizeR 0.3.2<a class="anchor" aria-label="anchor" href="#optimizer-032"></a></h2><p class="text-muted">CRAN release: 2023-03-25</p>
-<ul><li>Just added package logo and created package website (<a href="https://loelschlaeger.de/optimizeR" class="uri">https://loelschlaeger.de/optimizeR</a>) with the <a href="https://pkgdown.r-lib.org/" class="external-link">{pkgdown}</a> package. No code changes.</li>
+<ul><li>Added the package logo and created the package website (<a href="https://loelschlaeger.de/optimizeR" class="uri">https://loelschlaeger.de/optimizeR</a>) with <a href="https://pkgdown.r-lib.org/" class="external-link">{pkgdown}</a>. No code changes.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.1" id="optimizer-031">optimizeR 0.3.1<a class="anchor" aria-label="anchor" href="#optimizer-031"></a></h2><p class="text-muted">CRAN release: 2023-03-05</p>
@@ -132,7 +140,7 @@
 <code>test_par</code> -&gt; <code>validation_settings</code>
 </li>
 </ul></li>
-<li><p>Elements for input <code>validation_settings</code> have been simplified, please see the documentation of <code>define_optimizer()</code>.</p></li>
+<li><p>Elements for input <code>validation_settings</code> have been simplified. Please see the documentation of <code>define_optimizer()</code>.</p></li>
 <li>
 <p>Elements in the output of <code>apply_optimizer()</code> were renamed for clarity:</p>
 <ul><li>
@@ -176,7 +184,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>

@@ -3,11 +3,11 @@
 optimization algorithm implemented in R. The main advantage of working with
 an Optimizer object instead of using the optimization function
 directly lies in the standardized inputs and outputs.
-Any R function that fulfills the following four constraints can be defined as
-an Optimizer object:
+Any R function that fulfills the following four constraints can be defined
+as an Optimizer object:
 It must have an input for a function, the objective function to be
 optimized.
-It must have an input for a numeric vector, the initial values from
+It must have an input for a numeric vector, the initial values
 where the optimizer starts.
 It must have a ... argument for additional parameters passed on to
 the objective function.
@@ -18,11 +18,11 @@ value and the optimal parameter vector.
 optimization algorithm implemented in R. The main advantage of working with
 an Optimizer object instead of using the optimization function
 directly lies in the standardized inputs and outputs.
-Any R function that fulfills the following four constraints can be defined as
-an Optimizer object:
+Any R function that fulfills the following four constraints can be defined
+as an Optimizer object:
 It must have an input for a function, the objective function to be
 optimized.
-It must have an input for a numeric vector, the initial values from
+It must have an input for a numeric vector, the initial values
 where the optimizer starts.
 It must have a ... argument for additional parameters passed on to
 the objective function.
@@ -37,7 +37,7 @@ value and the optimal parameter vector.
 
     <a class="navbar-brand me-2" href="../index.html">optimizeR</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,10 +67,10 @@ value and the optimal parameter vector.
 optimization algorithm implemented in R. The main advantage of working with
 an <code>Optimizer</code> object instead of using the optimization function
 directly lies in the standardized inputs and outputs.</p>
-<p>Any R function that fulfills the following four constraints can be defined as
-an <code>Optimizer</code> object:</p><ol><li><p>It must have an input for a <code>function</code>, the objective function to be
+<p>Any R function that fulfills the following four constraints can be defined
+as an <code>Optimizer</code> object:</p><ol><li><p>It must have an input for a <code>function</code>, the objective function to be
 optimized.</p></li>
-<li><p>It must have an input for a <code>numeric</code> vector, the initial values from
+<li><p>It must have an input for a <code>numeric</code> vector, the initial values
 where the optimizer starts.</p></li>
 <li><p>It must have a <code>...</code> argument for additional parameters passed on to
 the objective function.</p></li>
@@ -149,8 +149,8 @@ attribute name.</p></dd>
 
 <dt><code>out_value</code></dt>
 <dd><p>[<code>character(1)</code>]<br>
-The element name for the optimal function value in the output <code>list</code>
-of <code>algorithm</code>.</p></dd>
+The element name for the optimal function value in the output
+<code>list</code> of <code>algorithm</code>.</p></dd>
 
 
 <dt><code>out_parameter</code></dt>
@@ -224,8 +224,10 @@ define the optimizer details.</p></li>
 
 <dt><code>...</code></dt>
 <dd><p>[<code>any</code>]<br>
-Optionally additional named arguments to be passed to the optimizer
-algorithm. Without specifications, default values of the optimizer are used.</p></dd>
+In <code>Optimizer$new()</code> and <code>$set_arguments()</code>, named arguments to
+pass to the optimizer algorithm. In <code>$minimize()</code>,
+<code>$maximize()</code>, and <code>$optimize()</code>, named arguments to pass to the
+objective function.</p></dd>
 
 
 <dt><code>.verbose</code></dt>
@@ -325,8 +327,8 @@ attribute name.</p></dd>
 
 <dt><code>out_value</code></dt>
 <dd><p>[<code>character(1)</code>]<br>
-The element name for the optimal function value in the output <code>list</code>
-of <code>algorithm</code>.</p></dd>
+The element name for the optimal function value in the output
+<code>list</code> of <code>algorithm</code>.</p></dd>
 
 
 <dt><code>out_parameter</code></dt>
@@ -355,8 +357,10 @@ Either <code>"min"</code> (if the optimizer minimizes) or <code>"max"</code>
 <h4 id="arguments-2">Arguments<a class="anchor" aria-label="anchor" href="#arguments-2"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>...</code></dt>
 <dd><p>[<code>any</code>]<br>
-Optionally additional named arguments to be passed to the optimizer
-algorithm. Without specifications, default values of the optimizer are used.</p></dd>
+In <code>Optimizer$new()</code> and <code>$set_arguments()</code>, named arguments to
+pass to the optimizer algorithm. In <code>$minimize()</code>,
+<code>$maximize()</code>, and <code>$optimize()</code>, named arguments to pass to the
+objective function.</p></dd>
 
 
 </dl><p></p></div>
@@ -368,7 +372,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 
 </div><p></p><hr><a id="method-Optimizer-minimize"></a><div class="section">
 <h3 id="method-minimize-">Method <code>minimize()</code><a class="anchor" aria-label="anchor" href="#method-minimize-"></a></h3>
-<p>Performing minimization.</p><div class="section">
+<p>Perform minimization.</p><div class="section">
 <h4 id="usage-3">Usage<a class="anchor" aria-label="anchor" href="#usage-3"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Optimizer</span><span class="op">$</span><span class="fu">minimize</span><span class="op">(</span><span class="va">objective</span>, <span class="va">initial</span>, lower <span class="op">=</span> <span class="cn">NA</span>, upper <span class="op">=</span> <span class="cn">NA</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -404,8 +408,10 @@ Upper bounds on the parameters.</p>
 
 <dt><code>...</code></dt>
 <dd><p>[<code>any</code>]<br>
-Optionally additional named arguments to be passed to the optimizer
-algorithm. Without specifications, default values of the optimizer are used.</p></dd>
+In <code>Optimizer$new()</code> and <code>$set_arguments()</code>, named arguments to
+pass to the optimizer algorithm. In <code>$minimize()</code>,
+<code>$maximize()</code>, and <code>$optimize()</code>, named arguments to pass to the
+objective function.</p></dd>
 
 
 </dl><p></p></div>
@@ -420,17 +426,19 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 where the minimum is obtained.</p></dd>
 
 <dt><code>seconds</code></dt>
-<dd><p>A <code>numeric</code>, the optimization time in seconds.</p></dd>
+<dd><p>A <code>numeric</code>, the optimization time in
+seconds.</p></dd>
 
 <dt><code>initial</code></dt>
 <dd><p>A <code>numeric</code>, the initial parameter values.</p></dd>
 
 <dt><code>error</code></dt>
-<dd><p>Either <code>TRUE</code> if an error occurred, or <code>FALSE</code>, else.</p></dd>
+<dd><p>A <code>logical</code> flag: <code>TRUE</code> if an error
+occurred, otherwise <code>FALSE</code>.</p></dd>
 
 
-</dl><p>Appended are additional output elements of the optimizer.</p>
-<p>If an error occurred, then the error message is also appended as element
+</dl><p>Additional output elements from the optimizer are appended.</p>
+<p>If an error occurred, the error message is also appended as element
 <code>error_message</code>.</p>
 <p>If the time limit was exceeded, this counts as an error. In addition,
 the flag <code>time_out = TRUE</code> is appended.</p>
@@ -444,7 +452,7 @@ the flag <code>time_out = TRUE</code> is appended.</p>
 
 </div><p></p><hr><a id="method-Optimizer-maximize"></a><div class="section">
 <h3 id="method-maximize-">Method <code>maximize()</code><a class="anchor" aria-label="anchor" href="#method-maximize-"></a></h3>
-<p>Performing maximization.</p><div class="section">
+<p>Perform maximization.</p><div class="section">
 <h4 id="usage-4">Usage<a class="anchor" aria-label="anchor" href="#usage-4"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Optimizer</span><span class="op">$</span><span class="fu">maximize</span><span class="op">(</span><span class="va">objective</span>, <span class="va">initial</span>, lower <span class="op">=</span> <span class="cn">NA</span>, upper <span class="op">=</span> <span class="cn">NA</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
@@ -480,8 +488,10 @@ Upper bounds on the parameters.</p>
 
 <dt><code>...</code></dt>
 <dd><p>[<code>any</code>]<br>
-Optionally additional named arguments to be passed to the optimizer
-algorithm. Without specifications, default values of the optimizer are used.</p></dd>
+In <code>Optimizer$new()</code> and <code>$set_arguments()</code>, named arguments to
+pass to the optimizer algorithm. In <code>$minimize()</code>,
+<code>$maximize()</code>, and <code>$optimize()</code>, named arguments to pass to the
+objective function.</p></dd>
 
 
 </dl><p></p></div>
@@ -496,20 +506,22 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 where the maximum is obtained.</p></dd>
 
 <dt><code>seconds</code></dt>
-<dd><p>A <code>numeric</code>, the optimization time in seconds.</p></dd>
+<dd><p>A <code>numeric</code>, the optimization time in
+seconds.</p></dd>
 
 <dt><code>initial</code></dt>
 <dd><p>A <code>numeric</code>, the initial parameter values.</p></dd>
 
 <dt><code>error</code></dt>
-<dd><p>Either <code>TRUE</code> if an error occurred, or <code>FALSE</code>, else.</p></dd>
+<dd><p>A <code>logical</code> flag: <code>TRUE</code> if an error
+occurred, otherwise <code>FALSE</code>.</p></dd>
 
 
-</dl><p>Appended are additional output elements of the optimizer.</p>
-<p>If an error occurred, then the error message is also appended as element
+</dl><p>Additional output elements from the optimizer are appended.</p>
+<p>If an error occurred, the error message is also appended as element
 <code>error_message</code>.</p>
-<p>If the time limit was exceeded, this also counts as an error. In addition,
-the flag <code>time_out = TRUE</code> is appended.</p>
+<p>If the time limit was exceeded, this also counts as an error. In
+addition, the flag <code>time_out = TRUE</code> is appended.</p>
 </div>
 <div class="section">
 <h4 id="examples-1">Examples<a class="anchor" aria-label="anchor" href="#examples-1"></a></h4>
@@ -520,7 +532,7 @@ the flag <code>time_out = TRUE</code> is appended.</p>
 
 </div><p></p><hr><a id="method-Optimizer-optimize"></a><div class="section">
 <h3 id="method-optimize-">Method <code><a href="https://rdrr.io/r/stats/optimize.html" class="external-link">optimize()</a></code><a class="anchor" aria-label="anchor" href="#method-optimize-"></a></h3>
-<p>Performing minimization or maximization.</p><div class="section">
+<p>Perform minimization or maximization.</p><div class="section">
 <h4 id="usage-5">Usage<a class="anchor" aria-label="anchor" href="#usage-5"></a></h4>
 <p></p><div class="r"><div class="sourceCode"><pre><code><span><span class="va">Optimizer</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span></span>
 <span>  <span class="va">objective</span>,</span>
@@ -568,8 +580,10 @@ Either <code>"min"</code> for minimization or <code>"max"</code> for maximizatio
 
 <dt><code>...</code></dt>
 <dd><p>[<code>any</code>]<br>
-Optionally additional named arguments to be passed to the optimizer
-algorithm. Without specifications, default values of the optimizer are used.</p></dd>
+In <code>Optimizer$new()</code> and <code>$set_arguments()</code>, named arguments to
+pass to the optimizer algorithm. In <code>$minimize()</code>,
+<code>$maximize()</code>, and <code>$optimize()</code>, named arguments to pass to the
+objective function.</p></dd>
 
 
 </dl><p></p></div>
@@ -577,34 +591,40 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <div class="section">
 <h4 id="returns-4">Returns<a class="anchor" aria-label="anchor" href="#returns-4"></a></h4>
 <p>A named <code>list</code>, containing at least these five elements:</p><dl><dt><code>value</code></dt>
-<dd><p>A <code>numeric</code>, the maximum function value.</p></dd>
+<dd><p>A <code>numeric</code>, the optimized function value.</p></dd>
 
 <dt><code>parameter</code></dt>
 <dd><p>A <code>numeric</code> vector, the parameter vector
-where the maximum is obtained.</p></dd>
+where the optimum is obtained.</p></dd>
 
 <dt><code>seconds</code></dt>
-<dd><p>A <code>numeric</code>, the optimization time in seconds.</p></dd>
+<dd><p>A <code>numeric</code>, the optimization time in
+seconds.</p></dd>
 
 <dt><code>initial</code></dt>
 <dd><p>A <code>numeric</code>, the initial parameter values.</p></dd>
 
 <dt><code>error</code></dt>
-<dd><p>Either <code>TRUE</code> if an error occurred, or <code>FALSE</code>, else.</p></dd>
+<dd><p>A <code>logical</code> flag: <code>TRUE</code> if an error
+occurred, otherwise <code>FALSE</code>.</p></dd>
 
 
-</dl><p>Appended are additional output elements of the optimizer.</p>
-<p>If an error occurred, then the error message is also appended as element
+</dl><p>Additional output elements from the optimizer are appended.</p>
+<p>If an error occurred, the error message is also appended as element
 <code>error_message</code>.</p>
-<p>If the time limit was exceeded, this also counts as an error. In addition,
-the flag <code>time_out = TRUE</code> is appended.</p>
+<p>If the time limit was exceeded, this also counts as an error. In
+addition, the flag <code>time_out = TRUE</code> is appended.</p>
 </div>
 <div class="section">
 <h4 id="examples-2">Examples<a class="anchor" aria-label="anchor" href="#examples-2"></a></h4>
 <p></p><div class="r example copy"><div class="sourceCode"><pre><code><span><span class="va">objective</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">-</span><span class="va">x</span><span class="op">^</span><span class="fl">4</span> <span class="op">+</span> <span class="fl">3</span><span class="op">*</span><span class="va">x</span> <span class="op">-</span> <span class="fl">5</span></span>
 <span><span class="va">optimizer</span> <span class="op">&lt;-</span> <span class="va"><a href="../reference/Optimizer.html">Optimizer</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="st">"stats::nlm"</span><span class="op">)</span></span>
-<span><span class="va">optimizer</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span>objective <span class="op">=</span> <span class="va">objective</span>, initial <span class="op">=</span> <span class="fl">2</span>, direction <span class="op">=</span> <span class="st">"min"</span><span class="op">)</span></span>
-<span><span class="va">optimizer</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span>objective <span class="op">=</span> <span class="va">objective</span>, initial <span class="op">=</span> <span class="fl">2</span>, direction <span class="op">=</span> <span class="st">"max"</span><span class="op">)</span></span></code></pre></div><p></p></div>
+<span><span class="va">optimizer</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span></span>
+<span>  objective <span class="op">=</span> <span class="va">objective</span>, initial <span class="op">=</span> <span class="fl">2</span>, direction <span class="op">=</span> <span class="st">"min"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">optimizer</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span></span>
+<span>  objective <span class="op">=</span> <span class="va">objective</span>, initial <span class="op">=</span> <span class="fl">2</span>, direction <span class="op">=</span> <span class="st">"max"</span></span>
+<span><span class="op">)</span></span></code></pre></div><p></p></div>
 </div>
 
 
@@ -619,8 +639,10 @@ the flag <code>time_out = TRUE</code> is appended.</p>
 <h4 id="arguments-6">Arguments<a class="anchor" aria-label="anchor" href="#arguments-6"></a></h4>
 <p></p><div class="arguments"><dl><dt><code>...</code></dt>
 <dd><p>[<code>any</code>]<br>
-Optionally additional named arguments to be passed to the optimizer
-algorithm. Without specifications, default values of the optimizer are used.</p></dd>
+In <code>Optimizer$new()</code> and <code>$set_arguments()</code>, named arguments to
+pass to the optimizer algorithm. In <code>$minimize()</code>,
+<code>$maximize()</code>, and <code>$optimize()</code>, named arguments to pass to the
+objective function.</p></dd>
 
 
 </dl><p></p></div>
@@ -667,15 +689,16 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-in"><span><span class="co"># 3. define 'nlm' optimizer</span></span></span>
 <span class="r-in"><span><span class="va">nlm</span> <span class="op">&lt;-</span> <span class="va">Optimizer</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>which <span class="op">=</span> <span class="st">"stats::nlm"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># 4. define the 'pracma::nelder_mead' optimizer (not contained in the dictionary)</span></span></span>
+<span class="r-in"><span><span class="co"># 4. define the 'pracma::nelder_mead' optimizer</span></span></span>
+<span class="r-in"><span><span class="co">#    (not contained in the dictionary)</span></span></span>
 <span class="r-in"><span><span class="va">nelder_mead</span> <span class="op">&lt;-</span> <span class="va">Optimizer</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span>which <span class="op">=</span> <span class="st">"custom"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Use method `$definition()` next to define a custom optimizer.</span>
 <span class="r-in"><span><span class="va">nelder_mead</span><span class="op">$</span><span class="fu">definition</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  algorithm <span class="op">=</span> <span class="fu">pracma</span><span class="fu">::</span><span class="va"><a href="https://rdrr.io/pkg/pracma/man/neldermead.html" class="external-link">nelder_mead</a></span>, <span class="co"># optimization function</span></span></span>
-<span class="r-in"><span>  arg_objective <span class="op">=</span> <span class="st">"fn"</span>,            <span class="co"># argument name for the objective function</span></span></span>
+<span class="r-in"><span>  arg_objective <span class="op">=</span> <span class="st">"fn"</span>,            <span class="co"># objective function argument name</span></span></span>
 <span class="r-in"><span>  arg_initial <span class="op">=</span> <span class="st">"x0"</span>,              <span class="co"># argument name for the initial values</span></span></span>
-<span class="r-in"><span>  out_value <span class="op">=</span> <span class="st">"fmin"</span>,              <span class="co"># element for the optimal function value in the output</span></span></span>
-<span class="r-in"><span>  out_parameter <span class="op">=</span> <span class="st">"xmin"</span>,          <span class="co"># element for the optimal parameters in the output</span></span></span>
+<span class="r-in"><span>  out_value <span class="op">=</span> <span class="st">"fmin"</span>,              <span class="co"># element for the optimal function value</span></span></span>
+<span class="r-in"><span>  out_parameter <span class="op">=</span> <span class="st">"xmin"</span>,          <span class="co"># element for the optimal parameters</span></span></span>
 <span class="r-in"><span>  direction <span class="op">=</span> <span class="st">"min"</span>                <span class="co"># optimizer minimizes</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -688,7 +711,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.974451 1.974451</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.03360105</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.03229809</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3 3</span>
@@ -713,7 +736,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.02466965</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.02242208</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3 3</span>
@@ -747,7 +770,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.9085614</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.003452301</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.003331423</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
@@ -756,7 +779,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $gradient</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -6.068035e-06</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -6.067147e-06</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $code</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
@@ -778,7 +801,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9085598</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.004195452</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.004034758</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
@@ -802,7 +825,9 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">objective</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">-</span><span class="va">x</span><span class="op">^</span><span class="fl">4</span> <span class="op">+</span> <span class="fl">3</span><span class="op">*</span><span class="va">x</span> <span class="op">-</span> <span class="fl">5</span></span></span>
 <span class="r-in"><span><span class="va">optimizer</span> <span class="op">&lt;-</span> <span class="va">Optimizer</span><span class="op">$</span><span class="fu">new</span><span class="op">(</span><span class="st">"stats::nlm"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">optimizer</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span>objective <span class="op">=</span> <span class="va">objective</span>, initial <span class="op">=</span> <span class="fl">2</span>, direction <span class="op">=</span> <span class="st">"min"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">optimizer</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  objective <span class="op">=</span> <span class="va">objective</span>, initial <span class="op">=</span> <span class="fl">2</span>, direction <span class="op">=</span> <span class="st">"min"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $value</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1.012458e+16</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -810,7 +835,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 10031</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.002873182</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.002794027</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
@@ -827,7 +852,9 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $iterations</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 6</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-in"><span><span class="va">optimizer</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span>objective <span class="op">=</span> <span class="va">objective</span>, initial <span class="op">=</span> <span class="fl">2</span>, direction <span class="op">=</span> <span class="st">"max"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">optimizer</span><span class="op">$</span><span class="fu">optimize</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  objective <span class="op">=</span> <span class="va">objective</span>, initial <span class="op">=</span> <span class="fl">2</span>, direction <span class="op">=</span> <span class="st">"max"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $value</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -2.955739</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
@@ -835,7 +862,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.9085598</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $seconds</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.004380703</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.004099846</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $initial</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 2</span>
@@ -863,7 +890,7 @@ algorithm. Without specifications, default values of the optimizer are used.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
