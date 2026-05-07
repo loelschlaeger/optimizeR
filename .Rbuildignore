@@ -1,5 +1,3 @@
-^renv$
-^renv\.lock$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^README\.Rmd$
@@ -13,5 +11,3 @@ LICENSE
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-^bibliography\.bib$
-^development_packages\.R$
