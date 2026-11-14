@@ -250,7 +250,7 @@ ParameterSpaces <- R6::R6Class(
         }
 
         ### transform to Interpretation Space
-        out <- setNames(
+        out <- stats::setNames(
           vector("list", private$.number_parameters()),
           private$.parameter_names
         )
@@ -284,7 +284,6 @@ ParameterSpaces <- R6::R6Class(
         }
 
         ### transform to Optimization Space
-        out <- numeric(private$.o_space_length())
         i2o_parts <- list()
         for (i in seq_along(private$.parameter_names)) {
           par_name <- private$.parameter_names[i]

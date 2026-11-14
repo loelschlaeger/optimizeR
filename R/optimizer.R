@@ -6,29 +6,30 @@
 #' an \code{Optimizer} object instead of using the optimization function
 #' directly lies in the standardized inputs and outputs.
 #'
-#' Any R function that fulfills the following four constraints can be defined
+#' Any R function that fulfills the following two constraints can be defined
 #' as an \code{Optimizer} object:
 #'
 #' 1. It must have an input for a \code{function}, the objective function to be
 #'    optimized.
-#' 2. It must have an input for a \code{numeric} vector, the initial values
-#'    where the optimizer starts.
-#' 3. It must have a \code{...} argument for additional parameters passed on to
-#'    the objective function.
-#' 4. The output must be a named \code{list}, including the optimal function
-#'    value and the optimal parameter vector.
+#' 2. Its output must include the optimal function value and the optimal
+#'    parameter vector.
 #'
 #' @param objective \[`function` | `Objective`\]\cr
 #' A \code{function} to be optimized that
 #'
-#' 1. has at least one argument that receives a \code{numeric} \code{vector}
+#' 1. receives a \code{numeric} \code{vector} as its first argument (the
+#'    so-called target argument)
 #' 2. and returns a single \code{numeric} value.
 #'
 #' Alternatively, it can also be an \code{\link{Objective}} object for more
-#' flexibility.
+#' flexibility (e.g., for another or more than one target argument, or for a
+#' gradient and Hessian function).
 #'
 #' @param initial \[`numeric()`\]\cr
-#' Starting parameter values for the optimization.
+#' Starting parameter values for the optimization (without missing values).
+#'
+#' If the optimizer does not take initial values, they only define the number
+#' of parameters.
 #'
 #' @param lower \[`NA` | `numeric()` | `numeric(1)`\]\cr
 #' Lower bounds on the parameters.
@@ -37,12 +38,16 @@
 #'
 #' Can be `NA` to not define any bounds.
 #'
+#' Ignored (with a warning) for optimizers that do not support lower bounds.
+#'
 #' @param upper \[`NA` | `numeric()` | `numeric(1)`\]\cr
 #' Upper bounds on the parameters.
 #'
 #' If a single number, this will be applied to all parameters.
 #'
 #' Can be `NA` to not define any bounds.
+#'
+#' Ignored (with a warning) for optimizers that do not support upper bounds.
 #'
 #' @param ... \[`any`\]\cr
 #' In \code{Optimizer$new()} and \code{$set_arguments()}, named arguments to
@@ -56,11 +61,14 @@
 #' @param .verbose \[`logical(1)`\]\cr
 #' Print status messages?
 #'
-#' @examples
+#' @examplesIf requireNamespace("pracma", quietly = TRUE)
 #' ### Task: compare minimization with 'stats::nlm' and 'pracma::nelder_mead'
 #'
-#' # 1. define objective function and initial values
-#' objective <- TestFunctions::TF_ackley
+#' # 1. define objective function (the Ackley function) and initial values
+#' objective <- function(x) {
+#'   -20 * exp(-0.2 * sqrt(mean(x^2))) - exp(mean(cos(2 * pi * x))) +
+#'     20 + exp(1)
+#' }
 #' initial <- c(3, 3)
 #'
 #' # 2. get overview of optimizers available in dictionary
@@ -136,10 +144,46 @@ Optimizer <- R6::R6Class(
           ),
           var_name = "which"
         )
+
+        ### get algorithm, from its package if it is specified by name
+        algorithm <- optimizer_dictionary$get(key = which, value = "algorithm")
+        if (is.character(algorithm)) {
+          algorithm <- strsplit(algorithm, split = "::", fixed = TRUE)[[1]]
+          if (length(algorithm) != 2) {
+            cli::cli_abort(
+              paste(
+                "The algorithm of {.val {which}} must be a function or a name",
+                "of the form {.val package::function}."
+              ),
+              call = NULL
+            )
+          }
+          algorithm_package <- algorithm[1]
+          algorithm_name <- algorithm[2]
+          package <- algorithm_package
+          if (package == "optimizeR") {
+            package <- adapter_packages[[algorithm_name]]
+          }
+          if (!requireNamespace(package, quietly = TRUE)) {
+            cli::cli_abort(
+              c(
+                paste(
+                  "The optimizer {.val {which}} needs the package",
+                  "{.pkg {package}}."
+                ),
+                "i" = "Please install it first."
+              ),
+              call = NULL
+            )
+          }
+          algorithm <- get(
+            algorithm_name, envir = asNamespace(algorithm_package)
+          )
+        }
+
+        ### define optimizer
         self$definition(
-          algorithm = optimizer_dictionary$get(
-            key = which, value = "algorithm"
-          ),
+          algorithm = algorithm,
           arg_objective = optimizer_dictionary$get(
             key = which, value = "arg_objective"
           ),
@@ -175,8 +219,8 @@ Optimizer <- R6::R6Class(
           )
         )
         self$label <- which
-        self$set_arguments(...)
       }
+      self$set_arguments(...)
     },
 
     #' @description
@@ -188,8 +232,10 @@ Optimizer <- R6::R6Class(
     #' @param arg_objective \[`character(1)`\]\cr
     #' The argument name for the objective function in \code{algorithm}.
     #'
-    #' @param arg_initial \[`character(1)`\]\cr
+    #' @param arg_initial \[`character(1)` | `NA`\]\cr
     #' The argument name for the initial values in \code{algorithm}.
+    #'
+    #' Can be `NA` if \code{algorithm} does not take initial values.
     #'
     #' @param arg_lower \[`character(1)` | `NA`\]\cr
     #' Optionally the argument name for the lower parameter bound in
@@ -231,17 +277,52 @@ Optimizer <- R6::R6Class(
     #' \code{\link[stats]{nlm}})? In that case, `arg_hessian` defines the
     #' attribute name.
     #'
-    #' @param out_value \[`character(1)`\]\cr
-    #' The element name for the optimal function value in the output
-    #' \code{list} of \code{algorithm}.
-    #'
-    #' @param out_parameter \[`character(1)`\]\cr
-    #' The element name for the optimal parameters in the output \code{list} of
+    #' @param out_value \[`character()` | `function`\]\cr
+    #' The element name for the optimal function value in the output of
     #' \code{algorithm}.
+    #'
+    #' Can be a vector of names if the output is nested (e.g.,
+    #' `c("optim", "bestval")` for the element `bestval` of the element
+    #' `optim`). If the output is an S4 object, the names refer to its slots.
+    #'
+    #' Alternatively, it can also be a \code{function} that receives the output
+    #' of \code{algorithm} and returns the optimal function value.
+    #'
+    #' @param out_parameter \[`character()` | `function`\]\cr
+    #' The element name for the optimal parameters in the output of
+    #' \code{algorithm}.
+    #'
+    #' Can be a vector of names if the output is nested (e.g.,
+    #' `c("optim", "bestmem")` for the element `bestmem` of the element
+    #' `optim`). If the output is an S4 object, the names refer to its slots.
+    #'
+    #' Alternatively, it can also be a \code{function} that receives the output
+    #' of \code{algorithm} and returns the optimal parameters.
     #'
     #' @param direction \[`character(1)`\]\cr
     #' Either \code{"min"} (if the optimizer minimizes) or \code{"max"}
     #' (if the optimizer maximizes).
+    #'
+    #' @return
+    #' Invisibly the \code{Optimizer} object.
+    #'
+    #' @examples
+    #' ### define 'stats::optimize', which does not take initial values
+    #' optimize <- Optimizer$new(which = "custom", .verbose = FALSE)
+    #' optimize$definition(
+    #'   algorithm = stats::optimize,
+    #'   arg_objective = "f",
+    #'   arg_initial = NA,
+    #'   arg_lower = "lower",
+    #'   arg_upper = "upper",
+    #'   out_value = "objective",
+    #'   out_parameter = "minimum",
+    #'   direction = "min"
+    #' )
+    #' optimize$minimize(
+    #'   objective = function(x) x^4 + 3*x - 5, initial = 2, lower = -5,
+    #'   upper = 5
+    #' )
 
     definition = function(
       algorithm,
@@ -283,6 +364,22 @@ Optimizer <- R6::R6Class(
       self$arg_hessian <- arg_hessian
       self$gradient_as_attribute <- gradient_as_attribute
       self$hessian_as_attribute <- hessian_as_attribute
+      oeli::input_check_response(
+        check = if (gradient_as_attribute && is.na(arg_gradient)) {
+          "Must be the attribute name if `gradient_as_attribute` is `TRUE`"
+        } else {
+          TRUE
+        },
+        var_name = "arg_gradient"
+      )
+      oeli::input_check_response(
+        check = if (hessian_as_attribute && is.na(arg_hessian)) {
+          "Must be the attribute name if `hessian_as_attribute` is `TRUE`"
+        } else {
+          TRUE
+        },
+        var_name = "arg_hessian"
+      )
 
       oeli::input_check_response(
         check = oeli::check_missing(out_value),
@@ -306,15 +403,14 @@ Optimizer <- R6::R6Class(
         check = checkmate::check_function(
           algorithm,
           args = c(
-            arg_objective, self$arg_initial,
+            arg_objective, if (!is.na(arg_initial)) arg_initial,
             if (!is.na(arg_lower)) arg_lower, if (!is.na(arg_upper)) arg_upper,
             if (
               !is.na(arg_gradient) && isFALSE(gradient_as_attribute)
             ) arg_gradient,
             if (
               !is.na(arg_hessian) && isFALSE(hessian_as_attribute)
-            ) arg_hessian,
-            "..."
+            ) arg_hessian
           )
         ),
         var_name = "algorithm"
@@ -326,12 +422,21 @@ Optimizer <- R6::R6Class(
     #' @description
     #' Sets optimizer arguments.
     #'
+    #' The arguments for the objective function and the initial values cannot
+    #' be set here, since they are specified when calling \code{$minimize()},
+    #' \code{$maximize()}, or \code{$optimize()}.
+    #'
     #' @return
-    #' The \code{Optimizer} object.
+    #' Invisibly the \code{Optimizer} object.
 
     set_arguments = function(...) {
       arguments <- list(...)
+      oeli::input_check_response(
+        check = checkmate::check_list(arguments, names = "unique"),
+        var_name = "..."
+      )
       private$.arguments[names(arguments)] <- arguments
+      invisible(self)
     },
 
     #' @description
@@ -349,7 +454,9 @@ Optimizer <- R6::R6Class(
     #'   \item{\code{error}}{A \code{logical} flag: \code{TRUE} if an error
     #'   occurred, otherwise \code{FALSE}.}
     #' }
-    #' Additional output elements from the optimizer are appended.
+    #' Additional output elements from the optimizer are appended. If the
+    #' optimizer output is not a named \code{list}, it is appended as element
+    #' \code{output}.
     #'
     #' If an error occurred, the error message is also appended as element
     #' \code{error_message}.
@@ -401,7 +508,9 @@ Optimizer <- R6::R6Class(
     #'   \item{\code{error}}{A \code{logical} flag: \code{TRUE} if an error
     #'   occurred, otherwise \code{FALSE}.}
     #' }
-    #' Additional output elements from the optimizer are appended.
+    #' Additional output elements from the optimizer are appended. If the
+    #' optimizer output is not a named \code{list}, it is appended as element
+    #' \code{output}.
     #'
     #' If an error occurred, the error message is also appended as element
     #' \code{error_message}.
@@ -453,7 +562,9 @@ Optimizer <- R6::R6Class(
     #'   \item{\code{error}}{A \code{logical} flag: \code{TRUE} if an error
     #'   occurred, otherwise \code{FALSE}.}
     #' }
-    #' Additional output elements from the optimizer are appended.
+    #' Additional output elements from the optimizer are appended. If the
+    #' optimizer output is not a named \code{list}, it is appended as element
+    #' \code{output}.
     #'
     #' If an error occurred, the error message is also appended as element
     #' \code{error_message}.
@@ -462,14 +573,10 @@ Optimizer <- R6::R6Class(
     #' addition, the flag \code{time_out = TRUE} is appended.
     #'
     #' @examples
-    #' objective <- function(x) -x^4 + 3*x - 5
-    #' optimizer <- Optimizer$new("stats::nlm")
-    #' optimizer$optimize(
-    #'   objective = objective, initial = 2, direction = "min"
-    #' )
-    #' optimizer$optimize(
-    #'   objective = objective, initial = 2, direction = "max"
-    #' )
+    #' objective <- function(x) sin(x)
+    #' nlm <- Optimizer$new("stats::nlm")
+    #' nlm$optimize(objective = objective, initial = 2, direction = "min")
+    #' nlm$optimize(objective = objective, initial = 2, direction = "max")
 
     optimize = function(
       objective,
@@ -503,7 +610,7 @@ Optimizer <- R6::R6Class(
     #' Invisibly the \code{Optimizer} object.
 
     print = function(...) {
-      cat("<optimizer '", self$label, "'>", sep = "")
+      cat("<optimizer '", self$label, "'>\n", sep = "")
       invisible(self)
     }
 
@@ -519,7 +626,8 @@ Optimizer <- R6::R6Class(
         private$.label
       } else {
         oeli::input_check_response(
-          check = checkmate::check_string(value)
+          check = checkmate::check_string(value),
+          var_name = "label"
         )
         private$.label <- value
       }
@@ -533,7 +641,8 @@ Optimizer <- R6::R6Class(
         private$.algorithm
       } else {
         oeli::input_check_response(
-          check = checkmate::check_function(value)
+          check = checkmate::check_function(value),
+          var_name = "algorithm"
         )
         private$.algorithm <- value
       }
@@ -547,21 +656,25 @@ Optimizer <- R6::R6Class(
         private$.arg_objective
       } else {
         oeli::input_check_response(
-          check = checkmate::check_string(value)
+          check = checkmate::check_string(value),
+          var_name = "arg_objective"
         )
         private$.arg_objective <- value
       }
     },
 
-    #' @field arg_initial \[`character(1)`\]\cr
+    #' @field arg_initial \[`character(1)` | `NA`\]\cr
     #' The argument name for the initial values in \code{algorithm}.
+    #'
+    #' Can be `NA` if \code{algorithm} does not take initial values.
 
     arg_initial = function(value) {
       if (missing(value)) {
         private$.arg_initial
       } else {
         oeli::input_check_response(
-          check = checkmate::check_string(value)
+          check = checkmate::check_string(value, na.ok = TRUE),
+          var_name = "arg_initial"
         )
         private$.arg_initial <- value
       }
@@ -578,7 +691,8 @@ Optimizer <- R6::R6Class(
         private$.arg_lower
       } else {
         oeli::input_check_response(
-          check = checkmate::check_string(value, na.ok = TRUE)
+          check = checkmate::check_string(value, na.ok = TRUE),
+          var_name = "arg_lower"
         )
         private$.arg_lower <- value
       }
@@ -595,7 +709,8 @@ Optimizer <- R6::R6Class(
         private$.arg_upper
       } else {
         oeli::input_check_response(
-          check = checkmate::check_string(value, na.ok = TRUE)
+          check = checkmate::check_string(value, na.ok = TRUE),
+          var_name = "arg_upper"
         )
         private$.arg_upper <- value
       }
@@ -612,7 +727,8 @@ Optimizer <- R6::R6Class(
         private$.arg_gradient
       } else {
         oeli::input_check_response(
-          check = checkmate::check_string(value, na.ok = TRUE)
+          check = checkmate::check_string(value, na.ok = TRUE),
+          var_name = "arg_gradient"
         )
         private$.arg_gradient <- value
       }
@@ -629,7 +745,8 @@ Optimizer <- R6::R6Class(
         private$.arg_hessian
       } else {
         oeli::input_check_response(
-          check = checkmate::check_string(value, na.ok = TRUE)
+          check = checkmate::check_string(value, na.ok = TRUE),
+          var_name = "arg_hessian"
         )
         private$.arg_hessian <- value
       }
@@ -648,7 +765,8 @@ Optimizer <- R6::R6Class(
         private$.gradient_as_attribute
       } else {
         oeli::input_check_response(
-          check = checkmate::check_flag(value)
+          check = checkmate::check_flag(value),
+          var_name = "gradient_as_attribute"
         )
         private$.gradient_as_attribute <- value
       }
@@ -667,37 +785,56 @@ Optimizer <- R6::R6Class(
         private$.hessian_as_attribute
       } else {
         oeli::input_check_response(
-          check = checkmate::check_flag(value)
+          check = checkmate::check_flag(value),
+          var_name = "hessian_as_attribute"
         )
         private$.hessian_as_attribute <- value
       }
     },
 
-    #' @field out_value \[`character(1)`\]\cr
-    #' The element name for the optimal function value in the output
-    #' \code{list} of \code{algorithm}.
+    #' @field out_value \[`character()` | `function`\]\cr
+    #' The element name for the optimal function value in the output of
+    #' \code{algorithm}.
+    #'
+    #' Can be a vector of names if the output is nested.
+    #'
+    #' Alternatively, it can also be a \code{function} that receives the output
+    #' of \code{algorithm} and returns the optimal function value.
 
     out_value = function(value) {
       if (missing(value)) {
         private$.out_value
       } else {
         oeli::input_check_response(
-          check = checkmate::check_string(value)
+          check = list(
+            checkmate::check_character(value, any.missing = FALSE, min.len = 1),
+            checkmate::check_function(value)
+          ),
+          var_name = "out_value"
         )
         private$.out_value <- value
       }
     },
 
-    #' @field out_parameter \[`character(1)`\]\cr
-    #' The element name for the optimal parameters in the output \code{list} of
+    #' @field out_parameter \[`character()` | `function`\]\cr
+    #' The element name for the optimal parameters in the output of
     #' \code{algorithm}.
+    #'
+    #' Can be a vector of names if the output is nested.
+    #'
+    #' Alternatively, it can also be a \code{function} that receives the output
+    #' of \code{algorithm} and returns the optimal parameters.
 
     out_parameter = function(value) {
       if (missing(value)) {
         private$.out_parameter
       } else {
         oeli::input_check_response(
-          check = checkmate::check_string(value)
+          check = list(
+            checkmate::check_character(value, any.missing = FALSE, min.len = 1),
+            checkmate::check_function(value)
+          ),
+          var_name = "out_parameter"
         )
         private$.out_parameter <- value
       }
@@ -712,7 +849,8 @@ Optimizer <- R6::R6Class(
         private$.direction
       } else {
         oeli::input_check_response(
-          check = checkmate::check_choice(value, c("min", "max"))
+          check = checkmate::check_choice(value, c("min", "max")),
+          var_name = "direction"
         )
         private$.direction <- value
       }
@@ -728,7 +866,8 @@ Optimizer <- R6::R6Class(
         private$.arguments
       } else {
         oeli::input_check_response(
-          check = checkmate::check_list(value, names = "unique")
+          check = checkmate::check_list(value, names = "unique"),
+          var_name = "arguments"
         )
         private$.arguments <- value
       }
@@ -742,13 +881,17 @@ Optimizer <- R6::R6Class(
     #' No time limit if \code{seconds = Inf} (the default).
     #'
     #' Note the limitations documented in \code{\link[base]{setTimeLimit}}.
+    #'
+    #' The time limit refers to elapsed time and is also checked each time the
+    #' optimizer evaluates the objective function.
 
     seconds = function(value) {
       if (missing(value)) {
         private$.seconds
       } else {
         oeli::input_check_response(
-          check = checkmate::check_number(value, lower = 0, finite = FALSE)
+          check = checkmate::check_number(value, lower = 0, finite = FALSE),
+          var_name = "seconds"
         )
         private$.seconds <- value
       }
@@ -762,7 +905,8 @@ Optimizer <- R6::R6Class(
         private$.hide_warnings
       } else {
         oeli::input_check_response(
-          check = checkmate::check_flag(value)
+          check = checkmate::check_flag(value),
+          var_name = "hide_warnings"
         )
         private$.hide_warnings <- value
       }
@@ -776,7 +920,8 @@ Optimizer <- R6::R6Class(
         private$.output_ignore
       } else {
         oeli::input_check_response(
-          check = checkmate::check_names(value)
+          check = checkmate::check_names(value),
+          var_name = "output_ignore"
         )
         private$.output_ignore <- value
       }
@@ -789,12 +934,12 @@ Optimizer <- R6::R6Class(
     .algorithm = NULL,
     .arg_objective = NULL,
     .arg_initial = NULL,
-    .arg_lower = NULL,
-    .arg_upper = NULL,
-    .arg_gradient = NULL,
-    .arg_hessian = NULL,
-    .gradient_as_attribute = NULL,
-    .hessian_as_attribute = NULL,
+    .arg_lower = NA,
+    .arg_upper = NA,
+    .arg_gradient = NA,
+    .arg_hessian = NA,
+    .gradient_as_attribute = FALSE,
+    .hessian_as_attribute = FALSE,
     .out_value = NULL,
     .out_parameter = NULL,
     .direction = NULL,
@@ -803,60 +948,112 @@ Optimizer <- R6::R6Class(
     .hide_warnings = FALSE,
     .output_ignore = character(),
 
+    ### helper function that extracts an element from the optimizer output
+    .extract_output = function(output, element, var_name) {
+      if (is.function(element)) {
+        out <- tryCatch(
+          element(output),
+          error = function(e) {
+            msg <- e$message
+            cli::cli_abort(
+              paste(
+                "The optimizer output is bad: {.var {var_name}} threw an",
+                "error: {msg}"
+              ),
+              call = NULL
+            )
+          }
+        )
+        if (is.null(out)) {
+          cli::cli_abort(
+            paste(
+              "The optimizer output is bad: {.var {var_name}} returned",
+              "{.code NULL}."
+            ),
+            call = NULL
+          )
+        }
+        return(out)
+      }
+      for (name in element) {
+        oeli::input_check_response(
+          check = checkmate::check_names(
+            if (isS4(output)) methods::slotNames(output) else names(output),
+            must.include = name
+          ),
+          prefix = "The optimizer output is bad:"
+        )
+        output <- if (isS4(output)) {
+          methods::slot(output, name)
+        } else {
+          output[[name]]
+        }
+      }
+      return(output)
+    },
+
     ### helper function that prepares the optimization results
     .prepare_result = function(result, initial, invert_objective) {
-      oeli::input_check_response(
-        check = checkmate::check_list(result$result),
-        prefix = "The optimizer output is bad:"
-      )
-      out <- list()
-      if (private$.out_value %in% names(result$result)) {
-        if (invert_objective) {
-          out[["value"]] <- -result$result[[private$.out_value]]
-        } else {
-          out[["value"]] <- result$result[[private$.out_value]]
+      output <- result$result
+      if ("error" %in% names(result)) {
+        value <- NA_real_
+        parameter <- rep(NA_real_, length(initial))
+      } else {
+        value <- private$.extract_output(
+          output, private$.out_value, "out_value"
+        )
+        parameter <- private$.extract_output(
+          output, private$.out_parameter, "out_parameter"
+        )
+        if (!checkmate::test_list(output, names = "unique")) {
+          output <- list("output" = output)
         }
-      } else {
-        out[["value"]] <- NA_real_
       }
-      if (private$.out_parameter %in% names(result$result)) {
-        out[["parameter"]] <- result$result[[private$.out_parameter]]
-      } else {
-        out[["parameter"]] <- rep(NA_real_, length(initial))
-      }
-      if ("time" %in% names(result)) {
-        out[["seconds"]] <- as.numeric(result$time)
-      } else {
-        out[["seconds"]] <- NA_real_
-      }
-      out[["initial"]] <- initial
-      if (!"error" %in% names(result)) {
-        out[["error"]] <- FALSE
-      } else {
-        out[["error"]] <- TRUE
-      }
+      out <- list(
+        "value" = if (invert_objective) -value else value,
+        "parameter" = parameter,
+        "seconds" = as.numeric(result$time),
+        "initial" = initial,
+        "error" = "error" %in% names(result)
+      )
       not_add <- c(
         private$.output_ignore,
-        private$.out_value,
-        private$.out_parameter
+        if (checkmate::test_string(private$.out_value)) private$.out_value,
+        if (checkmate::test_string(private$.out_parameter)) {
+          private$.out_parameter
+        }
       )
-      oeli::merge_lists(
-        out,
-        result$result[!names(result$result) %in% not_add]
-      )
+      oeli::merge_lists(out, output[!names(output) %in% not_add])
     },
 
     ### helper function that build an 'Objective' object from a function
     .build_objective_object = function(objective, initial) {
+      oeli::input_check_response(
+        check = oeli::check_numeric_vector(
+          initial, any.missing = FALSE, min.len = 1
+        ),
+        var_name = "initial"
+      )
       if (!checkmate::test_r6(objective, "Objective")) {
         oeli::input_check_response(
-          check = oeli::check_numeric_vector(initial),
-          var_name = "initial"
+          check = if (is.function(objective)) {
+            TRUE
+          } else {
+            "Must be a function or an object of class 'Objective'"
+          },
+          var_name = "objective"
         )
         objective <- Objective$new(
           f = objective,
           target = names(formals(objective))[1],
           npar = length(initial)
+        )
+      } else {
+        oeli::input_check_response(
+          check = oeli::check_numeric_vector(
+            initial, len = sum(objective$npar)
+          ),
+          var_name = "initial"
         )
       }
       return(objective)
@@ -868,14 +1065,49 @@ Optimizer <- R6::R6Class(
     ) {
 
       ### input checks
+      if (
+        is.null(private$.algorithm) ||
+        is.null(private$.arg_objective) ||
+        is.null(private$.arg_initial) ||
+        is.null(private$.out_value) ||
+        is.null(private$.out_parameter) ||
+        is.null(private$.direction)
+      ) {
+        cli::cli_abort(
+          c(
+            "The optimizer is not defined yet.",
+            "i" = "Use method {.fun $definition} to define it."
+          ),
+          call = NULL
+        )
+      }
       oeli::input_check_response(
         check = checkmate::check_choice(direction, c("min", "max")),
         var_name = "direction"
       )
-      checkmate::assert_list(additional_arguments) # to make sure
+      oeli::input_check_response(
+        check = checkmate::check_list(additional_arguments, names = "unique"),
+        var_name = "..."
+      )
 
       ### build objective function
       objective_object <- private$.build_objective_object(objective, initial)
+
+      ### check optimizer arguments
+      arguments_reserved <- intersect(
+        names(private$.arguments),
+        c(private$.arg_objective, private$.arg_initial)
+      )
+      if (length(arguments_reserved) > 0) {
+        cli::cli_abort(
+          paste(
+            "The optimizer argument{?s} {.var {arguments_reserved}} cannot be",
+            "set. The objective function and the initial values are specified",
+            "when the optimization is called."
+          ),
+          call = NULL
+        )
+      }
 
       ### check parameter bounds
       parameter_bounds_arguments <- list()
@@ -934,6 +1166,8 @@ Optimizer <- R6::R6Class(
 
       ### build objective, gradient, and Hessian wrappers
       invert_objective <- !identical(private$.direction, direction)
+      additional_arguments <- keep_unevaluated(additional_arguments)
+      evaluated <- FALSE
       evaluate_arguments <- function(.at) {
         c(
           list(
@@ -944,6 +1178,10 @@ Optimizer <- R6::R6Class(
         )
       }
       objective_function <- function(.at, ...) {
+        check_time_limit()
+        ### the optimizer may name the parameter argument
+        if (missing(.at)) .at <- ..1
+        evaluated <<- TRUE
         do.call(
           what = objective_object$evaluate,
           args = c(
@@ -958,15 +1196,23 @@ Optimizer <- R6::R6Class(
         )
       }
       gradient_function <- function(.at, ...) {
+        check_time_limit()
+        if (missing(.at)) .at <- ..1
+        evaluated <<- TRUE
         do.call(
           what = objective_object$evaluate_gradient,
           args = evaluate_arguments(.at)
         )
       }
       hessian_function <- function(.at, ...) {
-        do.call(
-          what = objective_object$evaluate_hessian,
-          args = evaluate_arguments(.at)
+        check_time_limit()
+        if (missing(.at)) .at <- ..1
+        evaluated <<- TRUE
+        as.matrix(
+          do.call(
+            what = objective_object$evaluate_hessian,
+            args = evaluate_arguments(.at)
+          )
         )
       }
 
@@ -1011,11 +1257,17 @@ Optimizer <- R6::R6Class(
       args <- c(
         ### defines objective and initial argument for optimizer
         structure(
-          list(objective_function, initial),
-          names = c(private$.arg_objective, private$.arg_initial)
+          list(objective_function),
+          names = private$.arg_objective
         ),
+        if (!is.na(private$.arg_initial)) {
+          structure(
+            list(initial),
+            names = private$.arg_initial
+          )
+        },
 
-        ### optimizer arguments have priority over internal helper arguments
+        ### internal helper arguments have priority over optimizer arguments
         oeli::merge_lists(
           parameter_bounds_arguments,
           gradient_hessian_arguments,
@@ -1024,43 +1276,68 @@ Optimizer <- R6::R6Class(
       )
       checkmate::assert_list(args, names = "unique") # to make sure
 
+      ### first without '...' in the wrappers if optimizer does not pass
+      ### arguments on, as some optimizers check the arguments of the objective
+      arguments_passed_on <- setdiff(
+        names(private$.arguments),
+        oeli::function_arguments(private$.algorithm)
+      )
+      args_attempts <- list(args)
+      if (length(arguments_passed_on) == 0) {
+        args_without_dots <- args
+        wrappers <- c(private$.arg_objective, names(gradient_hessian_arguments))
+        for (wrapper in wrappers) {
+          formals(args_without_dots[[wrapper]]) <- alist(.at = )
+        }
+        args_attempts <- list(args_without_dots, args)
+      }
+
       ### optimize
-      result <- tryCatch(
-        {
-          suppressWarnings(
-            oeli::timed(
-              oeli::do.call_timed(
-                what = private$.algorithm,
-                args = args,
-                units = "secs"
+      for (attempt in seq_along(args_attempts)) {
+        result <- tryCatch(
+          {
+            suppressWarnings(
+              with_time_limit(
+                oeli::do.call_timed(
+                  what = private$.algorithm,
+                  args = args_attempts[[attempt]],
+                  units = "secs"
+                ),
+                seconds = private$.seconds,
+                on_time_out = list(
+                  "result" = list(
+                    "error_message" = "time limit exceeded",
+                    "time_out" = TRUE
+                  ),
+                  "error" = TRUE,
+                  "time" = NA_real_
+                )
               ),
-              seconds = private$.seconds,
-              on_time_out = "error"
-            ),
-            classes = if (private$.hide_warnings) "warning" else ""
-          )
-        },
-        error = function(e) {
-          error_message <- e$message
-          time_out <- grepl("time limit exceeded", error_message)
-          if (time_out) {
-            list(
-              "result" = list(
-                "error_message" = error_message,
-                "time_out" = TRUE
-              ),
-              "error" = TRUE,
-              "time" = NA_real_
+              classes = if (private$.hide_warnings) "warning" else ""
             )
-          } else {
+          },
+          error = function(e) {
+            error_message <- trimws(unname(cli::ansi_strip(e$message)))
             list(
               "result" = list("error_message" = error_message),
               "error" = TRUE,
               "time" = NA_real_
             )
           }
+        )
+        if (attempt == 1) {
+          first_result <- result
         }
-      )
+        ### again with '...' only if the optimizer failed before it evaluated
+        if (
+          !isTRUE(result$error) || evaluated || isTRUE(result$result$time_out)
+        ) {
+          break
+        }
+      }
+      if (isTRUE(result$error) && !evaluated) {
+        result <- first_result
+      }
 
       ### prepare result
       private$.prepare_result(result, initial, invert_objective)

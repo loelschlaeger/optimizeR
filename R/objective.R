@@ -106,24 +106,41 @@ Objective <- R6::R6Class(
         check = checkmate::check_integerish(
           npar, lower = 1, any.missing = FALSE, len = length(target)
         ),
-        var_name = "f"
-      )
-      arguments <- list(...)
-      arguments <- c(
-        arguments,
-        oeli::function_defaults(f, names(arguments))
+        var_name = "npar"
       )
 
       ### define objective
-      do.call(self$set_argument, c(arguments, list(.verbose = FALSE)))
       self$objective_name <- oeli::variable_name(f)
       private$.f <- f
       private$.target <- target
       private$.npar <- npar
+
+      ### fix arguments (and default values that do not depend on others)
+      arguments <- list(...)
+      defaults <- oeli::function_defaults(
+        f, exclude = c(names(arguments), target)
+      )
+      for (argument_name in names(defaults)) {
+        default <- defaults[[argument_name]]
+        if (!any(all.vars(default) %in% names(formals(f)))) {
+          tryCatch(
+            arguments[argument_name] <- list(
+              eval(default, envir = environment(f))
+            ),
+            error = function(e) NULL
+          )
+        }
+      }
+      do.call(
+        self$set_argument,
+        keep_unevaluated(c(arguments, list(.verbose = FALSE)))
+      )
     },
 
     #' @description
     #' Set a function argument that remains fixed during optimization.
+    #'
+    #' A target argument cannot be fixed.
     #'
     #' @param .overwrite \[`logical(1)`\]\cr
     #' Overwrite existing values?
@@ -145,23 +162,33 @@ Objective <- R6::R6Class(
           check = checkmate::check_names(names(arguments), type = "strict"),
           var_name = "..."
         )
+        oeli::input_check_response(
+          check = if (any(names(arguments) %in% private$.target)) {
+            "Must not contain a target argument"
+          } else {
+            TRUE
+          },
+          var_name = "..."
+        )
+      }
+      argument_names <- names(arguments)
+      arguments_existing <- intersect(
+        argument_names, names(private$.arguments)
+      )
+      if (!.overwrite && length(arguments_existing) > 0) {
+        cli::cli_abort(
+          "Argument{?s} {.var {arguments_existing}} already exist{?s/}.",
+          call = NULL
+        )
       }
 
       ### set arguments
-      argument_names <- names(arguments)
       for (i in seq_along(arguments)) {
-        if (argument_names[i] %in% names(private$.arguments)) {
-          if (!.overwrite) {
-            cli::cli_abort(
-              "Argument {.var {argument_names[i]}} already exists.",
-              call = NULL
+        if (argument_names[i] %in% arguments_existing) {
+          if (.verbose) {
+            cli::cli_alert(
+              "Overwriting argument {.val {argument_names[i]}}."
             )
-          } else {
-            if (.verbose) {
-              cli::cli_alert(
-                "Overwriting argument {.val {argument_names[i]}}."
-              )
-            }
           }
         } else {
           if (.verbose) {
@@ -238,9 +265,15 @@ Objective <- R6::R6Class(
     #' A \code{function} that computes the gradient of the objective function
     #' \code{f}.
     #'
-    #' It is expected that \code{gradient} has the same call as \code{f}, and
-    #' that \code{gradient} returns a \code{numeric} \code{vector} of length
-    #' \code{sum(self$npar)}.
+    #' It is expected that \code{gradient} has the same target argument(s) as
+    #' \code{f}, and that \code{gradient} returns a \code{numeric}
+    #' \code{vector} of length \code{sum(self$npar)}.
+    #'
+    #' The fixed arguments of \code{f} are only passed on to \code{gradient}
+    #' if it has them as arguments.
+    #'
+    #' @param ...
+    #' Optionally additional arguments that are fixed for \code{gradient}.
 
     set_gradient = function(
       gradient, target = self$target, npar = self$npar, ...,
@@ -252,6 +285,10 @@ Objective <- R6::R6Class(
         check = oeli::check_missing(gradient),
         var_name = "gradient"
       )
+      oeli::input_check_response(
+        check = checkmate::check_function(gradient, args = target),
+        var_name = "gradient"
+      )
 
       ### determine arguments
       arguments <- oeli::merge_lists(list(...), private$.arguments)
@@ -259,8 +296,11 @@ Objective <- R6::R6Class(
       ### setting gradient
       private$.gradient <- do.call(
         Objective$new,
-        c(list(f = gradient, target = target, npar = npar), arguments)
+        keep_unevaluated(
+          c(list(f = gradient, target = target, npar = npar), arguments)
+        )
       )
+      private$.gradient$.__enclos_env__$private$.drop_unused_arguments <- TRUE
       private$.gradient$objective_name <- oeli::variable_name(
         gradient, fallback = "gradient"
       )
@@ -278,9 +318,16 @@ Objective <- R6::R6Class(
     #' A \code{function} that computes the Hessian of the objective function
     #' \code{f}.
     #'
-    #' It is expected that \code{hessian} has the same call as \code{f}, and
-    #' that \code{hessian} returns a \code{numeric} \code{matrix} of dimension
-    #' \code{sum(self$npar)} times \code{sum(self$npar)}.
+    #' It is expected that \code{hessian} has the same target argument(s) as
+    #' \code{f}, and that \code{hessian} returns a \code{numeric}
+    #' \code{matrix} of dimension \code{sum(self$npar)} times
+    #' \code{sum(self$npar)}.
+    #'
+    #' The fixed arguments of \code{f} are only passed on to \code{hessian}
+    #' if it has them as arguments.
+    #'
+    #' @param ...
+    #' Optionally additional arguments that are fixed for \code{hessian}.
 
     set_hessian = function(
       hessian, target = self$target, npar = self$npar, ...,
@@ -292,6 +339,10 @@ Objective <- R6::R6Class(
         check = oeli::check_missing(hessian),
         var_name = "hessian"
       )
+      oeli::input_check_response(
+        check = checkmate::check_function(hessian, args = target),
+        var_name = "hessian"
+      )
 
       ### determine arguments
       arguments <- oeli::merge_lists(list(...), private$.arguments)
@@ -299,8 +350,11 @@ Objective <- R6::R6Class(
       ### setting Hessian
       private$.hessian <- do.call(
         Objective$new,
-        c(list(f = hessian, target = target, npar = npar), arguments)
+        keep_unevaluated(
+          c(list(f = hessian, target = target, npar = npar), arguments)
+        )
       )
+      private$.hessian$.__enclos_env__$private$.drop_unused_arguments <- TRUE
       private$.hessian$objective_name <- oeli::variable_name(
         hessian, fallback = "hessian"
       )
@@ -337,7 +391,7 @@ Objective <- R6::R6Class(
     #' The attribute name is defined via the `.hessian_attribute_name`
     #' argument.
     #'
-    #' Ignored if `$hessian_specified` and `hessian_numeric` are `FALSE`.
+    #' Ignored if `$hessian_specified` and `.hessian_numeric` are `FALSE`.
     #'
     #' @param .hessian_attribute_name \[`character(1)`\]\cr
     #' Only relevant if `.hessian_as_attribute = TRUE`.
@@ -347,6 +401,21 @@ Objective <- R6::R6Class(
     #' @param .hessian_numeric \[`logical(1)`\]\cr
     #' Calculate the Hessian via the numerical approximation
     #' \code{\link[numDeriv]{hessian}}?
+    #'
+    #' @param .negate \[`logical(1)`\]\cr
+    #' Negate the function return value?
+    #'
+    #' In that case, derivatives that are attributes of the function return
+    #' value (with the names `.gradient_attribute_name` and
+    #' `.hessian_attribute_name`) are negated as well.
+    #'
+    #' @param ...
+    #' Optionally additional function arguments for this evaluation, which
+    #' have priority over fixed arguments of the same name.
+    #'
+    #' @return
+    #' The function value, or the string \code{"time limit reached"} if the
+    #' time limit \code{$seconds} is exceeded.
 
     evaluate = function(
       .at,
@@ -410,37 +479,45 @@ Objective <- R6::R6Class(
         }),
         names = private$.target
       )
-      setTimeLimit(
-        cpu = self$seconds,
-        elapsed = self$seconds,
-        transient = TRUE
-      )
-      on.exit({
-        setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE)
-      })
-      args <- c(.at_split, oeli::merge_lists(list(...), private$.arguments))
+      args <- oeli::merge_lists(list(...), private$.arguments)
+      if (private$.drop_unused_arguments) {
+        arguments_f <- oeli::function_arguments(private$.f)
+        if (!"..." %in% arguments_f) {
+          args <- args[names(args) %in% arguments_f]
+        }
+      }
+      args <- c(.at_split, keep_unevaluated(args))
       out <- tryCatch(
-        {
-          suppressWarnings(
-            value <- do.call(what = private$.f, args = args),
-            classes = if (self$hide_warnings) "warning" else ""
-          )
-          if (.negate) -value else value
-        },
-        error = function(e) {
-          msg <- e$message
-          time_limit_reached <- grepl(
-            "reached elapsed time limit|reached CPU time limit",
-            msg
-          )
-          if (time_limit_reached) {
-            return("time limit reached")
-          } else {
-            cli::cli_abort(
-              paste("Function evaluation threw an error:", msg),
-              call = NULL
+        with_time_limit(
+          {
+            suppressWarnings(
+              value <- do.call(what = private$.f, args = args),
+              classes = if (self$hide_warnings) "warning" else ""
             )
+            if (.negate) {
+              derivative_attributes <- intersect(
+                c(.gradient_attribute_name, .hessian_attribute_name),
+                names(attributes(value))
+              )
+              for (attribute_name in derivative_attributes) {
+                attr(value, attribute_name) <- -attr(value, attribute_name)
+              }
+              value <- -value
+            }
+            value
+          },
+          seconds = self$seconds,
+          on_time_out = "time limit reached"
+        ),
+        error = function(e) {
+          if (is_time_out(e)) {
+            signal_time_out()
           }
+          msg <- e$message
+          cli::cli_abort(
+            "Function evaluation threw an error: {msg}",
+            call = NULL
+          )
         }
       )
 
@@ -479,6 +556,9 @@ Objective <- R6::R6Class(
     #'
     #' Returns a \code{numeric} vector of \code{NA_real_} values if the
     #' evaluation fails or returns an unexpected result.
+    #'
+    #' @param ...
+    #' Optionally additional function arguments for this evaluation.
 
     evaluate_gradient = function(.at, .negate = FALSE, ...) {
       if (self$gradient_specified) {
@@ -505,6 +585,9 @@ Objective <- R6::R6Class(
     #'
     #' Returns a \code{numeric} vector of \code{NA_real_} values if the
     #' calculation fails or returns an unexpected result.
+    #'
+    #' @param ...
+    #' Optionally additional function arguments for this evaluation.
 
     evaluate_gradient_numeric = function(.at, .negate = FALSE, ...) {
       oeli::input_check_response(
@@ -513,9 +596,8 @@ Objective <- R6::R6Class(
       )
       out <- tryCatch(
         suppressWarnings(
-          do.call(
-            what = numDeriv::grad,
-            args = list(func = self$evaluate, x = .at, .negate = .negate, ...)
+          numDeriv::grad(
+            func = self$evaluate, x = .at, .negate = .negate, ...
           )
         ),
         error = function(e) private$.fallback_gradient()
@@ -528,6 +610,12 @@ Objective <- R6::R6Class(
     #'
     #' Returns an \code{NA_real_} value or matrix if the evaluation fails or
     #' returns an unexpected result.
+    #'
+    #' The Hessian function can also return a single number if there is only
+    #' one parameter, which is then returned as such.
+    #'
+    #' @param ...
+    #' Optionally additional function arguments for this evaluation.
 
     evaluate_hessian = function(.at, .negate = FALSE, ...) {
       if (self$hessian_specified) {
@@ -554,6 +642,9 @@ Objective <- R6::R6Class(
     #'
     #' Returns an \code{NA_real_} matrix if the calculation fails or returns an
     #' unexpected result.
+    #'
+    #' @param ...
+    #' Optionally additional function arguments for this evaluation.
 
     evaluate_hessian_numeric = function(.at, .negate = FALSE, ...) {
       oeli::input_check_response(
@@ -562,9 +653,8 @@ Objective <- R6::R6Class(
       )
       out <- tryCatch(
         suppressWarnings(
-          do.call(
-            what = numDeriv::hessian,
-            args = list(func = self$evaluate, x = .at, .negate = .negate, ...)
+          numDeriv::hessian(
+            func = self$evaluate, x = .at, .negate = .negate, ...
           )
         ),
         error = function(e) private$.fallback_hessian()
@@ -574,8 +664,14 @@ Objective <- R6::R6Class(
 
     #' @description
     #' Print details of the \code{Objective} object.
+    #'
+    #' @param ...
+    #' Currently not used.
+    #'
+    #' @return
+    #' Invisibly the \code{Objective} object.
 
-    print = function() {
+    print = function(...) {
       cli::cat_bullet(c(
         paste(
           "Function:", private$.objective_name
@@ -612,6 +708,7 @@ Objective <- R6::R6Class(
       } else {
         oeli::input_check_response(
           check = checkmate::check_string(value),
+          var_name = "objective_name"
         )
         private$.objective_name <- value
       }
@@ -632,8 +729,9 @@ Objective <- R6::R6Class(
     },
 
     #' @field seconds \[`numeric(1)`\]\cr
-    #' A time limit in seconds. Computations are interrupted
-    #' prematurely if \code{seconds} is exceeded.
+    #' A time limit in seconds for one function evaluation. Computations are
+    #' interrupted prematurely if \code{seconds} is exceeded, in which case
+    #' \code{$evaluate()} returns the string \code{"time limit reached"}.
     #'
     #' No time limit if \code{seconds = Inf} (the default).
     #'
@@ -644,7 +742,8 @@ Objective <- R6::R6Class(
         return(private$.seconds)
       } else {
         oeli::input_check_response(
-          check = checkmate::check_number(value, lower = 0, finite = FALSE)
+          check = checkmate::check_number(value, lower = 0, finite = FALSE),
+          var_name = "seconds"
         )
         private$.seconds <- value
       }
@@ -658,7 +757,8 @@ Objective <- R6::R6Class(
         return(private$.hide_warnings)
       } else {
         oeli::input_check_response(
-          check = checkmate::check_flag(value)
+          check = checkmate::check_flag(value),
+          var_name = "hide_warnings"
         )
         private$.hide_warnings <- value
       }
@@ -749,6 +849,7 @@ Objective <- R6::R6Class(
     .verbose = getOption("verbose", default = FALSE),
     .gradient = NULL,
     .hessian = NULL,
+    .drop_unused_arguments = FALSE,
 
     .as_gradient = function(value) {
       if (
@@ -768,13 +869,6 @@ Objective <- R6::R6Class(
     .as_hessian = function(value, scalar_ok = FALSE) {
       n <- private$.target_length()
       if (
-        scalar_ok &&
-        n == 1 &&
-        checkmate::test_number(value, na.ok = FALSE, finite = TRUE)
-      ) {
-        return(as.numeric(value))
-      }
-      if (
         is.matrix(value) &&
         all(dim(value) == c(n, n)) &&
         checkmate::test_numeric(value, any.missing = FALSE, finite = TRUE)
@@ -784,6 +878,13 @@ Objective <- R6::R6Class(
           nrow = n,
           dimnames = dimnames(value)
         ))
+      }
+      if (
+        scalar_ok &&
+        n == 1 &&
+        checkmate::test_number(value, na.ok = FALSE, finite = TRUE)
+      ) {
+        return(as.numeric(value))
       }
       if (scalar_ok && n == 1) {
         return(NA_real_)
@@ -902,7 +1003,7 @@ Objective <- R6::R6Class(
           }
         }
 
-        if (!is.null(private$.gradient)) {
+        if (!is.null(private$.hessian)) {
           private$.hessian$.__enclos_env__$private$.arguments <-
             private$.arguments
           if (.verbose) {
@@ -915,3 +1016,12 @@ Objective <- R6::R6Class(
   )
 
 )
+
+#' @keywords internal
+#' @noRd
+
+keep_unevaluated <- function(arguments) {
+  lapply(arguments, function(argument) {
+    if (is.language(argument)) enquote(argument) else argument
+  })
+}

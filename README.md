@@ -126,6 +126,12 @@ optimizer_dictionary
 #> - stats::nlminb
 #> - stats::optim
 #> - ucminf::ucminf
+#> - nloptr::nloptr
+#> - vntrs::vntrs
+#> - ao::ao
+#> - optimx::optimr
+#> - DEoptim::DEoptim
+#> - GenSA::GenSA
 ```
 
 Any optimizer that is not contained in the dictionary can still be put
@@ -161,8 +167,9 @@ nelder_mead$seconds <- 10
 ```
 
 Note that not everything, especially compiled C code, can technically be
-timed out. See the help page `help("withTimeout", package = "R.utils")`
-for more details.
+timed out. See the help page `help("setTimeLimit")` for more details. In
+addition to the checks by R, the time limit is checked each time the
+optimizer evaluates the objective function.
 
 **4. Maximize the objective function**
 
@@ -188,7 +195,7 @@ nlm$maximize(objective = objective, initial = c(3, 3))
 #> [1] 1.974451 1.974451
 #> 
 #> $seconds
-#> [1] 0.04005599
+#> [1] 0.01213908
 #> 
 #> $initial
 #> [1] 3 3
@@ -215,7 +222,7 @@ nelder_mead$maximize(objective = objective, initial = c(3, 3))
 #> [1] 0 0
 #> 
 #> $seconds
-#> [1] 0.02831006
+#> [1] 0.00818491
 #> 
 #> $initial
 #> [1] 3 3
@@ -247,6 +254,25 @@ Note that
 
 - `pracma::nelder_mead` outperforms `stats::nlm` here both in
   optimization time and in convergence to the global maximum.
+
+## What else can the package do?
+
+The demo above does not cover all features of the package. In
+particular,
+
+- parameter bounds can be passed to `$maximize()` and `$minimize()` via
+  the arguments `lower` and `upper`,
+
+- a gradient and a Hessian function can be added to an objective object
+  via its methods `$set_gradient()` and `$set_hessian()`, which are then
+  used by the optimizers that support them,
+
+- the method `$optimize()` selects minimization or maximization via its
+  argument `direction`,
+
+- and a `ParameterSpaces` object switches between the parameter vector
+  that an optimizer works on and a list of parameters that is easier to
+  interpret.
 
 ## Getting in touch
 

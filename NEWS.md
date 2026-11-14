@@ -1,3 +1,22 @@
+# optimizeR 1.4.0
+
+* Added `nloptr::nloptr()`, `optimx::optimr()`, `DEoptim::DEoptim()`,
+  `GenSA::GenSA()`, `ao::ao()`, and `vntrs::vntrs()` to the dictionary of
+  optimizers, see `help("optimizer_dictionary")` for details.
+
+* Moved `{lbfgsb3c}`, `{ucminf}`, and `{pracma}` from `Imports` to `Suggests`
+  and removed the dependency on `{TestFunctions}`.
+
+* Added functions `optimizer()` and `objective()` as alternatives to
+  `Optimizer$new()` and `Objective$new()`.
+
+* The time limit of an `Optimizer` object is now also checked each time the
+  optimizer evaluates the objective function. It also holds if the objective
+  has its own time limit or if the optimizer calls another optimizer, and it
+  refers to elapsed time.
+
+* Improved documentation.
+
 # optimizeR 1.3.0
 
 * Documentation improvements.

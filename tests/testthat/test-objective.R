@@ -177,9 +177,9 @@ test_that("objective with one target argument can be evaluated", {
 })
 
 test_that("objective can be evaluated with a time limit", {
-  skip_if_not(.Platform$OS.type == "windows")
   f <- function(x, a, b = 0) {
-    Sys.sleep(2)
+    end <- proc.time()[["elapsed"]] + 2
+    while (proc.time()[["elapsed"]] < end) NULL
     (x + a)^2 + b
   }
   objective <- Objective$new(f = f, npar = 1, a = -2)
@@ -188,6 +188,31 @@ test_that("objective can be evaluated with a time limit", {
   expect_equal(
     objective$evaluate(1),
     "time limit reached"
+  )
+  expect_equal(
+    objective$evaluate(1, .negate = TRUE),
+    "time limit reached"
+  )
+  expect_equal(time_limit$deadline, Inf)
+
+  ### time limit does not depend on the language
+  local_reproducible_output(lang = "de")
+  expect_equal(
+    objective$evaluate(1),
+    "time limit reached"
+  )
+
+  ### time limit is not reached
+  objective <- Objective$new(f = function(x) sum(x), npar = 1)
+  objective$seconds <- 10
+  expect_equal(
+    objective$evaluate(1),
+    1
+  )
+  objective$seconds <- Inf
+  expect_equal(
+    objective$evaluate(1),
+    1
   )
 })
 
@@ -356,3 +381,490 @@ test_that("invalid numerical derivatives return NA structures", {
   )
 })
 
+test_that("input checks for objective work", {
+  f <- function(x, y) sum(x) + sum(y)
+  expect_error(
+    Objective$new(npar = 1),
+    "Input `f` is bad: Argument needs a value"
+  )
+  expect_error(
+    Objective$new(f = 1, npar = 1),
+    "Input `f` is bad: Must be a function"
+  )
+  expect_error(
+    Objective$new(f = f, target = "z", npar = 1),
+    "Input `f` is bad: Must have formal arguments"
+  )
+  expect_error(
+    Objective$new(f = f),
+    "Input `npar` is bad: Argument needs a value"
+  )
+  expect_error(
+    Objective$new(f = f, npar = 1.5),
+    "Input `npar` is bad: Must be of type 'integerish'"
+  )
+  expect_error(
+    Objective$new(f = f, target = c("x", "y"), npar = 1),
+    "Input `npar` is bad: Must have length 2"
+  )
+  expect_error(
+    Objective$new(f = f, npar = 0),
+    "Input `npar` is bad"
+  )
+  objective <- Objective$new(f = f, npar = 2, y = 1)
+  expect_error(
+    objective$evaluate(1),
+    "Input `.at` is bad: Must have length 2"
+  )
+  expect_error(
+    objective$evaluate(c(1, NA)),
+    "Input `.at` is bad: Contains missing values"
+  )
+  expect_error(
+    objective$seconds <- "a",
+    "Input `seconds` is bad"
+  )
+  expect_error(
+    objective$hide_warnings <- 1,
+    "Input `hide_warnings` is bad"
+  )
+  expect_error(
+    objective$objective_name <- 1,
+    "Input `objective_name` is bad"
+  )
+})
+
+test_that("target argument cannot be fixed", {
+  f <- function(x, a) sum(x) + a
+  expect_error(
+    Objective$new(f = f, npar = 2, x = c(1, 1), a = 1),
+    "Input `...` is bad: Must not contain a target argument"
+  )
+  objective <- Objective$new(f = f, npar = 2, a = 1)
+  expect_error(
+    objective$set_argument(x = c(1, 1)),
+    "Input `...` is bad: Must not contain a target argument"
+  )
+  expect_equal(
+    objective$fixed_arguments,
+    "a"
+  )
+  expect_equal(
+    objective$evaluate(c(1, 1)),
+    3
+  )
+})
+
+test_that("arguments are only overwritten on request", {
+  f <- function(x, a, b) x + a + b
+  objective <- Objective$new(f = f, npar = 1, b = 1)
+  expect_error(
+    objective$set_argument(a = 2, b = 3, .overwrite = FALSE),
+    "Argument `b` already exists"
+  )
+  expect_equal(
+    objective$fixed_arguments,
+    "b"
+  )
+  expect_equal(
+    objective$get_argument("b"),
+    1
+  )
+  objective$set_argument(a = 2, .overwrite = FALSE)
+  expect_error(
+    objective$set_argument(a = 4, b = 3, .overwrite = FALSE),
+    "Arguments `a` and `b` already exist"
+  )
+  objective$set_argument(a = 4, b = 3)
+  expect_equal(
+    objective$evaluate(1),
+    8
+  )
+})
+
+test_that("objective can be cloned", {
+  objective <- Objective$new(f = function(x, a) (x - a)^2, npar = 1, a = 1)
+  objective$set_gradient(function(x, a) 2 * (x - a))
+  objective_clone <- objective$clone(deep = TRUE)
+  objective_clone$set_argument(a = 5)
+  expect_equal(
+    objective_clone$evaluate_gradient(0),
+    -10
+  )
+  expect_equal(
+    objective$evaluate_gradient(0),
+    -2
+  )
+})
+
+test_that("objective with default arguments can be evaluated", {
+
+  ### default value for target argument
+  objective <- Objective$new(
+    f = function(x = c(0, 0), a = 1) sum(x) + a, npar = 2
+  )
+  expect_equal(
+    objective$fixed_arguments,
+    "a"
+  )
+  expect_equal(
+    objective$evaluate(c(1, 2)),
+    4
+  )
+  out <- Optimizer$new("stats::nlm")$
+    minimize(objective = function(x = 0) (x - 1)^2, initial = 3)
+  expect_false(out$error)
+  expect_equal(out$parameter, 1, tolerance = 1e-4)
+
+  ### default value that is an expression
+  objective <- Objective$new(
+    f = function(x, shift = c(1, 2), scale = -1) sum((x - shift)^2) * scale,
+    npar = 2
+  )
+  expect_equal(
+    objective$get_argument("shift"),
+    c(1, 2)
+  )
+  expect_equal(
+    objective$get_argument("scale"),
+    -1
+  )
+  expect_equal(
+    objective$evaluate(c(1, 0)),
+    -4
+  )
+
+  ### default value that depends on another argument
+  x <- 1:10
+  objective <- Objective$new(
+    f = function(x, n = length(x), a) sum(x) / n + a, npar = 2, a = 1
+  )
+  expect_equal(
+    objective$fixed_arguments,
+    "a"
+  )
+  expect_equal(
+    objective$evaluate(c(1, 3)),
+    3
+  )
+  expect_equal(
+    objective$evaluate(c(1, 3), n = 4),
+    2
+  )
+  expect_error(
+    objective$get_argument("n"),
+    "is required but not specified yet"
+  )
+
+  ### default value from the environment of the function
+  build_f <- function() {
+    offset <- 5
+    function(x, a = offset) sum(x) + a
+  }
+  objective <- Objective$new(f = build_f(), npar = 1)
+  expect_equal(
+    objective$get_argument("a"),
+    5
+  )
+  expect_equal(
+    objective$evaluate(1),
+    6
+  )
+})
+
+test_that("objective with expression argument can be evaluated", {
+  f <- function(x, expr, label = NULL) {
+    if (is.call(expr)) sum(x) else stop("expression was evaluated")
+  }
+  objective <- Objective$new(f = f, npar = 2, expr = quote(a + b))
+  expect_identical(
+    objective$get_argument("expr"),
+    quote(a + b)
+  )
+  expect_equal(
+    objective$evaluate(c(1, 2)),
+    3
+  )
+  expect_equal(
+    objective$evaluate(c(1, 2), expr = quote(c * d)),
+    3
+  )
+  objective$set_argument(expr = quote(e / f))
+  expect_equal(
+    objective$evaluate(c(1, 2)),
+    3
+  )
+  objective$set_gradient(function(x, expr) {
+    if (is.call(expr)) rep(1, 2) else stop("expression was evaluated")
+  })
+  expect_equal(
+    objective$evaluate_gradient(c(1, 2)),
+    c(1, 1)
+  )
+  expect_equal(
+    objective$evaluate_gradient_numeric(c(1, 2)),
+    c(1, 1)
+  )
+})
+
+test_that("errors of objective can be detected", {
+  objective <- Objective$new(
+    f = function(x) stop("bad {value} with {.emph braces}"), npar = 1
+  )
+  expect_error(
+    objective$evaluate(1),
+    "Function evaluation threw an error: bad {value} with {.emph braces}",
+    fixed = TRUE
+  )
+  out <- Optimizer$new("stats::nlm")$minimize(objective, 1)
+  expect_equal(
+    out$error_message,
+    "Function evaluation threw an error: bad {value} with {.emph braces}"
+  )
+})
+
+test_that("warnings of objective can be hidden", {
+  f <- function(x) {
+    warning("careful")
+    sum(x)
+  }
+  objective <- Objective$new(f = f, npar = 1)
+  expect_warning(
+    objective$evaluate(1),
+    "careful"
+  )
+  objective$hide_warnings <- TRUE
+  expect_warning(
+    out <- objective$evaluate(1),
+    NA
+  )
+  expect_equal(out, 1)
+})
+
+test_that("objective can be printed", {
+  objective <- Objective$new(f = function(x) x, npar = 1)
+  expect_output(
+    out <- print(objective, digits = 3),
+    "Targets"
+  )
+  expect_identical(
+    out,
+    objective
+  )
+})
+
+test_that("arguments are synchronized with gradient and hessian", {
+  f <- function(x, a) sum((x - a)^2) * a
+  f_gradient <- function(x, a) 2 * (x - a) * a
+  f_hessian <- function(x, a) diag(2 * a, 2)
+
+  ### only gradient specified
+  objective <- Objective$new(f = f, npar = 2, a = 1)
+  objective$set_gradient(f_gradient)
+  objective$set_argument(a = 2)
+  expect_true(
+    objective$gradient_specified
+  )
+  expect_false(
+    objective$hessian_specified
+  )
+  expect_equal(
+    objective$evaluate_gradient(c(0, 0)),
+    c(-8, -8)
+  )
+  expect_error(
+    objective$evaluate_hessian(c(0, 0)),
+    "Hessian function is required"
+  )
+  out <- Optimizer$new("stats::nlminb")$minimize(objective, c(0, 0))
+  expect_false(out$error)
+  expect_equal(out$parameter, c(2, 2), tolerance = 1e-4)
+
+  ### only Hessian specified
+  objective <- Objective$new(f = f, npar = 2, a = 1)
+  objective$set_hessian(f_hessian)
+  objective$set_argument(a = 3)
+  expect_false(
+    objective$gradient_specified
+  )
+  expect_identical(
+    objective$evaluate_hessian(c(0, 0)),
+    diag(6, 2)
+  )
+  objective$remove_argument("a")
+  expect_identical(
+    objective$evaluate_hessian(c(0, 0), a = 4),
+    diag(8, 2)
+  )
+})
+
+test_that("input checks for gradient and hessian work", {
+  objective <- Objective$new(f = function(x, a) sum(x^2) + a, npar = 2, a = 1)
+  expect_error(
+    objective$set_gradient(),
+    "Input `gradient` is bad: Argument needs a value"
+  )
+  expect_error(
+    objective$set_gradient(1),
+    "Input `gradient` is bad: Must be a function"
+  )
+  expect_error(
+    objective$set_gradient(function(y, a) 2 * y),
+    "Input `gradient` is bad: Must have formal arguments"
+  )
+  expect_error(
+    objective$set_hessian(),
+    "Input `hessian` is bad: Argument needs a value"
+  )
+  expect_error(
+    objective$set_hessian("hessian"),
+    "Input `hessian` is bad: Must be a function"
+  )
+  expect_false(
+    objective$gradient_specified
+  )
+  expect_false(
+    objective$hessian_specified
+  )
+})
+
+test_that("gradient and hessian with fewer arguments can be evaluated", {
+  f <- function(x, a, b = 0) sum((x - a)^2) + b
+  objective <- Objective$new(f = f, npar = 2, a = 1)
+  objective$set_gradient(function(x, a) 2 * (x - a))
+  objective$set_hessian(function(x) diag(2, 2))
+  expect_equal(
+    objective$evaluate_gradient(c(0, 0)),
+    c(-2, -2)
+  )
+  expect_identical(
+    objective$evaluate_hessian(c(0, 0)),
+    diag(2, 2)
+  )
+  expect_equal(
+    objective$evaluate_gradient(c(0, 0), b = 5),
+    c(-2, -2)
+  )
+  objective$set_argument(b = 3)
+  expect_equal(
+    objective$evaluate_gradient(c(0, 0)),
+    c(-2, -2)
+  )
+  out <- Optimizer$new("stats::nlminb")$minimize(objective, c(0, 0), a = 2)
+  expect_false(out$error)
+  expect_equal(out$parameter, c(2, 2), tolerance = 1e-6)
+  expect_equal(out$value, 3, tolerance = 1e-6)
+
+  ### all arguments via '...'
+  objective$set_gradient(function(x, ...) 2 * (x - list(...)$a))
+  expect_equal(
+    objective$evaluate_gradient(c(0, 0)),
+    c(-2, -2)
+  )
+
+  ### unknown argument for the function
+  objective$set_argument(unknown = 1)
+  expect_error(
+    objective$evaluate(c(0, 0)),
+    "Function evaluation threw an error"
+  )
+})
+
+test_that("invalid derivatives return NA structures", {
+  objective <- Objective$new(f = function(x) sum(x^2), npar = 2)
+  objective$set_gradient(function(x) stop("no gradient"))
+  objective$set_hessian(function(x) stop("no Hessian"))
+  expect_identical(
+    objective$evaluate_gradient(c(1, 2)),
+    c(NA_real_, NA_real_)
+  )
+  expect_identical(
+    objective$evaluate_hessian(c(1, 2)),
+    matrix(NA_real_, nrow = 2, ncol = 2)
+  )
+
+  ### wrong format
+  objective$set_gradient(function(x) 2 * x[1])
+  objective$set_hessian(function(x) diag(2, 3))
+  expect_identical(
+    objective$evaluate_gradient(c(1, 2)),
+    c(NA_real_, NA_real_)
+  )
+  expect_identical(
+    objective$evaluate_hessian(c(1, 2)),
+    matrix(NA_real_, nrow = 2, ncol = 2)
+  )
+
+  ### Hessian as number or matrix for one parameter
+  objective <- Objective$new(f = function(x) x^2, npar = 1)
+  objective$set_gradient(function(x) 2 * x)
+  objective$set_hessian(function(x) 2)
+  expect_equal(
+    objective$evaluate_gradient(3),
+    6
+  )
+  expect_equal(
+    objective$evaluate_hessian(3),
+    2
+  )
+  objective$set_hessian(function(x) matrix(2))
+  expect_identical(
+    objective$evaluate_hessian(3),
+    matrix(2)
+  )
+  expect_identical(
+    objective$evaluate_hessian(3, .negate = TRUE),
+    matrix(-2)
+  )
+  objective$set_hessian(function(x) "a")
+  expect_identical(
+    objective$evaluate_hessian(3),
+    NA_real_
+  )
+  expect_equal(
+    objective$evaluate_gradient_numeric(3),
+    6
+  )
+  expect_equal(
+    objective$evaluate_hessian_numeric(3),
+    matrix(2)
+  )
+})
+
+test_that("derivatives as attributes can be negated", {
+  f <- function(x) {
+    structure(sum(x^2), gradient = 2 * x, hessian = diag(2, 2), note = "a")
+  }
+  objective <- Objective$new(f = f, npar = 2)
+  expect_identical(
+    objective$evaluate(c(1, 2)),
+    structure(5, gradient = c(2, 4), hessian = diag(2, 2), note = "a")
+  )
+  expect_identical(
+    objective$evaluate(c(1, 2), .negate = TRUE),
+    structure(-5, gradient = c(-2, -4), hessian = diag(-2, 2), note = "a")
+  )
+
+  ### other attribute names
+  objective_renamed <- Objective$new(
+    f = function(x) structure(sum(x^2), g = 2 * x, gradient = 2 * x),
+    npar = 2
+  )
+  expect_identical(
+    objective_renamed$evaluate(
+      c(1, 2), .negate = TRUE, .gradient_attribute_name = "g",
+      .hessian_attribute_name = NA_character_
+    ),
+    structure(-5, g = c(-2, -4), gradient = c(2, 4))
+  )
+
+  ### numerical derivatives
+  expect_equal(
+    objective$evaluate(
+      c(1, 2), .negate = TRUE, .gradient_as_attribute = TRUE,
+      .gradient_numeric = TRUE, .hessian_as_attribute = TRUE,
+      .hessian_numeric = TRUE
+    ),
+    structure(-5, gradient = c(-2, -4), hessian = diag(-2, 2), note = "a")
+  )
+})

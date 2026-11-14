@@ -74,75 +74,78 @@ normal_mixture_spaces$switch(x)          # switch back
 }
 \section{Methods}{
 \subsection{Public methods}{
-\itemize{
-\item \href{#method-ParameterSpaces-new}{\code{ParameterSpaces$new()}}
-\item \href{#method-ParameterSpaces-print}{\code{ParameterSpaces$print()}}
-\item \href{#method-ParameterSpaces-switch}{\code{ParameterSpaces$switch()}}
-\item \href{#method-ParameterSpaces-o2i}{\code{ParameterSpaces$o2i()}}
-\item \href{#method-ParameterSpaces-i2o}{\code{ParameterSpaces$i2o()}}
-\item \href{#method-ParameterSpaces-clone}{\code{ParameterSpaces$clone()}}
-}
+  \itemize{
+    \item \href{#method-ParameterSpaces-initialize}{\code{ParameterSpaces$new()}}
+    \item \href{#method-ParameterSpaces-print}{\code{ParameterSpaces$print()}}
+    \item \href{#method-ParameterSpaces-switch}{\code{ParameterSpaces$switch()}}
+    \item \href{#method-ParameterSpaces-o2i}{\code{ParameterSpaces$o2i()}}
+    \item \href{#method-ParameterSpaces-i2o}{\code{ParameterSpaces$i2o()}}
+    \item \href{#method-ParameterSpaces-clone}{\code{ParameterSpaces$clone()}}
+  }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-ParameterSpaces-new"></a>}}
-\if{latex}{\out{\hypertarget{method-ParameterSpaces-new}{}}}
-\subsection{Method \code{new()}}{
-Initializes a new \code{ParameterSpaces} object.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ParameterSpaces$new(parameter_names, parameter_lengths_in_o_space)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{parameter_names}}{[\code{character()}]\cr
+\if{html}{\out{<a id="method-ParameterSpaces-initialize"></a>}}
+\if{latex}{\out{\hypertarget{method-ParameterSpaces-initialize}{}}}
+\subsection{\code{ParameterSpaces$new()}}{
+  Initializes a new \code{ParameterSpaces} object.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{ParameterSpaces$new(parameter_names, parameter_lengths_in_o_space)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{parameter_names}}{[\code{character()}]\cr
 Unique names for the parameters.}
-
-\item{\code{parameter_lengths_in_o_space}}{[\code{integer()}]\cr
+      \item{\code{parameter_lengths_in_o_space}}{[\code{integer()}]\cr
 The length of each parameter in the optimization space.}
+    }
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Returns}{
+    A new \code{ParameterSpaces} object.
+  }
 }
-\if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A new \code{ParameterSpaces} object.
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ParameterSpaces-print"></a>}}
 \if{latex}{\out{\hypertarget{method-ParameterSpaces-print}{}}}
-\subsection{Method \code{print()}}{
-Print an overview of the parameter spaces.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ParameterSpaces$print(show_transformer = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{ParameterSpaces$print()}}{
+  Print an overview of the parameter spaces.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{ParameterSpaces$print(show_transformer = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{show_transformer}}{[\code{logical(1)}]\cr
+Show transformer functions in the output?}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{show_transformer}}{[\code{logical(1)}]\cr
-Show transformer functions in the output?}
-}
-\if{html}{\out{</div>}}
-}
-}
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ParameterSpaces-switch"></a>}}
 \if{latex}{\out{\hypertarget{method-ParameterSpaces-switch}{}}}
-\subsection{Method \code{switch()}}{
-Switch between Optimization Space and Interpretation Space.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ParameterSpaces$switch(x, to = NULL)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{x}}{[\code{numeric()} | \code{list()}]\cr
+\subsection{\code{ParameterSpaces$switch()}}{
+  Switch between Optimization Space and Interpretation Space.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{ParameterSpaces$switch(x, to = NULL)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{x}}{[\code{numeric()} | \code{list()}]\cr
 The parameters, either as a \verb{numeric vector} (will be switched to
 Interpretation Space), or as a \code{list()} (will be switched to
 Optimization Space).}
-
-\item{\code{to}}{[\code{character(1)} | \code{NULL}]\cr
+      \item{\code{to}}{[\code{character(1)} | \code{NULL}]\cr
 Explicitly switch to a specific space, either
 \itemize{
 \item \code{"o"}: Optimization Space
@@ -150,69 +153,76 @@ Explicitly switch to a specific space, either
 }
 
 If \code{NULL}, the function will switch to the other space.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ParameterSpaces-o2i"></a>}}
 \if{latex}{\out{\hypertarget{method-ParameterSpaces-o2i}{}}}
-\subsection{Method \code{o2i()}}{
-Define transformation functions when switching from Optimization Space
+\subsection{\code{ParameterSpaces$o2i()}}{
+  Define transformation functions when switching from Optimization Space
 to Interpretation Space.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ParameterSpaces$o2i(...)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{...}}{[\code{function}]\cr
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{ParameterSpaces$o2i(...)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{...}}{[\code{function}]\cr
 One or more transformation functions, named according to the parameters.
 
 Transformers from Optimization Space to Interpretation Space (o2i)
 \strong{must receive} a \code{numeric}. The default is the identity.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ParameterSpaces-i2o"></a>}}
 \if{latex}{\out{\hypertarget{method-ParameterSpaces-i2o}{}}}
-\subsection{Method \code{i2o()}}{
-Define transformation functions when switching from Interpretation Space
+\subsection{\code{ParameterSpaces$i2o()}}{
+  Define transformation functions when switching from Interpretation Space
 to Optimization Space.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ParameterSpaces$i2o(...)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{...}}{[\code{function}]\cr
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{ParameterSpaces$i2o(...)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{...}}{[\code{function}]\cr
 One or more transformation functions, named according to the parameters.
 
 Transformers from Interpretation Space to Optimization Space (i2o)
 \strong{must return} a \code{numeric}. The default is \code{as.vector()}.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
-\if{html}{\out{</div>}}
-}
-}
+
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-ParameterSpaces-clone"></a>}}
 \if{latex}{\out{\hypertarget{method-ParameterSpaces-clone}{}}}
-\subsection{Method \code{clone()}}{
-The objects of this class are cloneable with this method.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ParameterSpaces$clone(deep = FALSE)}\if{html}{\out{</div>}}
+\subsection{\code{ParameterSpaces$clone()}}{
+  The objects of this class are cloneable with this method.
+  \subsection{Usage}{
+    \if{html}{\out{<div class="r">}}
+    \preformatted{ParameterSpaces$clone(deep = FALSE)}
+    \if{html}{\out{</div>}}
+  }
+  \subsection{Arguments}{
+    \if{html}{\out{<div class="arguments">}}
+    \describe{
+      \item{\code{deep}}{Whether to make a deep clone.}
+    }
+    \if{html}{\out{</div>}}
+  }
 }
 
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{deep}}{Whether to make a deep clone.}
-}
-\if{html}{\out{</div>}}
-}
-}
 }

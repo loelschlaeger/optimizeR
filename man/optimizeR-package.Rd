@@ -11,10 +11,14 @@
 Provides a unified object-oriented framework for numerical optimizers in R. Supports minimization and maximization with any optimizer, optimization over more than one function argument, computation time measurement, and time limits for long optimization tasks.
 }
 \examples{
+\dontshow{if (requireNamespace("pracma", quietly = TRUE)) withAutoprint(\{ # examplesIf}
 ### Task: compare minimization with 'stats::nlm' and 'pracma::nelder_mead'
 
-# 1. define objective function and initial values
-objective <- TestFunctions::TF_ackley
+# 1. define objective function (the Ackley function) and initial values
+objective <- function(x) {
+  -20 * exp(-0.2 * sqrt(mean(x^2))) - exp(mean(cos(2 * pi * x))) +
+    20 + exp(1)
+}
 initial <- c(3, 3)
 
 # 2. get overview of optimizers available in dictionary
@@ -38,34 +42,51 @@ nelder_mead$definition(
 # 5. compare the minimization results
 nlm$minimize(objective, initial)
 nelder_mead$minimize(objective, initial)
-
+\dontshow{\}) # examplesIf}
 
 ## ------------------------------------------------
-## Method `Optimizer$minimize`
+## Method `Optimizer$definition()`
+## ------------------------------------------------
+
+### define 'stats::optimize', which does not take initial values
+optimize <- Optimizer$new(which = "custom", .verbose = FALSE)
+optimize$definition(
+  algorithm = stats::optimize,
+  arg_objective = "f",
+  arg_initial = NA,
+  arg_lower = "lower",
+  arg_upper = "upper",
+  out_value = "objective",
+  out_parameter = "minimum",
+  direction = "min"
+)
+optimize$minimize(
+  objective = function(x) x^4 + 3*x - 5, initial = 2, lower = -5,
+  upper = 5
+)
+
+## ------------------------------------------------
+## Method `Optimizer$minimize()`
 ## ------------------------------------------------
 
 Optimizer$new("stats::nlm")$
   minimize(objective = function(x) x^4 + 3*x - 5, initial = 2)
 
 ## ------------------------------------------------
-## Method `Optimizer$maximize`
+## Method `Optimizer$maximize()`
 ## ------------------------------------------------
 
 Optimizer$new("stats::nlm")$
   maximize(objective = function(x) -x^4 + 3*x - 5, initial = 2)
 
 ## ------------------------------------------------
-## Method `Optimizer$optimize`
+## Method `Optimizer$optimize()`
 ## ------------------------------------------------
 
-objective <- function(x) -x^4 + 3*x - 5
-optimizer <- Optimizer$new("stats::nlm")
-optimizer$optimize(
-  objective = objective, initial = 2, direction = "min"
-)
-optimizer$optimize(
-  objective = objective, initial = 2, direction = "max"
-)
+objective <- function(x) sin(x)
+nlm <- Optimizer$new("stats::nlm")
+nlm$optimize(objective = objective, initial = 2, direction = "min")
+nlm$optimize(objective = objective, initial = 2, direction = "max")
 }
 \seealso{
 Useful links:
@@ -77,6 +98,11 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Lennart Oelschläger \email{oelschlaeger.lennart@gmail.com} (\href{https://orcid.org/0000-0001-5421-9313}{ORCID})
+
+Authors:
+\itemize{
+  \item Lennart Oelschläger \email{oelschlaeger.lennart@gmail.com} (\href{https://orcid.org/0000-0001-5421-9313}{ORCID})
+}
 
 Other contributors:
 \itemize{

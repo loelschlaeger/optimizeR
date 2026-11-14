@@ -5,8 +5,8 @@
 ## usethis namespace: start
 #' @importFrom checkmate assert_choice
 #' @importFrom checkmate assert_flag
-#' @importFrom checkmate assert_function
 #' @importFrom checkmate assert_list
+#' @importFrom checkmate assert_multi_class
 #' @importFrom checkmate assert_string
 #' @importFrom checkmate check_character
 #' @importFrom checkmate check_choice
@@ -16,6 +16,7 @@
 #' @importFrom checkmate check_list
 #' @importFrom checkmate check_names
 #' @importFrom checkmate check_number
+#' @importFrom checkmate check_numeric
 #' @importFrom checkmate check_string
 #' @importFrom checkmate test_choice
 #' @importFrom checkmate test_list
@@ -23,6 +24,8 @@
 #' @importFrom checkmate test_numeric
 #' @importFrom checkmate test_r6
 #' @importFrom checkmate test_scalar_na
+#' @importFrom checkmate test_string
+#' @importFrom cli ansi_strip
 #' @importFrom cli cat_bullet
 #' @importFrom cli cli_abort
 #' @importFrom cli cli_alert
@@ -31,10 +34,8 @@
 #' @importFrom cli cli_h3
 #' @importFrom cli cli_inform
 #' @importFrom cli cli_warn
-#' @importFrom lbfgsb3c lbfgsb3
-#' @importFrom lbfgsb3c lbfgsb3c
-#' @importFrom lbfgsb3c lbfgsb3f
-#' @importFrom lbfgsb3c lbfgsb3x
+#' @importFrom methods slot
+#' @importFrom methods slotNames
 #' @importFrom numDeriv grad
 #' @importFrom numDeriv hessian
 #' @importFrom oeli check_missing
@@ -47,14 +48,18 @@
 #' @importFrom oeli input_check_response
 #' @importFrom oeli merge_lists
 #' @importFrom oeli test_numeric_vector
-#' @importFrom oeli timed
 #' @importFrom oeli variable_name
-#' @importFrom pracma nelder_mead
 #' @importFrom R6 R6Class
 #' @importFrom stats nlm
 #' @importFrom stats nlminb
 #' @importFrom stats optim
-#' @importFrom TestFunctions TF_ackley
-#' @importFrom ucminf ucminf
+#' @importFrom stats setNames
 ## usethis namespace: end
 NULL
+
+#' @keywords internal
+#' @noRd
+
+.onLoad <- function(lib, pkg) {
+  assign("optimizer_dictionary", build_optimizer_dictionary(), envir = topenv())
+}

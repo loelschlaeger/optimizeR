@@ -150,3 +150,62 @@ test_that("Parameter spaces with a subset of parameters work", {
     par
   )
 })
+
+test_that("Parameter spaces can be switched explicitly", {
+  ### define parameter spaces
+  explicit_parameter_spaces <- ParameterSpaces$
+    new(
+      parameter_names = c("a", "b"),
+      parameter_lengths_in_o_space = c(1, 2)
+    )
+
+  ### switch between parameter spaces
+  expect_identical(
+    explicit_parameter_spaces$switch(1:3, to = "i"),
+    list("a" = 1L, "b" = 2:3)
+  )
+  expect_identical(
+    explicit_parameter_spaces$switch(list("a" = 1, "b" = 2:3), to = "o"),
+    c(1, 2, 3)
+  )
+
+  ### input checks
+  expect_error(
+    explicit_parameter_spaces$switch(1:3, to = "x"),
+    "Input `to` is bad"
+  )
+  expect_error(
+    explicit_parameter_spaces$switch(),
+    "Input `x` is bad: Argument needs a value"
+  )
+  expect_error(
+    ParameterSpaces$new(c("a", "a"), c(1, 2)),
+    "Input `parameter_names` is bad"
+  )
+  expect_error(
+    ParameterSpaces$new(c("a", "b"), 1),
+    "Input `parameter_lengths_in_o_space` is bad"
+  )
+})
+
+test_that("Parameter spaces with missing parameters work", {
+  ### define parameter spaces
+  missing_parameter_spaces <- ParameterSpaces$
+    new(
+      parameter_names = c("mu", "sd"),
+      parameter_lengths_in_o_space = c(2, 1)
+    )$
+    i2o(
+      "sd" = function(x) if (is.null(x)) 0 else log(x)
+    )
+
+  ### switch between parameter spaces
+  expect_identical(
+    missing_parameter_spaces$switch(list("mu" = c(1, 2), "sd" = 1)),
+    c(1, 2, 0)
+  )
+  expect_identical(
+    missing_parameter_spaces$switch(list("mu" = c(1, 2))),
+    c(1, 2, 0)
+  )
+})
