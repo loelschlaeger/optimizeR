@@ -101,7 +101,7 @@ if (requireNamespace("pracma", quietly = TRUE)) {
 #> [1] 1 1
 #> 
 #> $seconds
-#> [1] 0.02211428
+#> [1] 0.02193499
 #> 
 #> $initial
 #> [1] 0 0

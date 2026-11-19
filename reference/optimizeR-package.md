@@ -73,7 +73,7 @@ nlm$minimize(objective, initial)
 #> [1] 1.974451 1.974451
 #> 
 #> $seconds
-#> [1] 0.005558014
+#> [1] 0.005295515
 #> 
 #> $initial
 #> [1] 3 3
@@ -98,7 +98,7 @@ nelder_mead$minimize(objective, initial)
 #> [1] 0 0
 #> 
 #> $seconds
-#> [1] 0.02347732
+#> [1] 0.02291775
 #> 
 #> $initial
 #> [1] 3 3
@@ -145,7 +145,7 @@ optimize$minimize(
 #> [1] -0.9085611
 #> 
 #> $seconds
-#> [1] 0.002953291
+#> [1] 0.00279808
 #> 
 #> $initial
 #> [1] 2
@@ -167,7 +167,7 @@ Optimizer$new("stats::nlm")$
 #> [1] -0.9085614
 #> 
 #> $seconds
-#> [1] 0.003938437
+#> [1] 0.003662348
 #> 
 #> $initial
 #> [1] 2
@@ -198,7 +198,7 @@ Optimizer$new("stats::nlm")$
 #> [1] 0.9085598
 #> 
 #> $seconds
-#> [1] 0.004786253
+#> [1] 0.004714727
 #> 
 #> $initial
 #> [1] 2
@@ -230,7 +230,7 @@ nlm$optimize(objective = objective, initial = 2, direction = "min")
 #> [1] 4.712387
 #> 
 #> $seconds
-#> [1] 0.003632069
+#> [1] 0.003472805
 #> 
 #> $initial
 #> [1] 2
@@ -255,7 +255,7 @@ nlm$optimize(objective = objective, initial = 2, direction = "max")
 #> [1] 1.570796
 #> 
 #> $seconds
-#> [1] 0.00199461
+#> [1] 0.001952171
 #> 
 #> $initial
 #> [1] 2
