@@ -23,8 +23,9 @@ An `Objective` object.
 - `seconds`:
 
   \[`numeric(1)`\]  
-  A time limit in seconds. Computations are interrupted prematurely if
-  `seconds` is exceeded.
+  A time limit in seconds for one function evaluation. Computations are
+  interrupted prematurely if `seconds` is exceeded, in which case
+  `$evaluate()` returns the string `"time limit reached"`.
 
   No time limit if `seconds = Inf` (the default).
 
@@ -66,7 +67,7 @@ An `Objective` object.
 
 ### Public methods
 
-- [`Objective$new()`](#method-Objective-new)
+- [`Objective$new()`](#method-Objective-initialize)
 
 - [`Objective$set_argument()`](#method-Objective-set_argument)
 
@@ -94,7 +95,7 @@ An `Objective` object.
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `Objective$new()`
 
 Creates a new `Objective` object.
 
@@ -136,9 +137,11 @@ Creates a new `Objective` object.
 
 ------------------------------------------------------------------------
 
-### Method `set_argument()`
+### `Objective$set_argument()`
 
 Set a function argument that remains fixed during optimization.
+
+A target argument cannot be fixed.
 
 #### Usage
 
@@ -163,7 +166,7 @@ Set a function argument that remains fixed during optimization.
 
 ------------------------------------------------------------------------
 
-### Method `get_argument()`
+### `Objective$get_argument()`
 
 Get a fixed function argument.
 
@@ -185,7 +188,7 @@ Get a fixed function argument.
 
 ------------------------------------------------------------------------
 
-### Method `remove_argument()`
+### `Objective$remove_argument()`
 
 Remove a fixed function argument.
 
@@ -207,7 +210,7 @@ Remove a fixed function argument.
 
 ------------------------------------------------------------------------
 
-### Method `set_gradient()`
+### `Objective$set_gradient()`
 
 Set a gradient function.
 
@@ -228,8 +231,12 @@ Set a gradient function.
   \[`function`\]  
   A `function` that computes the gradient of the objective function `f`.
 
-  It is expected that `gradient` has the same call as `f`, and that
-  `gradient` returns a `numeric` `vector` of length `sum(self$npar)`.
+  It is expected that `gradient` has the same target argument(s) as `f`,
+  and that `gradient` returns a `numeric` `vector` of length
+  `sum(self$npar)`.
+
+  The fixed arguments of `f` are only passed on to `gradient` if it has
+  them as arguments.
 
 - `target`:
 
@@ -248,8 +255,7 @@ Set a gradient function.
 
 - `...`:
 
-  Optionally additional function arguments that are fixed during the
-  optimization.
+  Optionally additional arguments that are fixed for `gradient`.
 
 - `.verbose`:
 
@@ -258,7 +264,7 @@ Set a gradient function.
 
 ------------------------------------------------------------------------
 
-### Method `set_hessian()`
+### `Objective$set_hessian()`
 
 Set a Hessian function.
 
@@ -279,9 +285,12 @@ Set a Hessian function.
   \[`function`\]  
   A `function` that computes the Hessian of the objective function `f`.
 
-  It is expected that `hessian` has the same call as `f`, and that
-  `hessian` returns a `numeric` `matrix` of dimension `sum(self$npar)`
-  times `sum(self$npar)`.
+  It is expected that `hessian` has the same target argument(s) as `f`,
+  and that `hessian` returns a `numeric` `matrix` of dimension
+  `sum(self$npar)` times `sum(self$npar)`.
+
+  The fixed arguments of `f` are only passed on to `hessian` if it has
+  them as arguments.
 
 - `target`:
 
@@ -300,8 +309,7 @@ Set a Hessian function.
 
 - `...`:
 
-  Optionally additional function arguments that are fixed during the
-  optimization.
+  Optionally additional arguments that are fixed for `hessian`.
 
 - `.verbose`:
 
@@ -310,7 +318,7 @@ Set a Hessian function.
 
 ------------------------------------------------------------------------
 
-### Method `evaluate()`
+### `Objective$evaluate()`
 
 Evaluate the objective function.
 
@@ -341,6 +349,10 @@ Evaluate the objective function.
 
   \[`logical(1)`\]  
   Negate the function return value?
+
+  In that case, derivatives that are attributes of the function return
+  value (with the names `.gradient_attribute_name` and
+  `.hessian_attribute_name`) are negated as well.
 
 - `.gradient_as_attribute`:
 
@@ -373,7 +385,7 @@ Evaluate the objective function.
   The attribute name is defined via the `.hessian_attribute_name`
   argument.
 
-  Ignored if `$hessian_specified` and `hessian_numeric` are `FALSE`.
+  Ignored if `$hessian_specified` and `.hessian_numeric` are `FALSE`.
 
 - `.hessian_attribute_name`:
 
@@ -390,12 +402,17 @@ Evaluate the objective function.
 
 - `...`:
 
-  Optionally additional function arguments that are fixed during the
-  optimization.
+  Optionally additional function arguments for this evaluation, which
+  have priority over fixed arguments of the same name.
+
+#### Returns
+
+The function value, or the string `"time limit reached"` if the time
+limit `$seconds` is exceeded.
 
 ------------------------------------------------------------------------
 
-### Method `evaluate_gradient()`
+### `Objective$evaluate_gradient()`
 
 Evaluate the gradient function.
 
@@ -422,12 +439,11 @@ or returns an unexpected result.
 
 - `...`:
 
-  Optionally additional function arguments that are fixed during the
-  optimization.
+  Optionally additional function arguments for this evaluation.
 
 ------------------------------------------------------------------------
 
-### Method `evaluate_gradient_numeric()`
+### `Objective$evaluate_gradient_numeric()`
 
 Evaluate the numerical gradient
 [`grad`](https://rdrr.io/pkg/numDeriv/man/grad.html).
@@ -455,17 +471,19 @@ or returns an unexpected result.
 
 - `...`:
 
-  Optionally additional function arguments that are fixed during the
-  optimization.
+  Optionally additional function arguments for this evaluation.
 
 ------------------------------------------------------------------------
 
-### Method `evaluate_hessian()`
+### `Objective$evaluate_hessian()`
 
 Evaluate the Hessian function.
 
 Returns an `NA_real_` value or matrix if the evaluation fails or returns
 an unexpected result.
+
+The Hessian function can also return a single number if there is only
+one parameter, which is then returned as such.
 
 #### Usage
 
@@ -487,12 +505,11 @@ an unexpected result.
 
 - `...`:
 
-  Optionally additional function arguments that are fixed during the
-  optimization.
+  Optionally additional function arguments for this evaluation.
 
 ------------------------------------------------------------------------
 
-### Method `evaluate_hessian_numeric()`
+### `Objective$evaluate_hessian_numeric()`
 
 Evaluate the numerical Hessian
 [`hessian`](https://rdrr.io/pkg/numDeriv/man/hessian.html).
@@ -520,22 +537,31 @@ unexpected result.
 
 - `...`:
 
-  Optionally additional function arguments that are fixed during the
-  optimization.
+  Optionally additional function arguments for this evaluation.
 
 ------------------------------------------------------------------------
 
-### Method [`print()`](https://rdrr.io/r/base/print.html)
+### `Objective$print()`
 
 Print details of the `Objective` object.
 
 #### Usage
 
-    Objective$print()
+    Objective$print(...)
+
+#### Arguments
+
+- `...`:
+
+  Currently not used.
+
+#### Returns
+
+Invisibly the `Objective` object.
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `Objective$clone()`
 
 The objects of this class are cloneable with this method.
 

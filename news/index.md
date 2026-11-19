@@ -1,6 +1,39 @@
 # Changelog
 
+## optimizeR 1.4.0
+
+- Added
+  [`nloptr::nloptr()`](https://astamm.github.io/nloptr/reference/nloptr.html),
+  [`optimx::optimr()`](https://rdrr.io/pkg/optimx/man/optimr.html),
+  [`DEoptim::DEoptim()`](https://rdrr.io/pkg/DEoptim/man/DEoptim.html),
+  [`GenSA::GenSA()`](https://rdrr.io/pkg/GenSA/man/GenSA.html),
+  [`ao::ao()`](https://loelschlaeger.de/ao/reference/ao.html), and
+  [`vntrs::vntrs()`](https://loelschlaeger.de/vntrs/reference/vntrs.html)
+  to the dictionary of optimizers, see
+  [`help("optimizer_dictionary")`](https://loelschlaeger.de/optimizeR/reference/optimizer_dictionary.md)
+  for details.
+
+- Moved [lbfgsb3c](https://nlmixr2.github.io/lbfgsb3c/),
+  [ucminf](https://github.com/hdakpo/ucminf), and `{pracma}` from
+  `Imports` to `Suggests` and removed the dependency on
+  `{TestFunctions}`.
+
+- Added functions
+  [`optimizer()`](https://loelschlaeger.de/optimizeR/reference/constructors.md)
+  and
+  [`objective()`](https://loelschlaeger.de/optimizeR/reference/constructors.md)
+  as alternatives to `Optimizer$new()` and `Objective$new()`.
+
+- The time limit of an `Optimizer` object is now also checked each time
+  the optimizer evaluates the objective function. It also holds if the
+  objective has its own time limit or if the optimizer calls another
+  optimizer, and it refers to elapsed time.
+
+- Improved documentation.
+
 ## optimizeR 1.3.0
+
+CRAN release: 2026-05-09
 
 - Documentation improvements.
 
@@ -143,10 +176,8 @@ CRAN release: 2023-09-27
 
 - Removed dependency on [glue](https://glue.tidyverse.org/).
 
-- Used
-  [`TestFunctions::TF_ackley`](https://rdrr.io/pkg/TestFunctions/man/TF_ackley.html)
-  instead of the package’s own implementation of the Ackley function for
-  validation.
+- Used `TestFunctions::TF_ackley` instead of the package’s own
+  implementation of the Ackley function for validation.
 
 ## optimizeR 0.3.2
 

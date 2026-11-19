@@ -5,20 +5,14 @@ optimization algorithm implemented in R. The main advantage of working
 with an `Optimizer` object instead of using the optimization function
 directly lies in the standardized inputs and outputs.
 
-Any R function that fulfills the following four constraints can be
+Any R function that fulfills the following two constraints can be
 defined as an `Optimizer` object:
 
 1.  It must have an input for a `function`, the objective function to be
     optimized.
 
-2.  It must have an input for a `numeric` vector, the initial values
-    where the optimizer starts.
-
-3.  It must have a `...` argument for additional parameters passed on to
-    the objective function.
-
-4.  The output must be a named `list`, including the optimal function
-    value and the optimal parameter vector.
+2.  Its output must include the optimal function value and the optimal
+    parameter vector.
 
 ## Active bindings
 
@@ -39,8 +33,10 @@ defined as an `Optimizer` object:
 
 - `arg_initial`:
 
-  \[`character(1)`\]  
+  \[`character(1)` \| `NA`\]  
   The argument name for the initial values in `algorithm`.
+
+  Can be `NA` if `algorithm` does not take initial values.
 
 - `arg_lower`:
 
@@ -94,15 +90,27 @@ defined as an `Optimizer` object:
 
 - `out_value`:
 
-  \[`character(1)`\]  
-  The element name for the optimal function value in the output `list`
-  of `algorithm`.
+  \[[`character()`](https://rdrr.io/r/base/character.html) \|
+  `function`\]  
+  The element name for the optimal function value in the output of
+  `algorithm`.
+
+  Can be a vector of names if the output is nested.
+
+  Alternatively, it can also be a `function` that receives the output of
+  `algorithm` and returns the optimal function value.
 
 - `out_parameter`:
 
-  \[`character(1)`\]  
-  The element name for the optimal parameters in the output `list` of
+  \[[`character()`](https://rdrr.io/r/base/character.html) \|
+  `function`\]  
+  The element name for the optimal parameters in the output of
   `algorithm`.
+
+  Can be a vector of names if the output is nested.
+
+  Alternatively, it can also be a `function` that receives the output of
+  `algorithm` and returns the optimal parameters.
 
 - `direction`:
 
@@ -129,6 +137,9 @@ defined as an `Optimizer` object:
   Note the limitations documented in
   [`setTimeLimit`](https://rdrr.io/r/base/setTimeLimit.html).
 
+  The time limit refers to elapsed time and is also checked each time
+  the optimizer evaluates the objective function.
+
 - `hide_warnings`:
 
   \[`logical(1)`\]  
@@ -143,7 +154,7 @@ defined as an `Optimizer` object:
 
 ### Public methods
 
-- [`Optimizer$new()`](#method-Optimizer-new)
+- [`Optimizer$new()`](#method-Optimizer-initialize)
 
 - [`Optimizer$definition()`](#method-Optimizer-definition)
 
@@ -161,7 +172,7 @@ defined as an `Optimizer` object:
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `Optimizer$new()`
 
 Initializes a new `Optimizer` object.
 
@@ -199,7 +210,7 @@ A new `Optimizer` object.
 
 ------------------------------------------------------------------------
 
-### Method `definition()`
+### `Optimizer$definition()`
 
 Defines an optimizer.
 
@@ -234,8 +245,10 @@ Defines an optimizer.
 
 - `arg_initial`:
 
-  \[`character(1)`\]  
+  \[`character(1)` \| `NA`\]  
   The argument name for the initial values in `algorithm`.
+
+  Can be `NA` if `algorithm` does not take initial values.
 
 - `arg_lower`:
 
@@ -289,15 +302,31 @@ Defines an optimizer.
 
 - `out_value`:
 
-  \[`character(1)`\]  
-  The element name for the optimal function value in the output `list`
-  of `algorithm`.
+  \[[`character()`](https://rdrr.io/r/base/character.html) \|
+  `function`\]  
+  The element name for the optimal function value in the output of
+  `algorithm`.
+
+  Can be a vector of names if the output is nested (e.g.,
+  `c("optim", "bestval")` for the element `bestval` of the element
+  `optim`). If the output is an S4 object, the names refer to its slots.
+
+  Alternatively, it can also be a `function` that receives the output of
+  `algorithm` and returns the optimal function value.
 
 - `out_parameter`:
 
-  \[`character(1)`\]  
-  The element name for the optimal parameters in the output `list` of
+  \[[`character()`](https://rdrr.io/r/base/character.html) \|
+  `function`\]  
+  The element name for the optimal parameters in the output of
   `algorithm`.
+
+  Can be a vector of names if the output is nested (e.g.,
+  `c("optim", "bestmem")` for the element `bestmem` of the element
+  `optim`). If the output is an S4 object, the names refer to its slots.
+
+  Alternatively, it can also be a `function` that receives the output of
+  `algorithm` and returns the optimal parameters.
 
 - `direction`:
 
@@ -305,11 +334,38 @@ Defines an optimizer.
   Either `"min"` (if the optimizer minimizes) or `"max"` (if the
   optimizer maximizes).
 
+#### Returns
+
+Invisibly the `Optimizer` object.
+
+#### Examples
+
+    ### define 'stats::optimize', which does not take initial values
+    optimize <- Optimizer$new(which = "custom", .verbose = FALSE)
+    optimize$definition(
+      algorithm = stats::optimize,
+      arg_objective = "f",
+      arg_initial = NA,
+      arg_lower = "lower",
+      arg_upper = "upper",
+      out_value = "objective",
+      out_parameter = "minimum",
+      direction = "min"
+    )
+    optimize$minimize(
+      objective = function(x) x^4 + 3*x - 5, initial = 2, lower = -5,
+      upper = 5
+    )
+
 ------------------------------------------------------------------------
 
-### Method `set_arguments()`
+### `Optimizer$set_arguments()`
 
 Sets optimizer arguments.
+
+The arguments for the objective function and the initial values cannot
+be set here, since they are specified when calling `$minimize()`,
+`$maximize()`, or `$optimize()`.
 
 #### Usage
 
@@ -326,11 +382,11 @@ Sets optimizer arguments.
 
 #### Returns
 
-The `Optimizer` object.
+Invisibly the `Optimizer` object.
 
 ------------------------------------------------------------------------
 
-### Method `minimize()`
+### `Optimizer$minimize()`
 
 Perform minimization.
 
@@ -345,18 +401,24 @@ Perform minimization.
   \[`function` \| `Objective`\]  
   A `function` to be optimized that
 
-  1.  has at least one argument that receives a `numeric` `vector`
+  1.  receives a `numeric` `vector` as its first argument (the so-called
+      target argument)
 
   2.  and returns a single `numeric` value.
 
   Alternatively, it can also be an
   [`Objective`](https://loelschlaeger.de/optimizeR/reference/Objective.md)
-  object for more flexibility.
+  object for more flexibility (e.g., for another or more than one target
+  argument, or for a gradient and Hessian function).
 
 - `initial`:
 
   \[[`numeric()`](https://rdrr.io/r/base/numeric.html)\]  
-  Starting parameter values for the optimization.
+  Starting parameter values for the optimization (without missing
+  values).
+
+  If the optimizer does not take initial values, they only define the
+  number of parameters.
 
 - `lower`:
 
@@ -368,6 +430,9 @@ Perform minimization.
 
   Can be `NA` to not define any bounds.
 
+  Ignored (with a warning) for optimizers that do not support lower
+  bounds.
+
 - `upper`:
 
   \[`NA` \| [`numeric()`](https://rdrr.io/r/base/numeric.html) \|
@@ -377,6 +442,9 @@ Perform minimization.
   If a single number, this will be applied to all parameters.
 
   Can be `NA` to not define any bounds.
+
+  Ignored (with a warning) for optimizers that do not support upper
+  bounds.
 
 - `...`:
 
@@ -410,7 +478,9 @@ A named `list`, containing at least these five elements:
 
   A `logical` flag: `TRUE` if an error occurred, otherwise `FALSE`.
 
-Additional output elements from the optimizer are appended.
+Additional output elements from the optimizer are appended. If the
+optimizer output is not a named `list`, it is appended as element
+`output`.
 
 If an error occurred, the error message is also appended as element
 `error_message`.
@@ -425,7 +495,7 @@ the flag `time_out = TRUE` is appended.
 
 ------------------------------------------------------------------------
 
-### Method `maximize()`
+### `Optimizer$maximize()`
 
 Perform maximization.
 
@@ -440,18 +510,24 @@ Perform maximization.
   \[`function` \| `Objective`\]  
   A `function` to be optimized that
 
-  1.  has at least one argument that receives a `numeric` `vector`
+  1.  receives a `numeric` `vector` as its first argument (the so-called
+      target argument)
 
   2.  and returns a single `numeric` value.
 
   Alternatively, it can also be an
   [`Objective`](https://loelschlaeger.de/optimizeR/reference/Objective.md)
-  object for more flexibility.
+  object for more flexibility (e.g., for another or more than one target
+  argument, or for a gradient and Hessian function).
 
 - `initial`:
 
   \[[`numeric()`](https://rdrr.io/r/base/numeric.html)\]  
-  Starting parameter values for the optimization.
+  Starting parameter values for the optimization (without missing
+  values).
+
+  If the optimizer does not take initial values, they only define the
+  number of parameters.
 
 - `lower`:
 
@@ -463,6 +539,9 @@ Perform maximization.
 
   Can be `NA` to not define any bounds.
 
+  Ignored (with a warning) for optimizers that do not support lower
+  bounds.
+
 - `upper`:
 
   \[`NA` \| [`numeric()`](https://rdrr.io/r/base/numeric.html) \|
@@ -472,6 +551,9 @@ Perform maximization.
   If a single number, this will be applied to all parameters.
 
   Can be `NA` to not define any bounds.
+
+  Ignored (with a warning) for optimizers that do not support upper
+  bounds.
 
 - `...`:
 
@@ -505,7 +587,9 @@ A named `list`, containing at least these five elements:
 
   A `logical` flag: `TRUE` if an error occurred, otherwise `FALSE`.
 
-Additional output elements from the optimizer are appended.
+Additional output elements from the optimizer are appended. If the
+optimizer output is not a named `list`, it is appended as element
+`output`.
 
 If an error occurred, the error message is also appended as element
 `error_message`.
@@ -520,7 +604,7 @@ addition, the flag `time_out = TRUE` is appended.
 
 ------------------------------------------------------------------------
 
-### Method [`optimize()`](https://rdrr.io/r/stats/optimize.html)
+### `Optimizer$optimize()`
 
 Perform minimization or maximization.
 
@@ -542,18 +626,24 @@ Perform minimization or maximization.
   \[`function` \| `Objective`\]  
   A `function` to be optimized that
 
-  1.  has at least one argument that receives a `numeric` `vector`
+  1.  receives a `numeric` `vector` as its first argument (the so-called
+      target argument)
 
   2.  and returns a single `numeric` value.
 
   Alternatively, it can also be an
   [`Objective`](https://loelschlaeger.de/optimizeR/reference/Objective.md)
-  object for more flexibility.
+  object for more flexibility (e.g., for another or more than one target
+  argument, or for a gradient and Hessian function).
 
 - `initial`:
 
   \[[`numeric()`](https://rdrr.io/r/base/numeric.html)\]  
-  Starting parameter values for the optimization.
+  Starting parameter values for the optimization (without missing
+  values).
+
+  If the optimizer does not take initial values, they only define the
+  number of parameters.
 
 - `lower`:
 
@@ -565,6 +655,9 @@ Perform minimization or maximization.
 
   Can be `NA` to not define any bounds.
 
+  Ignored (with a warning) for optimizers that do not support lower
+  bounds.
+
 - `upper`:
 
   \[`NA` \| [`numeric()`](https://rdrr.io/r/base/numeric.html) \|
@@ -574,6 +667,9 @@ Perform minimization or maximization.
   If a single number, this will be applied to all parameters.
 
   Can be `NA` to not define any bounds.
+
+  Ignored (with a warning) for optimizers that do not support upper
+  bounds.
 
 - `direction`:
 
@@ -612,7 +708,9 @@ A named `list`, containing at least these five elements:
 
   A `logical` flag: `TRUE` if an error occurred, otherwise `FALSE`.
 
-Additional output elements from the optimizer are appended.
+Additional output elements from the optimizer are appended. If the
+optimizer output is not a named `list`, it is appended as element
+`output`.
 
 If an error occurred, the error message is also appended as element
 `error_message`.
@@ -622,18 +720,14 @@ addition, the flag `time_out = TRUE` is appended.
 
 #### Examples
 
-    objective <- function(x) -x^4 + 3*x - 5
-    optimizer <- Optimizer$new("stats::nlm")
-    optimizer$optimize(
-      objective = objective, initial = 2, direction = "min"
-    )
-    optimizer$optimize(
-      objective = objective, initial = 2, direction = "max"
-    )
+    objective <- function(x) sin(x)
+    nlm <- Optimizer$new("stats::nlm")
+    nlm$optimize(objective = objective, initial = 2, direction = "min")
+    nlm$optimize(objective = objective, initial = 2, direction = "max")
 
 ------------------------------------------------------------------------
 
-### Method [`print()`](https://rdrr.io/r/base/print.html)
+### `Optimizer$print()`
 
 Prints the optimizer label.
 
@@ -656,7 +750,7 @@ Invisibly the `Optimizer` object.
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `Optimizer$clone()`
 
 The objects of this class are cloneable with this method.
 
@@ -675,15 +769,20 @@ The objects of this class are cloneable with this method.
 ``` r
 ### Task: compare minimization with 'stats::nlm' and 'pracma::nelder_mead'
 
-# 1. define objective function and initial values
-objective <- TestFunctions::TF_ackley
+# 1. define objective function (the Ackley function) and initial values
+objective <- function(x) {
+  -20 * exp(-0.2 * sqrt(mean(x^2))) - exp(mean(cos(2 * pi * x))) +
+    20 + exp(1)
+}
 initial <- c(3, 3)
 
 # 2. get overview of optimizers available in dictionary
 optimizer_dictionary$keys
-#> [1] "lbfgsb3c::lbfgsb3c" "lbfgsb3c::lbfgsb3"  "lbfgsb3c::lbfgsb3f"
-#> [4] "lbfgsb3c::lbfgsb3x" "stats::nlm"         "stats::nlminb"     
-#> [7] "stats::optim"       "ucminf::ucminf"    
+#>  [1] "lbfgsb3c::lbfgsb3c" "lbfgsb3c::lbfgsb3"  "lbfgsb3c::lbfgsb3f"
+#>  [4] "lbfgsb3c::lbfgsb3x" "stats::nlm"         "stats::nlminb"     
+#>  [7] "stats::optim"       "ucminf::ucminf"     "nloptr::nloptr"    
+#> [10] "vntrs::vntrs"       "ao::ao"             "optimx::optimr"    
+#> [13] "DEoptim::DEoptim"   "GenSA::GenSA"      
 
 # 3. define 'nlm' optimizer
 nlm <- Optimizer$new(which = "stats::nlm")
@@ -710,7 +809,7 @@ nlm$minimize(objective, initial)
 #> [1] 1.974451 1.974451
 #> 
 #> $seconds
-#> [1] 0.03510308
+#> [1] 0.03969812
 #> 
 #> $initial
 #> [1] 3 3
@@ -735,7 +834,7 @@ nelder_mead$minimize(objective, initial)
 #> [1] 0 0
 #> 
 #> $seconds
-#> [1] 0.0263989
+#> [1] 0.02321792
 #> 
 #> $initial
 #> [1] 3 3
@@ -755,9 +854,44 @@ nelder_mead$minimize(objective, initial)
 #> 
 #> 
 
+## ------------------------------------------------
+## Method `Optimizer$definition()`
+## ------------------------------------------------
+
+### define 'stats::optimize', which does not take initial values
+optimize <- Optimizer$new(which = "custom", .verbose = FALSE)
+optimize$definition(
+  algorithm = stats::optimize,
+  arg_objective = "f",
+  arg_initial = NA,
+  arg_lower = "lower",
+  arg_upper = "upper",
+  out_value = "objective",
+  out_parameter = "minimum",
+  direction = "min"
+)
+optimize$minimize(
+  objective = function(x) x^4 + 3*x - 5, initial = 2, lower = -5,
+  upper = 5
+)
+#> $value
+#> [1] -7.044261
+#> 
+#> $parameter
+#> [1] -0.9085611
+#> 
+#> $seconds
+#> [1] 0.002896786
+#> 
+#> $initial
+#> [1] 2
+#> 
+#> $error
+#> [1] FALSE
+#> 
 
 ## ------------------------------------------------
-## Method `Optimizer$minimize`
+## Method `Optimizer$minimize()`
 ## ------------------------------------------------
 
 Optimizer$new("stats::nlm")$
@@ -769,7 +903,7 @@ Optimizer$new("stats::nlm")$
 #> [1] -0.9085614
 #> 
 #> $seconds
-#> [1] 0.003821611
+#> [1] 0.003795147
 #> 
 #> $initial
 #> [1] 2
@@ -788,7 +922,7 @@ Optimizer$new("stats::nlm")$
 #> 
 
 ## ------------------------------------------------
-## Method `Optimizer$maximize`
+## Method `Optimizer$maximize()`
 ## ------------------------------------------------
 
 Optimizer$new("stats::nlm")$
@@ -800,7 +934,7 @@ Optimizer$new("stats::nlm")$
 #> [1] 0.9085598
 #> 
 #> $seconds
-#> [1] 0.004701614
+#> [1] 0.004636288
 #> 
 #> $initial
 #> [1] 2
@@ -819,22 +953,20 @@ Optimizer$new("stats::nlm")$
 #> 
 
 ## ------------------------------------------------
-## Method `Optimizer$optimize`
+## Method `Optimizer$optimize()`
 ## ------------------------------------------------
 
-objective <- function(x) -x^4 + 3*x - 5
-optimizer <- Optimizer$new("stats::nlm")
-optimizer$optimize(
-  objective = objective, initial = 2, direction = "min"
-)
+objective <- function(x) sin(x)
+nlm <- Optimizer$new("stats::nlm")
+nlm$optimize(objective = objective, initial = 2, direction = "min")
 #> $value
-#> [1] -1.012458e+16
+#> [1] -1
 #> 
 #> $parameter
-#> [1] 10031
+#> [1] 4.712387
 #> 
 #> $seconds
-#> [1] 0.003214598
+#> [1] 0.003644228
 #> 
 #> $initial
 #> [1] 2
@@ -843,39 +975,37 @@ optimizer$optimize(
 #> [1] FALSE
 #> 
 #> $gradient
-#> [1] -4.037322e+12
-#> 
-#> $code
-#> [1] 5
-#> 
-#> $iterations
-#> [1] 6
-#> 
-optimizer$optimize(
-  objective = objective, initial = 2, direction = "max"
-)
-#> $value
-#> [1] -2.955739
-#> 
-#> $parameter
-#> [1] 0.9085598
-#> 
-#> $seconds
-#> [1] 0.004770517
-#> 
-#> $initial
-#> [1] 2
-#> 
-#> $error
-#> [1] FALSE
-#> 
-#> $gradient
-#> [1] -3.801404e-07
+#> [1] -2.355968e-11
 #> 
 #> $code
 #> [1] 1
 #> 
 #> $iterations
-#> [1] 8
+#> [1] 7
+#> 
+nlm$optimize(objective = objective, initial = 2, direction = "max")
+#> $value
+#> [1] 1
+#> 
+#> $parameter
+#> [1] 1.570796
+#> 
+#> $seconds
+#> [1] 0.002090454
+#> 
+#> $initial
+#> [1] 2
+#> 
+#> $error
+#> [1] FALSE
+#> 
+#> $gradient
+#> [1] 1.166204e-08
+#> 
+#> $code
+#> [1] 1
+#> 
+#> $iterations
+#> [1] 3
 #> 
 ```

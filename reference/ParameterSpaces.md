@@ -19,7 +19,7 @@ switch between these spaces via the `$o2i()` and `$i2o()` methods.
 
 ### Public methods
 
-- [`ParameterSpaces$new()`](#method-ParameterSpaces-new)
+- [`ParameterSpaces$new()`](#method-ParameterSpaces-initialize)
 
 - [`ParameterSpaces$print()`](#method-ParameterSpaces-print)
 
@@ -33,7 +33,7 @@ switch between these spaces via the `$o2i()` and `$i2o()` methods.
 
 ------------------------------------------------------------------------
 
-### Method `new()`
+### `ParameterSpaces$new()`
 
 Initializes a new `ParameterSpaces` object.
 
@@ -59,7 +59,7 @@ A new `ParameterSpaces` object.
 
 ------------------------------------------------------------------------
 
-### Method [`print()`](https://rdrr.io/r/base/print.html)
+### `ParameterSpaces$print()`
 
 Print an overview of the parameter spaces.
 
@@ -76,7 +76,7 @@ Print an overview of the parameter spaces.
 
 ------------------------------------------------------------------------
 
-### Method [`switch()`](https://rdrr.io/r/base/switch.html)
+### `ParameterSpaces$switch()`
 
 Switch between Optimization Space and Interpretation Space.
 
@@ -108,7 +108,7 @@ Switch between Optimization Space and Interpretation Space.
 
 ------------------------------------------------------------------------
 
-### Method `o2i()`
+### `ParameterSpaces$o2i()`
 
 Define transformation functions when switching from Optimization Space
 to Interpretation Space.
@@ -130,7 +130,7 @@ to Interpretation Space.
 
 ------------------------------------------------------------------------
 
-### Method `i2o()`
+### `ParameterSpaces$i2o()`
 
 Define transformation functions when switching from Interpretation Space
 to Optimization Space.
@@ -153,7 +153,7 @@ to Optimization Space.
 
 ------------------------------------------------------------------------
 
-### Method `clone()`
+### `ParameterSpaces$clone()`
 
 The objects of this class are cloneable with this method.
 
